@@ -14,7 +14,340 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assets: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          description: string
+          holder: string | null
+          id: string
+          purchase_date: string | null
+          type: Database["public"]["Enums"]["asset_type"]
+          updated_at: string | null
+          user_id: string
+          valuation: number
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          description: string
+          holder?: string | null
+          id?: string
+          purchase_date?: string | null
+          type: Database["public"]["Enums"]["asset_type"]
+          updated_at?: string | null
+          user_id: string
+          valuation: number
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          description?: string
+          holder?: string | null
+          id?: string
+          purchase_date?: string | null
+          type?: Database["public"]["Enums"]["asset_type"]
+          updated_at?: string | null
+          user_id?: string
+          valuation?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bank_accounts: {
+        Row: {
+          balance: number
+          color_variant: string | null
+          country: string | null
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          id: string
+          is_primary: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          color_variant?: string | null
+          country?: string | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          id?: string
+          is_primary?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          color_variant?: string | null
+          country?: string | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          id?: string
+          is_primary?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cards: {
+        Row: {
+          bank_name: string
+          color_variant: string | null
+          created_at: string | null
+          expiry: string
+          holder_name: string
+          id: string
+          last_four: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bank_name: string
+          color_variant?: string | null
+          created_at?: string | null
+          expiry: string
+          holder_name: string
+          id?: string
+          last_four: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bank_name?: string
+          color_variant?: string | null
+          created_at?: string | null
+          expiry?: string
+          holder_name?: string
+          id?: string
+          last_four?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          asset_linked: boolean | null
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          current_amount: number | null
+          id: string
+          is_long_term: boolean | null
+          linked_asset_id: string | null
+          target_amount: number
+          timeframe: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          asset_linked?: boolean | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          current_amount?: number | null
+          id?: string
+          is_long_term?: boolean | null
+          linked_asset_id?: string | null
+          target_amount: number
+          timeframe?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          asset_linked?: boolean | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          current_amount?: number | null
+          id?: string
+          is_long_term?: boolean | null
+          linked_asset_id?: string | null
+          target_amount?: number
+          timeframe?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_linked_asset_id_fkey"
+            columns: ["linked_asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      income_streams: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          frequency: string | null
+          id: string
+          is_primary: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          frequency?: string | null
+          id?: string
+          is_primary?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          frequency?: string | null
+          id?: string
+          is_primary?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "income_streams_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      liabilities: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          description: string
+          holder: string | null
+          id: string
+          interest_rate: number | null
+          start_date: string | null
+          type: Database["public"]["Enums"]["liability_type"]
+          updated_at: string | null
+          user_id: string
+          valuation: number
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          description: string
+          holder?: string | null
+          id?: string
+          interest_rate?: number | null
+          start_date?: string | null
+          type: Database["public"]["Enums"]["liability_type"]
+          updated_at?: string | null
+          user_id: string
+          valuation: number
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          description?: string
+          holder?: string | null
+          id?: string
+          interest_rate?: number | null
+          start_date?: string | null
+          type?: Database["public"]["Enums"]["liability_type"]
+          updated_at?: string | null
+          user_id?: string
+          valuation?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "liabilities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string
+          onboarding_completed: boolean | null
+          preferred_currency:
+            | Database["public"]["Enums"]["currency_code"]
+            | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id: string
+          onboarding_completed?: boolean | null
+          preferred_currency?:
+            | Database["public"]["Enums"]["currency_code"]
+            | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          onboarding_completed?: boolean | null
+          preferred_currency?:
+            | Database["public"]["Enums"]["currency_code"]
+            | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +356,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      asset_type:
+        | "CASH"
+        | "EQUITY"
+        | "CRYPTO"
+        | "GOLD"
+        | "REAL_ESTATE"
+        | "OTHER"
+      currency_code: "USD" | "EUR" | "INR" | "GBP" | "JPY" | "AUD" | "CAD"
+      liability_type: "LOAN" | "MORTGAGE" | "CREDIT_CARD" | "OTHER"
+      transaction_type: "INCOME" | "EXPENSE"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +492,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      asset_type: ["CASH", "EQUITY", "CRYPTO", "GOLD", "REAL_ESTATE", "OTHER"],
+      currency_code: ["USD", "EUR", "INR", "GBP", "JPY", "AUD", "CAD"],
+      liability_type: ["LOAN", "MORTGAGE", "CREDIT_CARD", "OTHER"],
+      transaction_type: ["INCOME", "EXPENSE"],
+    },
   },
 } as const

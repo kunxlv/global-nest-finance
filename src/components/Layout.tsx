@@ -1,4 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 import { 
   LayoutDashboard, 
   RefreshCw, 
@@ -21,6 +23,26 @@ const navigation = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { profile, loading } = useAuth();
+
+  // Redirect to onboarding if not completed
+  useEffect(() => {
+    if (!loading && profile && !profile.onboarding_completed) {
+      navigate('/onboarding');
+    }
+  }, [profile, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -33,15 +55,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* User Profile */}
         <div className="mb-8 flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-muted overflow-hidden">
-            <img 
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" 
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+            {profile?.avatar_url ? (
+              <img 
+                src={profile.avatar_url} 
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-[hsl(var(--success))]/20 text-[hsl(var(--success))] font-bold text-lg">
+                {profile?.display_name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+            )}
           </div>
           <div>
             <p className="text-xs text-[hsl(var(--sidebar-text))]/70">Welcome back,</p>
-            <p className="font-semibold">Kunal Vaidya</p>
+            <p className="font-semibold">{profile?.display_name || 'User'}</p>
           </div>
         </div>
 
