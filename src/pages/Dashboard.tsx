@@ -32,6 +32,21 @@ type PaymentWithRecurring = PaymentHistory & {
 
 const DEFAULT_WIDGETS: WidgetType[] = ["net-worth", "salary-countdown", "upcoming-payments", "goals"];
 
+const getDefaultPosition = (type: WidgetType, index: number) => {
+  switch(type) {
+    case "net-worth":
+      return { x: 0, y: 0 };
+    case "salary-countdown":
+      return { x: 2, y: 0 };
+    case "upcoming-payments":
+      return { x: 0, y: 2 };
+    case "goals":
+      return { x: 0, y: 5 };
+    default:
+      return { x: 0, y: index * 2 };
+  }
+};
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -88,15 +103,18 @@ export default function Dashboard() {
   const initializeDefaultWidgets = async () => {
     if (!user) return;
 
-    const defaultWidgetData = DEFAULT_WIDGETS.map((type, index) => ({
-      user_id: user.id,
-      widget_type: type,
-      position_x: (index % 2) * 2,
-      position_y: Math.floor(index / 2) * 2,
-      width: WIDGET_METADATA[type].defaultWidth,
-      height: WIDGET_METADATA[type].defaultHeight,
-      is_visible: true,
-    }));
+    const defaultWidgetData = DEFAULT_WIDGETS.map((type, index) => {
+      const pos = getDefaultPosition(type, index);
+      return {
+        user_id: user.id,
+        widget_type: type,
+        position_x: pos.x,
+        position_y: pos.y,
+        width: WIDGET_METADATA[type].defaultWidth,
+        height: WIDGET_METADATA[type].defaultHeight,
+        is_visible: true,
+      };
+    });
 
     const { data, error } = await supabase
       .from("dashboard_widgets")
@@ -268,12 +286,12 @@ export default function Dashboard() {
             layouts={{ lg: generateLayout() }}
             breakpoints={{ lg: 1024, md: 768, sm: 640, xs: 0 }}
             cols={{ lg: 4, md: 3, sm: 2, xs: 1 }}
-            rowHeight={200}
+            rowHeight={120}
             isDraggable={isEditMode}
             isResizable={false}
             onLayoutChange={handleLayoutChange}
             compactType="vertical"
-            margin={[16, 16]}
+            margin={[12, 12]}
           >
             {widgets.map((widget) => (
               <div key={widget.id} className={isEditMode ? "cursor-move" : ""}>

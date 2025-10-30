@@ -21,45 +21,13 @@ interface WidgetMeta {
 }
 
 export const WIDGET_METADATA: Record<WidgetType, WidgetMeta> = {
-  "upcoming-payments": {
-    type: "upcoming-payments",
-    name: "Upcoming Payments",
-    description: "View payments due in the next 7 days",
-    icon: Bell,
-    defaultWidth: 2,
-    defaultHeight: 2,
-  },
-  "top-gainers": {
-    type: "top-gainers",
-    name: "Top Gainers",
-    description: "Assets with highest growth",
-    icon: TrendingUp,
-    defaultWidth: 1,
-    defaultHeight: 1,
-  },
-  "top-losers": {
-    type: "top-losers",
-    name: "Top Losers",
-    description: "Assets with highest decline",
-    icon: TrendingDown,
-    defaultWidth: 1,
-    defaultHeight: 1,
-  },
-  "goals": {
-    type: "goals",
-    name: "Goals",
-    description: "Track your financial goals",
-    icon: Target,
-    defaultWidth: 2,
-    defaultHeight: 1,
-  },
   "net-worth": {
     type: "net-worth",
     name: "Net Worth",
     description: "Your total net worth summary",
     icon: DollarSign,
-    defaultWidth: 1,
-    defaultHeight: 1,
+    defaultWidth: 2,
+    defaultHeight: 2,
   },
   "salary-countdown": {
     type: "salary-countdown",
@@ -67,7 +35,39 @@ export const WIDGET_METADATA: Record<WidgetType, WidgetMeta> = {
     description: "Days until next salary",
     icon: CalendarDays,
     defaultWidth: 2,
-    defaultHeight: 1,
+    defaultHeight: 2,
+  },
+  "upcoming-payments": {
+    type: "upcoming-payments",
+    name: "Upcoming Payments",
+    description: "View payments due in the next 7 days",
+    icon: Bell,
+    defaultWidth: 4,
+    defaultHeight: 3,
+  },
+  "goals": {
+    type: "goals",
+    name: "Goals",
+    description: "Track your financial goals",
+    icon: Target,
+    defaultWidth: 4,
+    defaultHeight: 2,
+  },
+  "top-gainers": {
+    type: "top-gainers",
+    name: "Top Gainers",
+    description: "Assets with highest growth",
+    icon: TrendingUp,
+    defaultWidth: 2,
+    defaultHeight: 2,
+  },
+  "top-losers": {
+    type: "top-losers",
+    name: "Top Losers",
+    description: "Assets with highest decline",
+    icon: TrendingDown,
+    defaultWidth: 2,
+    defaultHeight: 2,
   },
 };
 

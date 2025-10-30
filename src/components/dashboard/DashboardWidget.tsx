@@ -37,7 +37,7 @@ export function DashboardWidget({ type, onRemove, isEditMode }: DashboardWidgetP
 
   return (
     <div className={cn(
-      "bg-white rounded-3xl p-4 sm:p-6 relative h-full transition-all",
+      "bg-white rounded-3xl p-4 relative h-full transition-all flex flex-col",
       isEditMode && "ring-2 ring-primary/20"
     )}>
       {isEditMode && (
