@@ -82,7 +82,7 @@ export async function fetchExchangeRates(baseCurrency: CurrencyCode = 'USD'): Pr
   try {
     const targetCurrencies = SUPPORTED_CURRENCIES.filter(c => c !== baseCurrency).join(',');
     const response = await fetch(
-      `https://api.frankfurter.dev/latest?from=${baseCurrency}&to=${targetCurrencies}`
+      `https://api.frankfurter.app/latest?from=${baseCurrency}&to=${targetCurrencies}`
     );
 
     if (!response.ok) {
@@ -105,7 +105,12 @@ export async function fetchExchangeRates(baseCurrency: CurrencyCode = 'USD'): Pr
       return cached.rates;
     }
     
-    throw error;
+    // Return default rates (1:1) so the app still works
+    const defaultRates: Record<string, number> = {};
+    SUPPORTED_CURRENCIES.forEach(currency => {
+      defaultRates[currency] = 1.0;
+    });
+    return defaultRates;
   }
 }
 

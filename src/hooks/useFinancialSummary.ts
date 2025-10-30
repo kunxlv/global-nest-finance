@@ -26,7 +26,7 @@ export function useFinancialSummary(): FinancialSummary {
   });
 
   useEffect(() => {
-    if (!user || !exchangeRates) {
+    if (!user) {
       setSummary(prev => ({ ...prev, isLoading: false }));
       return;
     }
