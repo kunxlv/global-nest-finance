@@ -95,22 +95,23 @@ export default function Liabilities() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold">Liabilities.</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold">Liabilities.</h1>
           <div className="flex gap-3">
             <LiabilityForm onSuccess={fetchLiabilities}>
-              <Button size="sm" className="bg-black text-white hover:bg-black/90">
+              <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
-                Add Liability
+                <span className="hidden sm:inline">Add Liability</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </LiabilityForm>
           </div>
         </div>
 
         {/* Liabilities Table */}
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-white rounded-3xl p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-6">
-            <h2 className="text-xl font-semibold">All liabilities</h2>
+            <h2 className="text-lg sm:text-xl font-semibold">All liabilities</h2>
             <ChevronDown className="w-5 h-5" />
           </div>
 
@@ -123,83 +124,85 @@ export default function Liabilities() {
               <p className="text-muted-foreground">No liabilities yet. Add your first liability to track your debts.</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Country</TableHead>
-                  <TableHead>Lender</TableHead>
-                  <TableHead>Interest Rate</TableHead>
-                  <TableHead>Start Date</TableHead>
-                  <TableHead>Linked Payments</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {liabilities.map((liability) => (
-                  <TableRow key={liability.id}>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(Number(liability.valuation), liability.currency)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{liability.type}</Badge>
-                    </TableCell>
-                    <TableCell>{liability.description}</TableCell>
-                    <TableCell>{liability.country || "-"}</TableCell>
-                    <TableCell>{liability.holder || "-"}</TableCell>
-                    <TableCell>
-                      {liability.interest_rate ? `${liability.interest_rate}%` : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {liability.start_date
-                        ? new Date(liability.start_date).toLocaleDateString()
-                        : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {linkedPayments[liability.id]?.length > 0 && (
-                        <Badge variant="secondary" className="text-xs">
-                          <Bell className="w-3 h-3 mr-1" />
-                          {linkedPayments[liability.id].length} payment{linkedPayments[liability.id].length !== 1 ? 's' : ''}
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <LiabilityForm liability={liability} onSuccess={fetchLiabilities}>
-                          <Button variant="ghost" size="sm">
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                        </LiabilityForm>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <Trash className="w-4 h-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Liability</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete this liability? This action cannot be
-                                undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(liability.id)}>
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[120px]">Amount</TableHead>
+                    <TableHead className="min-w-[100px]">Type</TableHead>
+                    <TableHead className="min-w-[150px]">Description</TableHead>
+                    <TableHead className="min-w-[100px]">Country</TableHead>
+                    <TableHead className="min-w-[100px]">Lender</TableHead>
+                    <TableHead className="min-w-[100px]">Interest Rate</TableHead>
+                    <TableHead className="min-w-[120px]">Start Date</TableHead>
+                    <TableHead className="min-w-[120px]">Linked Payments</TableHead>
+                    <TableHead className="text-right min-w-[100px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {liabilities.map((liability) => (
+                    <TableRow key={liability.id}>
+                      <TableCell className="font-semibold">
+                        {formatCurrency(Number(liability.valuation), liability.currency)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{liability.type}</Badge>
+                      </TableCell>
+                      <TableCell>{liability.description}</TableCell>
+                      <TableCell>{liability.country || "-"}</TableCell>
+                      <TableCell>{liability.holder || "-"}</TableCell>
+                      <TableCell>
+                        {liability.interest_rate ? `${liability.interest_rate}%` : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {liability.start_date
+                          ? new Date(liability.start_date).toLocaleDateString()
+                          : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {linkedPayments[liability.id]?.length > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            <Bell className="w-3 h-3 mr-1" />
+                            {linkedPayments[liability.id].length} payment{linkedPayments[liability.id].length !== 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <LiabilityForm liability={liability} onSuccess={fetchLiabilities}>
+                            <Button variant="ghost" size="sm">
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                          </LiabilityForm>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <Trash className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Liability</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete this liability? This action cannot be
+                                  undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(liability.id)}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </div>
       </div>

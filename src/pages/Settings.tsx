@@ -51,8 +51,8 @@ export default function Settings() {
     <Layout>
       <div className="space-y-6 max-w-4xl">
         <div>
-          <h1 className="text-4xl font-bold">Settings.</h1>
-          <p className="text-muted-foreground mt-2">Manage your account settings and preferences</p>
+          <h1 className="text-3xl sm:text-4xl font-bold">Settings.</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">Manage your account settings and preferences</p>
         </div>
 
         {/* Profile Settings */}

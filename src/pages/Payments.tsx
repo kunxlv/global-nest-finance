@@ -175,12 +175,13 @@ export default function Payments() {
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold">Payments.</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold">Payments.</h1>
           <RecurringPaymentForm onSuccess={fetchData}>
-            <Button className="bg-black text-white hover:bg-black/90">
+            <Button className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
-              Add Recurring Payment
+              <span className="hidden sm:inline">Add Recurring Payment</span>
+              <span className="sm:hidden">Add Payment</span>
             </Button>
           </RecurringPaymentForm>
         </div>
@@ -223,7 +224,7 @@ export default function Payments() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {filteredUpcoming.map((payment) => (
                     <PaymentAlert
                       key={payment.id}
@@ -241,17 +242,17 @@ export default function Payments() {
                   <p className="text-muted-foreground">No payment history yet</p>
                 </div>
               ) : (
-                <div className="bg-card rounded-2xl border">
+                <div className="bg-card rounded-2xl border overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Payment</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Due Date</TableHead>
-                        <TableHead>Paid Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="min-w-[150px]">Payment</TableHead>
+                        <TableHead className="min-w-[100px]">Category</TableHead>
+                        <TableHead className="min-w-[100px]">Amount</TableHead>
+                        <TableHead className="min-w-[120px]">Due Date</TableHead>
+                        <TableHead className="min-w-[120px]">Paid Date</TableHead>
+                        <TableHead className="min-w-[100px]">Status</TableHead>
+                        <TableHead className="text-right min-w-[120px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -316,17 +317,17 @@ export default function Payments() {
                   </p>
                 </div>
               ) : (
-                <div className="bg-card rounded-2xl border">
+                <div className="bg-card rounded-2xl border overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Frequency</TableHead>
-                        <TableHead>Next Due</TableHead>
-                        <TableHead>Active</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="min-w-[150px]">Name</TableHead>
+                        <TableHead className="min-w-[100px]">Category</TableHead>
+                        <TableHead className="min-w-[100px]">Amount</TableHead>
+                        <TableHead className="min-w-[100px]">Frequency</TableHead>
+                        <TableHead className="min-w-[120px]">Next Due</TableHead>
+                        <TableHead className="min-w-[80px]">Active</TableHead>
+                        <TableHead className="text-right min-w-[120px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

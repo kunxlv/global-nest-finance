@@ -115,7 +115,7 @@ export default function CashFlow() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold">Cash flow.</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold">Cash flow.</h1>
         </div>
 
         {loading ? (
@@ -132,12 +132,13 @@ export default function CashFlow() {
             <TabsContent value="income" className="space-y-6">
               {/* Income Streams */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold">Income</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <h2 className="text-xl sm:text-2xl font-bold">Income</h2>
                   <IncomeStreamForm onSuccess={fetchData}>
-                    <Button size="sm" className="bg-black text-white hover:bg-black/90">
+                    <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
                       <Plus className="w-4 h-4 mr-2" />
-                      Add Income Stream
+                      <span className="hidden sm:inline">Add Income Stream</span>
+                      <span className="sm:hidden">Add Income</span>
                     </Button>
                   </IncomeStreamForm>
                 </div>
@@ -198,12 +199,13 @@ export default function CashFlow() {
 
               {/* Bank Accounts */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold">Bank Accounts</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <h2 className="text-xl sm:text-2xl font-bold">Bank Accounts</h2>
                   <BankAccountForm onSuccess={fetchData}>
-                    <Button size="sm" className="bg-black text-white hover:bg-black/90">
+                    <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
                       <Plus className="w-4 h-4 mr-2" />
-                      Add Bank Account
+                      <span className="hidden sm:inline">Add Bank Account</span>
+                      <span className="sm:hidden">Add Account</span>
                     </Button>
                   </BankAccountForm>
                 </div>
@@ -259,10 +261,10 @@ export default function CashFlow() {
 
               {/* Cards */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold">Cards</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <h2 className="text-xl sm:text-2xl font-bold">Cards</h2>
                   <CardForm onSuccess={fetchData}>
-                    <Button size="sm" className="bg-black text-white hover:bg-black/90">
+                    <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
                       <Plus className="w-4 h-4 mr-2" />
                       Add Card
                     </Button>

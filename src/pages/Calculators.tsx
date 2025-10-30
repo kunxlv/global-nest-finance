@@ -70,11 +70,11 @@ export default function Calculators() {
     <Layout>
       <div className="space-y-8">
         {/* Header */}
-        <h1 className="text-4xl font-bold">Calculators.</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold">Calculators.</h1>
 
         {/* Savings & Investments */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Savings & Investments</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Savings & Investments</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {savingsCalculators.map((calc) => (
               <CalculatorCard key={calc.title} {...calc} />
@@ -84,7 +84,7 @@ export default function Calculators() {
 
         {/* Debts & Mortgages */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Debts & Mortgages</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Debts & Mortgages</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {debtCalculators.map((calc) => (
               <CalculatorCard key={calc.title} {...calc} />
@@ -94,7 +94,7 @@ export default function Calculators() {
 
         {/* Pay & Salary */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Pay & Salary</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Pay & Salary</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {salaryCalculators.map((calc) => (
               <CalculatorCard key={calc.title} {...calc} />

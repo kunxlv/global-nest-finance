@@ -76,10 +76,10 @@ export default function Goals() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold">Goals.</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold">Goals.</h1>
           <GoalForm onSuccess={fetchGoals}>
-            <Button size="sm" className="bg-black text-white hover:bg-black/90">
+            <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Add Goal
             </Button>

@@ -96,26 +96,27 @@ export default function Assets() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold">Assets.</h1>
-          <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold">Assets.</h1>
+          <div className="flex gap-2 sm:gap-3">
             <AssetForm onSuccess={fetchAssets}>
-              <Button size="sm" className="bg-black text-white hover:bg-black/90">
+              <Button size="sm" className="bg-black text-white hover:bg-black/90 flex-1 sm:flex-initial">
                 <Plus className="w-4 h-4 mr-2" />
-                Add Asset
+                <span className="hidden sm:inline">Add Asset</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </AssetForm>
-            <Button variant="outline" size="sm">
-              <FileDown className="w-4 h-4 mr-2" />
-              Export Data
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-initial">
+              <FileDown className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export Data</span>
             </Button>
           </div>
         </div>
 
         {/* Assets Table */}
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-white rounded-3xl p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-6">
-            <h2 className="text-xl font-semibold">All assets</h2>
+            <h2 className="text-lg sm:text-xl font-semibold">All assets</h2>
             <ChevronDown className="w-5 h-5" />
           </div>
 
@@ -128,79 +129,81 @@ export default function Assets() {
               <p className="text-muted-foreground">No assets yet. Add your first asset to get started!</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Valuation</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Country</TableHead>
-                  <TableHead>Holder</TableHead>
-                  <TableHead>Purchase Date</TableHead>
-                  <TableHead>Linked Payments</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {assets.map((asset) => (
-                  <TableRow key={asset.id}>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(Number(asset.valuation), asset.currency)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{asset.type}</Badge>
-                    </TableCell>
-                    <TableCell>{asset.description}</TableCell>
-                    <TableCell>{asset.country || "-"}</TableCell>
-                    <TableCell>{asset.holder || "-"}</TableCell>
-                    <TableCell>
-                      {asset.purchase_date
-                        ? new Date(asset.purchase_date).toLocaleDateString()
-                        : "NA"}
-                    </TableCell>
-                    <TableCell>
-                      {linkedPayments[asset.id]?.length > 0 && (
-                        <Badge variant="secondary" className="text-xs">
-                          <Bell className="w-3 h-3 mr-1" />
-                          {linkedPayments[asset.id].length} payment{linkedPayments[asset.id].length !== 1 ? 's' : ''}
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <AssetForm asset={asset} onSuccess={fetchAssets}>
-                          <Button variant="ghost" size="sm">
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                        </AssetForm>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <Trash className="w-4 h-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Asset</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete this asset? This action cannot be
-                                undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(asset.id)}>
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[120px]">Valuation</TableHead>
+                    <TableHead className="min-w-[100px]">Type</TableHead>
+                    <TableHead className="min-w-[150px]">Description</TableHead>
+                    <TableHead className="min-w-[100px]">Country</TableHead>
+                    <TableHead className="min-w-[100px]">Holder</TableHead>
+                    <TableHead className="min-w-[120px]">Purchase Date</TableHead>
+                    <TableHead className="min-w-[120px]">Linked Payments</TableHead>
+                    <TableHead className="text-right min-w-[100px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {assets.map((asset) => (
+                    <TableRow key={asset.id}>
+                      <TableCell className="font-semibold">
+                        {formatCurrency(Number(asset.valuation), asset.currency)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{asset.type}</Badge>
+                      </TableCell>
+                      <TableCell>{asset.description}</TableCell>
+                      <TableCell>{asset.country || "-"}</TableCell>
+                      <TableCell>{asset.holder || "-"}</TableCell>
+                      <TableCell>
+                        {asset.purchase_date
+                          ? new Date(asset.purchase_date).toLocaleDateString()
+                          : "NA"}
+                      </TableCell>
+                      <TableCell>
+                        {linkedPayments[asset.id]?.length > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            <Bell className="w-3 h-3 mr-1" />
+                            {linkedPayments[asset.id].length} payment{linkedPayments[asset.id].length !== 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <AssetForm asset={asset} onSuccess={fetchAssets}>
+                            <Button variant="ghost" size="sm">
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                          </AssetForm>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <Trash className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Asset</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete this asset? This action cannot be
+                                  undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(asset.id)}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </div>
       </div>

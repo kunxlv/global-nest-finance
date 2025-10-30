@@ -62,13 +62,13 @@ export default function Dashboard() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold">Dashboard.</h1>
-          <div className="flex gap-3">
-            <Button variant="outline" size="sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold">Dashboard.</h1>
+          <div className="flex gap-2 sm:gap-3">
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
               Widgets
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
               $ USD
             </Button>
           </div>
@@ -99,16 +99,16 @@ export default function Dashboard() {
         </div>
 
         {/* Salary Countdown */}
-        <div className="bg-white rounded-3xl p-6 relative">
-          <Button variant="ghost" size="icon" className="absolute top-4 right-4">
+        <div className="bg-white rounded-3xl p-4 sm:p-6 relative">
+          <Button variant="ghost" size="icon" className="absolute top-2 right-2 sm:top-4 sm:right-4">
             <X className="w-4 h-4" />
           </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-6xl font-bold">19</span>
-              <span className="text-xl ml-2">days until the next salary...</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl sm:text-6xl font-bold">19</span>
+              <span className="text-sm sm:text-xl">days until the next salary...</span>
             </div>
-            <Button variant="link" className="underline">
+            <Button variant="link" className="underline text-sm">
               Manage Budget
             </Button>
           </div>
@@ -181,11 +181,11 @@ export default function Dashboard() {
 
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
 
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-white rounded-3xl p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">Upcoming Payments</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">Upcoming Payments</h2>
             <Link to="/payments">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
                 View All <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
@@ -193,7 +193,7 @@ export default function Dashboard() {
           {upcomingPayments.length === 0 ? (
             <p className="text-muted-foreground text-sm">No upcoming payments in the next 7 days</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {upcomingPayments.map((payment) => (
                 <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
               ))}
