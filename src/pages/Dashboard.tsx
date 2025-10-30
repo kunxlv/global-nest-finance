@@ -1,261 +1,62 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
+import StatCard from "@/components/StatCard";
+import GoalCard from "@/components/GoalCard";
+import PaymentAlert from "@/components/PaymentAlert";
+import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { X, ArrowRight } from "lucide-react";
 import { supabase, PaymentHistory, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Grip } from "lucide-react";
-import { Responsive, WidthProvider, Layout as GridLayout } from "react-grid-layout";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-import { WidgetSelector, WidgetType, WIDGET_METADATA } from "@/components/dashboard/WidgetSelector";
-import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
-import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
-import { FixedStatsRow } from "@/components/dashboard/FixedStatsRow";
 import { differenceInDays } from "date-fns";
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
-
-const MAX_ROWS = 12;
-const ROW_HEIGHT = 100;
-const GRID_GAP = 16;
-
-interface DashboardWidgetData {
-  id: string;
-  widget_type: WidgetType;
-  position_x: number;
-  position_y: number;
-  width: number;
-  height: number;
-}
+import { Link } from "react-router-dom";
 
 type PaymentWithRecurring = PaymentHistory & {
   recurring_payment: RecurringPayment;
 };
 
-const DEFAULT_WIDGETS: WidgetType[] = ["salary-countdown", "upcoming-payments", "goals"];
-
-const getDefaultPosition = (type: WidgetType, index: number) => {
-  switch(type) {
-    case "salary-countdown":
-      return { x: 0, y: 0 };
-    case "upcoming-payments":
-      return { x: 2, y: 0 };
-    case "goals":
-      return { x: 0, y: 4 };
-    default:
-      return { x: 0, y: index * 2 };
-  }
-};
-
 export default function Dashboard() {
-  const { user } = useAuth();
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [widgets, setWidgets] = useState<DashboardWidgetData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [upcomingPayments, setUpcomingPayments] = useState<PaymentWithRecurring[]>([]);
-  const gridContainerRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
-    fetchWidgets();
-    fetchUpcomingPayments();
+    
+    const fetchUpcoming = async () => {
+      const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      
+      const { data } = await supabase
+        .from("payment_history")
+        .select("*, recurring_payment:recurring_payments(*)")
+        .eq("user_id", user.id)
+        .eq("status", "UPCOMING")
+        .lte("due_date", sevenDaysLater)
+        .order("due_date", { ascending: true })
+        .limit(3);
+
+      if (data) setUpcomingPayments(data as PaymentWithRecurring[]);
+    };
+
+    fetchUpcoming();
   }, [user]);
 
-  const fetchUpcomingPayments = async () => {
-    if (!user) return;
-    
-    const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    
-    const { data } = await supabase
-      .from("payment_history")
-      .select("*, recurring_payment:recurring_payments(*)")
-      .eq("user_id", user.id)
-      .eq("status", "UPCOMING")
-      .lte("due_date", sevenDaysLater)
-      .order("due_date", { ascending: true });
-
-    if (data) setUpcomingPayments(data as PaymentWithRecurring[]);
-  };
-
-  const fetchWidgets = async () => {
-    if (!user) return;
-    setLoading(true);
-
-    const { data, error } = await supabase
-      .from("dashboard_widgets")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("is_visible", true)
-      .order("position_y")
-      .order("position_x");
-
-    if (error) {
-      console.error("Error fetching widgets:", error);
-    } else if (data && data.length > 0) {
-      setWidgets(data as DashboardWidgetData[]);
-    } else {
-      // Initialize with default widgets
-      await initializeDefaultWidgets();
-    }
-
-    setLoading(false);
-  };
-
-  const initializeDefaultWidgets = async () => {
-    if (!user) return;
-
-    const defaultWidgetData = DEFAULT_WIDGETS.map((type, index) => {
-      const pos = getDefaultPosition(type, index);
-      return {
-        user_id: user.id,
-        widget_type: type,
-        position_x: pos.x,
-        position_y: pos.y,
-        width: WIDGET_METADATA[type].defaultWidth,
-        height: WIDGET_METADATA[type].defaultHeight,
-        is_visible: true,
-      };
-    });
-
-    const { data, error } = await supabase
-      .from("dashboard_widgets")
-      .insert(defaultWidgetData)
-      .select();
-
-    if (error) {
-      toast.error("Failed to initialize dashboard");
-      console.error(error);
-    } else if (data) {
-      setWidgets(data as DashboardWidgetData[]);
-    }
-  };
-
-  const handleAddWidget = async (widgetType: WidgetType) => {
-    if (!user) return;
-
-    const meta = WIDGET_METADATA[widgetType];
-    const maxY = widgets.reduce((max, w) => Math.max(max, w.position_y + w.height), 0);
-
-    const { data, error } = await supabase
-      .from("dashboard_widgets")
-      .insert({
-        user_id: user.id,
-        widget_type: widgetType,
-        position_x: 0,
-        position_y: maxY,
-        width: meta.defaultWidth,
-        height: meta.defaultHeight,
-        is_visible: true,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      toast.error("Failed to add widget");
-    } else {
-      setWidgets([...widgets, data as DashboardWidgetData]);
-      toast.success("Widget added");
-    }
-  };
-
-  const handleRemoveWidget = async (id: string) => {
+  const handleMarkAsPaid = async (historyId: string) => {
     const { error } = await supabase
-      .from("dashboard_widgets")
-      .update({ is_visible: false })
-      .eq("id", id);
+      .from("payment_history")
+      .update({ status: "PAID", paid_date: new Date().toISOString().split('T')[0] })
+      .eq("id", historyId);
 
     if (error) {
-      toast.error("Failed to remove widget");
+      toast.error("Failed to mark payment as paid");
     } else {
-      setWidgets(widgets.filter((w) => w.id !== id));
-      toast.success("Widget removed");
+      toast.success("Payment marked as paid");
+      setUpcomingPayments(prev => prev.filter(p => p.id !== historyId));
     }
   };
-
-  const handleLayoutChange = async (layout: GridLayout[]) => {
-    if (!isEditMode || layout.length === 0) return;
-
-    const updates = layout.map((item) => {
-      const widget = widgets.find((w) => w.id === item.i);
-      if (!widget) return null;
-
-      return {
-        id: widget.id,
-        position_x: item.x,
-        position_y: item.y,
-        width: item.w,
-        height: item.h,
-      };
-    }).filter(Boolean);
-
-    // Update local state immediately for smooth UI
-    setWidgets((prev) =>
-      prev.map((widget) => {
-        const update = updates.find((u) => u?.id === widget.id);
-        return update ? { ...widget, ...update } : widget;
-      })
-    );
-  };
-
-  const handleLayoutChangeEnd = async (layout: GridLayout[]) => {
-    if (!isEditMode || layout.length === 0) return;
-
-    const updates = layout.map((item) => {
-      const widget = widgets.find((w) => w.id === item.i);
-      if (!widget) return null;
-
-      return {
-        id: widget.id,
-        position_x: item.x,
-        position_y: item.y,
-        width: item.w,
-        height: item.h,
-      };
-    }).filter(Boolean);
-
-    // Batch update to database
-    for (const update of updates) {
-      if (!update) continue;
-      const { id, ...data } = update;
-      await supabase
-        .from("dashboard_widgets")
-        .update(data)
-        .eq("id", id);
-    }
-  };
-
-  const generateLayout = (): GridLayout[] => {
-    return widgets.map((widget) => {
-      const meta = WIDGET_METADATA[widget.widget_type];
-      return {
-        i: widget.id,
-        x: widget.position_x,
-        y: widget.position_y,
-        w: widget.width,
-        h: widget.height,
-        minW: meta.defaultWidth,
-        minH: meta.defaultHeight,
-      };
-    });
-  };
-
-  const activeWidgetTypes = widgets.map((w) => w.widget_type);
 
   const overdueCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) < 0).length;
   const dueTodayCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) === 0).length;
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
@@ -263,81 +64,166 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold">Dashboard.</h1>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Switch
-                id="edit-mode"
-                checked={isEditMode}
-                onCheckedChange={setIsEditMode}
-              />
-              <Label htmlFor="edit-mode" className="text-sm cursor-pointer">
-                {isEditMode ? (
-                  <span className="flex items-center gap-1">
-                    <Grip className="w-4 h-4" />
-                    Edit Mode
-                  </span>
-                ) : (
-                  "Edit Mode"
-                )}
-              </Label>
-            </div>
-            <WidgetSelector
-              activeWidgets={activeWidgetTypes}
-              onAddWidget={handleAddWidget}
-            >
-              <Button variant="outline" size="sm" className="text-xs sm:text-sm">
-                Widgets
-              </Button>
-            </WidgetSelector>
+          <div className="flex gap-2 sm:gap-3">
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+              Widgets
+            </Button>
             <Button variant="outline" size="sm" className="text-xs sm:text-sm">
               $ USD
             </Button>
           </div>
         </div>
 
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard 
+            title="NET WORTH" 
+            value="$ 37,457.4" 
+            trend={11.9}
+          />
+          <StatCard 
+            title="ASSETS" 
+            value="$ 52,257.2" 
+            trend={29.1}
+          />
+          <StatCard 
+            title="DEBT" 
+            value="$ 14,799.8" 
+          />
+          <div className="bg-[#2a2a2a] rounded-3xl p-6 text-white flex flex-col justify-center items-center text-center">
+            <p className="text-sm mb-2 text-white/70">Get more features and strategies.</p>
+            <Button variant="secondary" size="sm" className="bg-white text-black hover:bg-white/90">
+              GO PRO
+            </Button>
+          </div>
+        </div>
+
+        {/* Salary Countdown */}
+        <div className="bg-white rounded-3xl p-4 sm:p-6 relative">
+          <Button variant="ghost" size="icon" className="absolute top-2 right-2 sm:top-4 sm:right-4">
+            <X className="w-4 h-4" />
+          </Button>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl sm:text-6xl font-bold">19</span>
+              <span className="text-sm sm:text-xl">days until the next salary...</span>
+            </div>
+            <Button variant="link" className="underline text-sm">
+              Manage Budget
+            </Button>
+          </div>
+        </div>
+
+        {/* Gainers and Losers */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-3xl p-6 relative">
+            <Button variant="ghost" size="icon" className="absolute top-4 right-4">
+              <X className="w-4 h-4" />
+            </Button>
+            <h2 className="text-2xl font-bold mb-4">Top gainers</h2>
+            <div className="flex justify-center items-center h-40">
+              <div className="w-full max-w-xs h-32 bg-black rounded-2xl flex items-end p-4 relative">
+                <svg className="w-full h-full absolute inset-0 p-4" viewBox="0 0 200 80">
+                  <path 
+                    d="M 0,60 Q 30,40 50,45 T 100,35 T 150,25 T 200,20" 
+                    fill="none" 
+                    stroke="hsl(var(--success))" 
+                    strokeWidth="2"
+                  />
+                  <path 
+                    d="M 0,60 Q 30,40 50,45 T 100,35 T 150,25 T 200,20 L 200,80 L 0,80 Z" 
+                    fill="url(#greenGradient)" 
+                    opacity="0.3"
+                  />
+                  <defs>
+                    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <span className="text-white/60 text-xs absolute bottom-2 left-2">15 April - 21 April</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 relative">
+            <Button variant="ghost" size="icon" className="absolute top-4 right-4">
+              <X className="w-4 h-4" />
+            </Button>
+            <h2 className="text-2xl font-bold mb-4">Top losers</h2>
+            <div className="flex justify-center items-center h-40">
+              <div className="w-full max-w-xs h-32 bg-black rounded-2xl flex items-end p-4 relative">
+                <svg className="w-full h-full absolute inset-0 p-4" viewBox="0 0 200 80">
+                  <path 
+                    d="M 0,20 Q 30,30 50,35 T 100,45 T 150,55 T 200,60" 
+                    fill="none" 
+                    stroke="hsl(var(--destructive))" 
+                    strokeWidth="2"
+                  />
+                  <path 
+                    d="M 0,20 Q 30,30 50,35 T 100,45 T 150,55 T 200,60 L 200,80 L 0,80 Z" 
+                    fill="url(#redGradient)" 
+                    opacity="0.3"
+                  />
+                  <defs>
+                    <linearGradient id="redGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="hsl(var(--destructive))" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="hsl(var(--destructive))" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <span className="text-white/60 text-xs absolute bottom-2 left-2">15 April - 21 April</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
 
-        {/* Fixed Stats Row - Not Editable */}
-        <FixedStatsRow />
-
-        {/* Widget Grid */}
-        {widgets.length === 0 ? (
-          <div className="text-center py-12 bg-muted/50 rounded-2xl">
-            <p className="text-muted-foreground mb-4">
-              No widgets added yet. Click "Widgets" to add some!
-            </p>
+        <div className="bg-white rounded-3xl p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold">Upcoming Payments</h2>
+            <Link to="/payments">
+              <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+                View All <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
           </div>
-        ) : (
-          <div ref={gridContainerRef}>
-            <ResponsiveGridLayout
-              className="layout"
-              layouts={{ lg: generateLayout() }}
-              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-              cols={{ lg: 4, md: 3, sm: 2, xs: 1 }}
-              rowHeight={ROW_HEIGHT}
-              isDraggable={isEditMode}
-              isResizable={false}
-              onLayoutChange={handleLayoutChange}
-              onDragStop={handleLayoutChangeEnd}
-              compactType="vertical"
-              margin={[GRID_GAP, GRID_GAP]}
-              containerPadding={[0, 0]}
-              preventCollision={false}
-              useCSSTransforms={true}
-              draggableHandle=".drag-handle"
-            >
-              {widgets.map((widget) => (
-                <div key={widget.id}>
-                  <DashboardWidget
-                    type={widget.widget_type}
-                    onRemove={() => handleRemoveWidget(widget.id)}
-                    isEditMode={isEditMode}
-                  />
-                </div>
+          {upcomingPayments.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No upcoming payments in the next 7 days</p>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {upcomingPayments.map((payment) => (
+                <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
               ))}
-            </ResponsiveGridLayout>
+            </div>
+          )}
+        </div>
+
+        {/* Goals */}
+        <div className="bg-white rounded-3xl p-6 relative">
+          <Button variant="ghost" size="icon" className="absolute top-4 right-4">
+            <X className="w-4 h-4" />
+          </Button>
+          <h2 className="text-2xl font-bold mb-6">Goals</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <GoalCard
+              title="Travel Fund"
+              target="$500"
+              current="$345"
+              progress={69}
+            />
+            <GoalCard
+              title="Retirement Fund"
+              target="$20,000"
+              current="$2740"
+              progress={14}
+              timeframe="16 years"
+              assetLinked
+            />
           </div>
-        )}
+        </div>
       </div>
     </Layout>
   );

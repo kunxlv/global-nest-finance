@@ -155,45 +155,6 @@ export type Database = {
           },
         ]
       }
-      dashboard_widgets: {
-        Row: {
-          created_at: string | null
-          height: number
-          id: string
-          is_visible: boolean
-          position_x: number
-          position_y: number
-          updated_at: string | null
-          user_id: string
-          widget_type: string
-          width: number
-        }
-        Insert: {
-          created_at?: string | null
-          height?: number
-          id?: string
-          is_visible?: boolean
-          position_x?: number
-          position_y?: number
-          updated_at?: string | null
-          user_id: string
-          widget_type: string
-          width?: number
-        }
-        Update: {
-          created_at?: string | null
-          height?: number
-          id?: string
-          is_visible?: boolean
-          position_x?: number
-          position_y?: number
-          updated_at?: string | null
-          user_id?: string
-          widget_type?: string
-          width?: number
-        }
-        Relationships: []
-      }
       goals: {
         Row: {
           asset_linked: boolean | null
