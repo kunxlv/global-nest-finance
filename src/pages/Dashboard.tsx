@@ -1,8 +1,62 @@
+import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import StatCard from "@/components/StatCard";
 import GoalCard from "@/components/GoalCard";
+import PaymentAlert from "@/components/PaymentAlert";
+import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, ArrowRight } from "lucide-react";
+import { supabase, PaymentHistory, RecurringPayment } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { differenceInDays } from "date-fns";
+import { Link } from "react-router-dom";
+
+type PaymentWithRecurring = PaymentHistory & {
+  recurring_payment: RecurringPayment;
+};
+
+export default function Dashboard() {
+  const [upcomingPayments, setUpcomingPayments] = useState<PaymentWithRecurring[]>([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    
+    const fetchUpcoming = async () => {
+      const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      
+      const { data } = await supabase
+        .from("payment_history")
+        .select("*, recurring_payment:recurring_payments(*)")
+        .eq("user_id", user.id)
+        .eq("status", "UPCOMING")
+        .lte("due_date", sevenDaysLater)
+        .order("due_date", { ascending: true })
+        .limit(3);
+
+      if (data) setUpcomingPayments(data as PaymentWithRecurring[]);
+    };
+
+    fetchUpcoming();
+  }, [user]);
+
+  const handleMarkAsPaid = async (historyId: string) => {
+    const { error } = await supabase
+      .from("payment_history")
+      .update({ status: "PAID", paid_date: new Date().toISOString().split('T')[0] })
+      .eq("id", historyId);
+
+    if (error) {
+      toast.error("Failed to mark payment as paid");
+    } else {
+      toast.success("Payment marked as paid");
+      setUpcomingPayments(prev => prev.filter(p => p.id !== historyId));
+    }
+  };
+
+  const overdueCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) < 0).length;
+  const dueTodayCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) === 0).length;
 
 export default function Dashboard() {
   return (
@@ -126,17 +180,26 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Upcoming Payments */}
-        <div className="bg-white rounded-3xl p-6 relative">
-          <Button variant="ghost" size="icon" className="absolute top-4 right-4">
-            <X className="w-4 h-4" />
-          </Button>
-          <h2 className="text-2xl font-bold mb-4">Upcoming Payments</h2>
-          <ul className="space-y-2 list-disc list-inside">
-            <li>Credit card XX87 Repayment - <span className="underline">13th June 2024</span></li>
-            <li>Chase Personal Loan(10th Installment) - <span className="underline">15th June 2024</span></li>
-            <li>S&P 100 Mutual Fund SIP - <span className="underline">23rd June 2024</span></li>
-          </ul>
+        <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
+
+        <div className="bg-white rounded-3xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">Upcoming Payments</h2>
+            <Link to="/payments">
+              <Button variant="ghost" size="sm">
+                View All <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </div>
+          {upcomingPayments.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No upcoming payments in the next 7 days</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {upcomingPayments.map((payment) => (
+                <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Goals */}

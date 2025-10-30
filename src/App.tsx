@@ -10,6 +10,7 @@ import CashFlow from "./pages/CashFlow";
 import Assets from "./pages/Assets";
 import Liabilities from "./pages/Liabilities";
 import Goals from "./pages/Goals";
+import Payments from "./pages/Payments";
 import Calculators from "./pages/Calculators";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/assets" element={<ProtectedRoute><Assets /></ProtectedRoute>} />
             <Route path="/liabilities" element={<ProtectedRoute><Liabilities /></ProtectedRoute>} />
             <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
+            <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
             <Route path="/calculators" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

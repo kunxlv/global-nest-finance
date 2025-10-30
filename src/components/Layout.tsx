@@ -8,7 +8,8 @@ import {
   Landmark, 
   Target, 
   Calculator,
-  Settings
+  Settings,
+  Bell
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Assets", href: "/assets", icon: Building2 },
   { name: "Liabilities", href: "/liabilities", icon: Landmark },
   { name: "Goals", href: "/goals", icon: Target },
+  { name: "Payments", href: "/payments", icon: Bell },
   { name: "Calculators", href: "/calculators", icon: Calculator },
 ];
 
