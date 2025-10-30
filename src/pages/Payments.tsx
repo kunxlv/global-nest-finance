@@ -6,10 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Plus, Search, Filter } from "lucide-react";
 import RecurringPaymentForm from "@/components/forms/RecurringPaymentForm";
 import PaymentAlert from "@/components/PaymentAlert";
-import CurrencyAmount from "@/components/CurrencyAmount";
 import { supabase, PaymentHistory, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { CurrencyCode } from "@/lib/currencyConversion";
+import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -257,11 +256,7 @@ export default function Payments() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <CurrencyAmount 
-                              amount={Number(payment.amount)} 
-                              originalCurrency={payment.currency as CurrencyCode}
-                              showOriginal
-                            />
+                            {formatCurrency(Number(payment.amount), payment.currency as CurrencyCode)}
                           </TableCell>
                           <TableCell>
                             {format(new Date(payment.due_date), "MMM d, yyyy")}
@@ -332,11 +327,7 @@ export default function Payments() {
                             <Badge variant="secondary">{payment.category}</Badge>
                           </TableCell>
                           <TableCell>
-                            <CurrencyAmount 
-                              amount={Number(payment.amount)} 
-                              originalCurrency={payment.currency as CurrencyCode}
-                              showOriginal
-                            />
+                            {formatCurrency(Number(payment.amount), payment.currency as CurrencyCode)}
                           </TableCell>
                           <TableCell>{payment.frequency}</TableCell>
                           <TableCell>

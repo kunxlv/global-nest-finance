@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import GoalCard from "@/components/GoalCard";
-import CurrencyAmount from "@/components/CurrencyAmount";
 import { Button } from "@/components/ui/button";
 import { Plus, Pencil, Trash } from "lucide-react";
 import GoalForm from "@/components/forms/GoalForm";
 import { supabase, Goal } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { CurrencyCode } from "@/lib/currencyConversion";
+import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -99,20 +98,8 @@ export default function Goals() {
                       <div key={goal.id} className="relative">
                         <GoalCard
                           title={goal.title}
-                          target={
-                            <CurrencyAmount 
-                              amount={Number(goal.target_amount)} 
-                              originalCurrency={goal.currency as CurrencyCode}
-                              showOriginal
-                            />
-                          }
-                          current={
-                            <CurrencyAmount 
-                              amount={Number(goal.current_amount)} 
-                              originalCurrency={goal.currency as CurrencyCode}
-                              showOriginal
-                            />
-                          }
+                          target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
+                          current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
                           progress={progress}
                           timeframe={goal.timeframe || undefined}
                           assetLinked={goal.asset_linked}
@@ -170,20 +157,8 @@ export default function Goals() {
                       <div key={goal.id} className="relative">
                         <GoalCard
                           title={goal.title}
-                          target={
-                            <CurrencyAmount 
-                              amount={Number(goal.target_amount)} 
-                              originalCurrency={goal.currency as CurrencyCode}
-                              showOriginal
-                            />
-                          }
-                          current={
-                            <CurrencyAmount 
-                              amount={Number(goal.current_amount)} 
-                              originalCurrency={goal.currency as CurrencyCode}
-                              showOriginal
-                            />
-                          }
+                          target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
+                          current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
                           progress={progress}
                           timeframe={goal.timeframe || undefined}
                           assetLinked={goal.asset_linked}

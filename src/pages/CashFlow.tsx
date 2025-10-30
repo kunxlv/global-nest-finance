@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import BankAccountCard from "@/components/BankAccountCard";
 import CreditCardDisplay from "@/components/CreditCardDisplay";
-import CurrencyAmount from "@/components/CurrencyAmount";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +11,7 @@ import BankAccountForm from "@/components/forms/BankAccountForm";
 import CardForm from "@/components/forms/CardForm";
 import { supabase, IncomeStream, BankAccount, Card, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { CurrencyCode } from "@/lib/currencyConversion";
+import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -34,7 +32,6 @@ export default function CashFlow() {
   const [linkedPayments, setLinkedPayments] = useState<Record<string, RecurringPayment[]>>({});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const { convertToDisplayCurrency, formatCurrency } = useCurrency();
 
   const fetchData = async () => {
     if (!user) return;
@@ -180,12 +177,7 @@ export default function CashFlow() {
                           </div>
                         </div>
                         <p className="text-3xl font-bold">
-                          <CurrencyAmount 
-                            amount={Number(income.amount)} 
-                            originalCurrency={income.currency as CurrencyCode}
-                            showOriginal
-                            className="text-white"
-                          />
+                          {formatCurrency(Number(income.amount), income.currency as CurrencyCode)}
                         </p>
                         <p className="text-xs text-white/60 mt-2 uppercase">{income.frequency}</p>
                       </div>
@@ -218,9 +210,7 @@ export default function CashFlow() {
                         <BankAccountCard
                           name={account.name}
                           country={account.country || ""}
-                          balance={formatCurrency(
-                            convertToDisplayCurrency(Number(account.balance), account.currency as CurrencyCode)
-                          )}
+                          balance={formatCurrency(Number(account.balance), account.currency as CurrencyCode)}
                           variant={account.color_variant as "purple" | "blue" | "black" | "pink"}
                           isPrimary={account.is_primary ? "Primary" : undefined}
                         />

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
-import CurrencyAmount from "@/components/CurrencyAmount";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +8,7 @@ import AssetForm from "@/components/forms/AssetForm";
 import RecurringPaymentForm from "@/components/forms/RecurringPaymentForm";
 import { supabase, Asset, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { CurrencyCode } from "@/lib/currencyConversion";
+import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -137,11 +136,7 @@ export default function Assets() {
                   {assets.map((asset) => (
                     <TableRow key={asset.id}>
                       <TableCell className="font-semibold">
-                        <CurrencyAmount 
-                          amount={Number(asset.valuation)} 
-                          originalCurrency={asset.currency as CurrencyCode}
-                          showOriginal
-                        />
+                        {formatCurrency(Number(asset.valuation), asset.currency as CurrencyCode)}
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary">{asset.type}</Badge>

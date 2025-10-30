@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
-import CurrencyAmount from "@/components/CurrencyAmount";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +7,7 @@ import { Plus, ChevronDown, Pencil, Trash, Bell } from "lucide-react";
 import LiabilityForm from "@/components/forms/LiabilityForm";
 import { supabase, Liability, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { CurrencyCode } from "@/lib/currencyConversion";
+import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -133,11 +132,7 @@ export default function Liabilities() {
                   {liabilities.map((liability) => (
                     <TableRow key={liability.id}>
                       <TableCell className="font-semibold">
-                        <CurrencyAmount 
-                          amount={Number(liability.valuation)} 
-                          originalCurrency={liability.currency as CurrencyCode}
-                          showOriginal
-                        />
+                        {formatCurrency(Number(liability.valuation), liability.currency as CurrencyCode)}
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary">{liability.type}</Badge>
