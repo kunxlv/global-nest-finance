@@ -1,74 +1,216 @@
+import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import GoalCard from "@/components/GoalCard";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Pencil, Trash } from "lucide-react";
+import GoalForm from "@/components/forms/GoalForm";
+import { supabase, Goal } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Goals() {
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const fetchGoals = async () => {
+    if (!user) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("goals")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error("Failed to load goals");
+      console.error(error);
+    } else {
+      setGoals(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchGoals();
+  }, [user]);
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("goals").delete().eq("id", id);
+    if (error) {
+      toast.error("Failed to delete goal");
+    } else {
+      toast.success("Goal deleted successfully");
+      fetchGoals();
+    }
+  };
+
+  const formatCurrency = (amount: number, currency: string) => {
+    const symbols: Record<string, string> = {
+      USD: "$",
+      EUR: "€",
+      GBP: "£",
+      INR: "₹",
+      JPY: "¥",
+      AUD: "A$",
+      CAD: "C$",
+    };
+    return `${symbols[currency] || currency}${amount.toLocaleString()}`;
+  };
+
+  const shortTermGoals = goals.filter((g) => !g.is_long_term);
+  const longTermGoals = goals.filter((g) => g.is_long_term);
+
   return (
     <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold">Goals.</h1>
-          <div className="flex gap-3">
+          <GoalForm onSuccess={fetchGoals}>
             <Button size="sm" className="bg-black text-white hover:bg-black/90">
               <Plus className="w-4 h-4 mr-2" />
               Add Goal
             </Button>
-            <Button variant="outline" size="sm">
-              $ USD
-            </Button>
-          </div>
+          </GoalForm>
         </div>
 
-        {/* Short Term Goals */}
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Short term goals</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <GoalCard
-              title="Travel Fund"
-              target="$500"
-              current="$345"
-              progress={69}
-            />
-            <GoalCard
-              title="Wedding fund"
-              target="$20,000"
-              current="$2740"
-              progress={14}
-              assetLinked
-            />
-            <GoalCard
-              title="Emergency Fund"
-              target="$5000"
-              current="$500"
-              progress={10}
-            />
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading goals...</p>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Short term goals */}
+            <div className="bg-white rounded-3xl p-6">
+              <h2 className="text-2xl font-bold mb-6">Short term goals</h2>
+              {shortTermGoals.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  No short-term goals yet. Add one to start tracking!
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {shortTermGoals.map((goal) => {
+                    const progress = Math.round(
+                      (Number(goal.current_amount) / Number(goal.target_amount)) * 100
+                    );
+                    return (
+                      <div key={goal.id} className="relative">
+                        <GoalCard
+                          title={goal.title}
+                          target={formatCurrency(Number(goal.target_amount), goal.currency)}
+                          current={formatCurrency(Number(goal.current_amount), goal.currency)}
+                          progress={progress}
+                          timeframe={goal.timeframe || undefined}
+                          assetLinked={goal.asset_linked}
+                        />
+                        <div className="absolute top-2 right-2 flex gap-1">
+                          <GoalForm goal={goal} onSuccess={fetchGoals}>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Pencil className="w-3 h-3" />
+                            </Button>
+                          </GoalForm>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash className="w-3 h-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Goal</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete "{goal.title}"? This action cannot be
+                                  undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(goal.id)}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
-        {/* Long Term Goals */}
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Long term goals</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <GoalCard
-              title="Education Fund"
-              target="$50,000"
-              current="$900"
-              progress={2}
-              timeframe="7 years"
-              assetLinked
-            />
-            <GoalCard
-              title="Retirement Fund"
-              target="$500,000"
-              current="$2740"
-              progress={1}
-              timeframe="16 years"
-              assetLinked
-            />
-          </div>
-        </div>
+            {/* Long term goals */}
+            <div className="bg-white rounded-3xl p-6">
+              <h2 className="text-2xl font-bold mb-6">Long term goals</h2>
+              {longTermGoals.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  No long-term goals yet. Add one to start tracking!
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {longTermGoals.map((goal) => {
+                    const progress = Math.round(
+                      (Number(goal.current_amount) / Number(goal.target_amount)) * 100
+                    );
+                    return (
+                      <div key={goal.id} className="relative">
+                        <GoalCard
+                          title={goal.title}
+                          target={formatCurrency(Number(goal.target_amount), goal.currency)}
+                          current={formatCurrency(Number(goal.current_amount), goal.currency)}
+                          progress={progress}
+                          timeframe={goal.timeframe || undefined}
+                          assetLinked={goal.asset_linked}
+                        />
+                        <div className="absolute top-2 right-2 flex gap-1">
+                          <GoalForm goal={goal} onSuccess={fetchGoals}>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Pencil className="w-3 h-3" />
+                            </Button>
+                          </GoalForm>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash className="w-3 h-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Goal</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete "{goal.title}"? This action cannot be
+                                  undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(goal.id)}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </Layout>
   );

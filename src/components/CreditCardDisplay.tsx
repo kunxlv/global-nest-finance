@@ -5,13 +5,14 @@ interface CreditCardDisplayProps {
   last4: string;
   holderName: string;
   expiry: string;
-  variant?: "purple" | "black" | "pink";
+  variant?: "purple" | "black" | "pink" | "blue";
 }
 
 const variantStyles = {
   purple: "bg-gradient-to-br from-purple-600 to-purple-800",
   black: "bg-gradient-to-br from-gray-900 to-black",
   pink: "bg-gradient-to-br from-pink-600 to-pink-800",
+  blue: "bg-gradient-to-br from-blue-600 to-blue-800",
 };
 
 export default function CreditCardDisplay({ 

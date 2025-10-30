@@ -1,26 +1,75 @@
+import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, FileDown, ChevronDown } from "lucide-react";
-
-const assetCharts = [
-  { name: "Cash", dateRange: "15 April - 21 April", color: "hsl(var(--chart-green))" },
-  { name: "Equity", dateRange: "15 April - 21 April", color: "hsl(var(--chart-pink))" },
-  { name: "Gold", dateRange: "15 April - 21 April", color: "hsl(var(--chart-yellow))" },
-  { name: "Crypto", dateRange: "15 April - 21 April", color: "hsl(var(--chart-blue))" },
-];
-
-const assetData = [
-  { valuation: "€ 1200", type: "CASH", description: "Savings account", country: "🇮🇪 Ireland", holder: "AIB", date: "NA" },
-  { valuation: "$ 2890", type: "EQUITY", description: "Apple Stocks", country: "🇺🇸 U.S.A", holder: "Etoro", date: "12th Feb 2024" },
-  { valuation: "€ 500", type: "CRYPTO", description: "Ethereum", country: "🇮🇪 Ireland", holder: "Binance", date: "10th Jan 2024" },
-  { valuation: "₹ 500,000", type: "CASH", description: "Fixed Deposit", country: "🇮🇳 India", holder: "Axis Bank", date: "20th Dec 2023" },
-  { valuation: "₹ 50,000", type: "GOLD", description: "Golden Harvest", country: "🇮🇳 India", holder: "Tanishq", date: "15th Nov 2023" },
-  { valuation: "₹ 20,000", type: "EQUITY", description: "ITC Stocks", country: "🇮🇳 India", holder: "Zerodha", date: "12th June 2023" },
-];
+import { Plus, FileDown, ChevronDown, Pencil, Trash } from "lucide-react";
+import AssetForm from "@/components/forms/AssetForm";
+import { supabase, Asset } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Assets() {
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const fetchAssets = async () => {
+    if (!user) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("assets")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error("Failed to load assets");
+      console.error(error);
+    } else {
+      setAssets(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAssets();
+  }, [user]);
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("assets").delete().eq("id", id);
+    if (error) {
+      toast.error("Failed to delete asset");
+    } else {
+      toast.success("Asset deleted successfully");
+      fetchAssets();
+    }
+  };
+
+  const formatCurrency = (amount: number, currency: string) => {
+    const symbols: Record<string, string> = {
+      USD: "$",
+      EUR: "€",
+      GBP: "£",
+      INR: "₹",
+      JPY: "¥",
+      AUD: "A$",
+      CAD: "C$",
+    };
+    return `${symbols[currency] || currency} ${amount.toLocaleString()}`;
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -28,54 +77,17 @@ export default function Assets() {
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold">Assets.</h1>
           <div className="flex gap-3">
-            <Button size="sm" className="bg-black text-white hover:bg-black/90">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Asset
-            </Button>
+            <AssetForm onSuccess={fetchAssets}>
+              <Button size="sm" className="bg-black text-white hover:bg-black/90">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Asset
+              </Button>
+            </AssetForm>
             <Button variant="outline" size="sm">
               <FileDown className="w-4 h-4 mr-2" />
               Export Data
             </Button>
-            <Button variant="outline" size="sm">
-              $ USD
-            </Button>
           </div>
-        </div>
-
-        {/* Asset Charts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {assetCharts.map((asset) => (
-            <div key={asset.name} className="bg-black rounded-3xl p-6 text-white">
-              <div className="mb-4">
-                <h3 className="text-lg font-bold mb-1">{asset.name}</h3>
-                <p className="text-xs text-white/60">{asset.dateRange}</p>
-              </div>
-              <div className="h-32 flex items-end">
-                <svg className="w-full h-full" viewBox="0 0 200 100">
-                  <path 
-                    d="M 0,70 Q 30,50 50,55 T 100,45 T 150,60 T 200,50" 
-                    fill="none" 
-                    stroke={asset.color} 
-                    strokeWidth="2"
-                  />
-                  <path 
-                    d="M 0,70 Q 30,50 50,55 T 100,45 T 150,60 T 200,50 L 200,100 L 0,100 Z" 
-                    fill={asset.color} 
-                    opacity="0.3"
-                  />
-                </svg>
-              </div>
-              <div className="flex justify-between text-[10px] text-white/50 mt-2">
-                <span>M</span>
-                <span>T</span>
-                <span>W</span>
-                <span>T</span>
-                <span>F</span>
-                <span>S</span>
-                <span>S</span>
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* Assets Table */}
@@ -85,32 +97,80 @@ export default function Assets() {
             <ChevronDown className="w-5 h-5" />
           </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Valuation</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Country</TableHead>
-                <TableHead>Holder</TableHead>
-                <TableHead>Purchase Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {assetData.map((asset, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-semibold">{asset.valuation}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{asset.type}</Badge>
-                  </TableCell>
-                  <TableCell>{asset.description}</TableCell>
-                  <TableCell>{asset.country}</TableCell>
-                  <TableCell>{asset.holder}</TableCell>
-                  <TableCell>{asset.date}</TableCell>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading assets...</p>
+            </div>
+          ) : assets.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No assets yet. Add your first asset to get started!</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Valuation</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Country</TableHead>
+                  <TableHead>Holder</TableHead>
+                  <TableHead>Purchase Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {assets.map((asset) => (
+                  <TableRow key={asset.id}>
+                    <TableCell className="font-semibold">
+                      {formatCurrency(Number(asset.valuation), asset.currency)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{asset.type}</Badge>
+                    </TableCell>
+                    <TableCell>{asset.description}</TableCell>
+                    <TableCell>{asset.country || "-"}</TableCell>
+                    <TableCell>{asset.holder || "-"}</TableCell>
+                    <TableCell>
+                      {asset.purchase_date
+                        ? new Date(asset.purchase_date).toLocaleDateString()
+                        : "NA"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <AssetForm asset={asset} onSuccess={fetchAssets}>
+                          <Button variant="ghost" size="sm">
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        </AssetForm>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Trash className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Asset</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this asset? This action cannot be
+                                undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(asset.id)}>
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </div>
       </div>
     </Layout>
