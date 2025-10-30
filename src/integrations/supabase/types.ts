@@ -312,6 +312,56 @@ export type Database = {
           },
         ]
       }
+      payment_history: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          due_date: string
+          id: string
+          notes: string | null
+          paid_date: string | null
+          recurring_payment_id: string
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          due_date: string
+          id?: string
+          notes?: string | null
+          paid_date?: string | null
+          recurring_payment_id: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          due_date?: string
+          id?: string
+          notes?: string | null
+          paid_date?: string | null
+          recurring_payment_id?: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_history_recurring_payment_id_fkey"
+            columns: ["recurring_payment_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -348,12 +398,130 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_payments: {
+        Row: {
+          amount: number
+          auto_pay_enabled: boolean | null
+          category: Database["public"]["Enums"]["payment_category"]
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          day_of_month: number | null
+          day_of_week: number | null
+          description: string | null
+          end_date: string | null
+          frequency: Database["public"]["Enums"]["recurrence_frequency"]
+          id: string
+          is_active: boolean | null
+          last_paid_date: string | null
+          linked_asset_id: string | null
+          linked_bank_account_id: string | null
+          linked_card_id: string | null
+          linked_liability_id: string | null
+          name: string
+          next_due_date: string
+          notification_enabled: boolean | null
+          notify_days_before: number | null
+          start_date: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          auto_pay_enabled?: boolean | null
+          category: Database["public"]["Enums"]["payment_category"]
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          day_of_month?: number | null
+          day_of_week?: number | null
+          description?: string | null
+          end_date?: string | null
+          frequency?: Database["public"]["Enums"]["recurrence_frequency"]
+          id?: string
+          is_active?: boolean | null
+          last_paid_date?: string | null
+          linked_asset_id?: string | null
+          linked_bank_account_id?: string | null
+          linked_card_id?: string | null
+          linked_liability_id?: string | null
+          name: string
+          next_due_date: string
+          notification_enabled?: boolean | null
+          notify_days_before?: number | null
+          start_date: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          auto_pay_enabled?: boolean | null
+          category?: Database["public"]["Enums"]["payment_category"]
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          day_of_month?: number | null
+          day_of_week?: number | null
+          description?: string | null
+          end_date?: string | null
+          frequency?: Database["public"]["Enums"]["recurrence_frequency"]
+          id?: string
+          is_active?: boolean | null
+          last_paid_date?: string | null
+          linked_asset_id?: string | null
+          linked_bank_account_id?: string | null
+          linked_card_id?: string | null
+          linked_liability_id?: string | null
+          name?: string
+          next_due_date?: string
+          notification_enabled?: boolean | null
+          notify_days_before?: number | null
+          start_date?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_payments_linked_asset_id_fkey"
+            columns: ["linked_asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_payments_linked_bank_account_id_fkey"
+            columns: ["linked_bank_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_payments_linked_card_id_fkey"
+            columns: ["linked_card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_payments_linked_liability_id_fkey"
+            columns: ["linked_liability_id"]
+            isOneToOne: false
+            referencedRelation: "liabilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_next_due_date: {
+        Args: {
+          p_current_date: string
+          p_day_of_month?: number
+          p_day_of_week?: number
+          p_frequency: Database["public"]["Enums"]["recurrence_frequency"]
+        }
+        Returns: string
+      }
     }
     Enums: {
       asset_type:
@@ -365,6 +533,24 @@ export type Database = {
         | "OTHER"
       currency_code: "USD" | "EUR" | "INR" | "GBP" | "JPY" | "AUD" | "CAD"
       liability_type: "LOAN" | "MORTGAGE" | "CREDIT_CARD" | "OTHER"
+      payment_category:
+        | "SIP"
+        | "CREDIT_CARD_BILL"
+        | "LOAN_INSTALLMENT"
+        | "SUBSCRIPTION"
+        | "INSURANCE"
+        | "UTILITY"
+        | "RENT"
+        | "OTHER"
+      payment_status: "UPCOMING" | "OVERDUE" | "PAID" | "SKIPPED"
+      recurrence_frequency:
+        | "DAILY"
+        | "WEEKLY"
+        | "BIWEEKLY"
+        | "MONTHLY"
+        | "QUARTERLY"
+        | "HALF_YEARLY"
+        | "YEARLY"
       transaction_type: "INCOME" | "EXPENSE"
     }
     CompositeTypes: {
@@ -496,6 +682,26 @@ export const Constants = {
       asset_type: ["CASH", "EQUITY", "CRYPTO", "GOLD", "REAL_ESTATE", "OTHER"],
       currency_code: ["USD", "EUR", "INR", "GBP", "JPY", "AUD", "CAD"],
       liability_type: ["LOAN", "MORTGAGE", "CREDIT_CARD", "OTHER"],
+      payment_category: [
+        "SIP",
+        "CREDIT_CARD_BILL",
+        "LOAN_INSTALLMENT",
+        "SUBSCRIPTION",
+        "INSURANCE",
+        "UTILITY",
+        "RENT",
+        "OTHER",
+      ],
+      payment_status: ["UPCOMING", "OVERDUE", "PAID", "SKIPPED"],
+      recurrence_frequency: [
+        "DAILY",
+        "WEEKLY",
+        "BIWEEKLY",
+        "MONTHLY",
+        "QUARTERLY",
+        "HALF_YEARLY",
+        "YEARLY",
+      ],
       transaction_type: ["INCOME", "EXPENSE"],
     },
   },
