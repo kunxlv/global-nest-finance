@@ -82,7 +82,7 @@ export function useFinancialSummary(): FinancialSummary {
           return sum + converted;
         }, 0);
 
-        const netWorth = totalAssets - totalLiabilities;
+        const netWorth = (totalAssets + totalBankBalance) - totalLiabilities;
 
         setSummary({
           totalAssets,
