@@ -51,11 +51,11 @@ export function UpcomingPaymentsWidget() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold">Upcoming Payments</h2>
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h2 className="text-lg sm:text-xl font-bold">Upcoming Payments</h2>
         <Link to="/payments">
-          <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+          <Button variant="ghost" size="sm" className="text-xs">
             View All <ArrowRight className="w-4 h-4 ml-1" />
           </Button>
         </Link>
@@ -63,7 +63,7 @@ export function UpcomingPaymentsWidget() {
       {upcomingPayments.length === 0 ? (
         <p className="text-muted-foreground text-sm">No upcoming payments in the next 7 days</p>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="flex-1 overflow-y-auto space-y-3">
           {upcomingPayments.map((payment) => (
             <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
           ))}

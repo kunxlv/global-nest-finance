@@ -187,13 +187,30 @@ export default function Dashboard() {
       };
     }).filter(Boolean);
 
-    // Update local state immediately
+    // Update local state immediately for smooth UI
     setWidgets((prev) =>
       prev.map((widget) => {
         const update = updates.find((u) => u?.id === widget.id);
         return update ? { ...widget, ...update } : widget;
       })
     );
+  };
+
+  const handleLayoutChangeEnd = async (layout: GridLayout[]) => {
+    if (!isEditMode || layout.length === 0) return;
+
+    const updates = layout.map((item) => {
+      const widget = widgets.find((w) => w.id === item.i);
+      if (!widget) return null;
+
+      return {
+        id: widget.id,
+        position_x: item.x,
+        position_y: item.y,
+        width: item.w,
+        height: item.h,
+      };
+    }).filter(Boolean);
 
     // Batch update to database
     for (const update of updates) {
@@ -207,15 +224,18 @@ export default function Dashboard() {
   };
 
   const generateLayout = (): GridLayout[] => {
-    return widgets.map((widget) => ({
-      i: widget.id,
-      x: widget.position_x,
-      y: widget.position_y,
-      w: widget.width,
-      h: widget.height,
-      minW: 1,
-      minH: 1,
-    }));
+    return widgets.map((widget) => {
+      const meta = WIDGET_METADATA[widget.widget_type];
+      return {
+        i: widget.id,
+        x: widget.position_x,
+        y: widget.position_y,
+        w: widget.width,
+        h: widget.height,
+        minW: meta.defaultWidth,
+        minH: meta.defaultHeight,
+      };
+    });
   };
 
   const activeWidgetTypes = widgets.map((w) => w.widget_type);
@@ -290,8 +310,12 @@ export default function Dashboard() {
             isDraggable={isEditMode}
             isResizable={false}
             onLayoutChange={handleLayoutChange}
+            onDragStop={handleLayoutChangeEnd}
             compactType="vertical"
             margin={[12, 12]}
+            containerPadding={[0, 0]}
+            preventCollision={false}
+            useCSSTransforms={true}
           >
             {widgets.map((widget) => (
               <div key={widget.id} className={isEditMode ? "cursor-move" : ""}>

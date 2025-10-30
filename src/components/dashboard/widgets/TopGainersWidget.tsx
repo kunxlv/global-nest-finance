@@ -1,13 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-
 export function TopGainersWidget() {
   return (
-    <div className="h-full flex flex-col">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4">Top gainers</h2>
-      <div className="flex justify-center items-center flex-1">
-        <div className="w-full h-32 bg-black rounded-2xl flex items-end p-4 relative">
-          <svg className="w-full h-full absolute inset-0 p-4" viewBox="0 0 200 80">
+    <div className="h-full flex flex-col overflow-hidden">
+      <h2 className="text-lg sm:text-xl font-bold mb-3 flex-shrink-0">Top gainers</h2>
+      <div className="flex justify-center items-center flex-1 min-h-0">
+        <div className="w-full h-full max-h-32 bg-black rounded-2xl flex items-end p-3 relative">
+          <svg className="w-full h-full absolute inset-0 p-3" viewBox="0 0 200 80" preserveAspectRatio="none">
             <path 
               d="M 0,60 Q 30,40 50,45 T 100,35 T 150,25 T 200,20" 
               fill="none" 

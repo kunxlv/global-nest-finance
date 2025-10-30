@@ -2,7 +2,7 @@ import StatCard from "@/components/StatCard";
 
 export function NetWorthWidget() {
   return (
-    <div className="h-full">
+    <div className="h-full flex items-center">
       <StatCard 
         title="NET WORTH" 
         value="$ 37,457.4" 
