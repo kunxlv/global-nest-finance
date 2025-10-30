@@ -37,14 +37,14 @@ export function DashboardWidget({ type, onRemove, isEditMode }: DashboardWidgetP
 
   return (
     <div className={cn(
-      "bg-white rounded-3xl p-4 relative h-full transition-all flex flex-col overflow-hidden",
-      isEditMode && "ring-2 ring-primary/20 cursor-grab active:cursor-grabbing shadow-lg"
+      "bg-white rounded-3xl p-5 relative h-full flex flex-col overflow-hidden transition-all duration-200",
+      isEditMode && "ring-2 ring-primary/30 shadow-xl drag-handle cursor-grab active:cursor-grabbing hover:ring-primary/50"
     )}>
       {isEditMode && (
         <Button
           variant="destructive"
           size="icon"
-          className="absolute -top-2 -right-2 h-8 w-8 rounded-full shadow-lg z-10 hover:scale-110 transition-transform"
+          className="absolute -top-2 -right-2 h-8 w-8 rounded-full shadow-lg z-10 hover:scale-110 transition-all duration-200"
           onClick={(e) => {
             e.stopPropagation();
             onRemove();
@@ -53,7 +53,7 @@ export function DashboardWidget({ type, onRemove, isEditMode }: DashboardWidgetP
           <X className="w-4 h-4" />
         </Button>
       )}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-hidden">
         {renderWidget()}
       </div>
     </div>

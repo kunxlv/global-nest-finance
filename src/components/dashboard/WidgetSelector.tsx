@@ -42,8 +42,8 @@ export const WIDGET_METADATA: Record<WidgetType, WidgetMeta> = {
     name: "Upcoming Payments",
     description: "View payments due in the next 7 days",
     icon: Bell,
-    defaultWidth: 4,
-    defaultHeight: 3,
+    defaultWidth: 2,
+    defaultHeight: 4,
   },
   "goals": {
     type: "goals",
@@ -51,7 +51,7 @@ export const WIDGET_METADATA: Record<WidgetType, WidgetMeta> = {
     description: "Track your financial goals",
     icon: Target,
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
   },
   "top-gainers": {
     type: "top-gainers",

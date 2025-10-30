@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -16,6 +16,10 @@ import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
 import { differenceInDays } from "date-fns";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const MAX_ROWS = 12;
+const ROW_HEIGHT = 100;
+const GRID_GAP = 16;
 
 interface DashboardWidgetData {
   id: string;
@@ -53,6 +57,7 @@ export default function Dashboard() {
   const [widgets, setWidgets] = useState<DashboardWidgetData[]>([]);
   const [loading, setLoading] = useState(true);
   const [upcomingPayments, setUpcomingPayments] = useState<PaymentWithRecurring[]>([]);
+  const gridContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -301,32 +306,35 @@ export default function Dashboard() {
             </p>
           </div>
         ) : (
-          <ResponsiveGridLayout
-            className="layout"
-            layouts={{ lg: generateLayout() }}
-            breakpoints={{ lg: 1024, md: 768, sm: 640, xs: 0 }}
-            cols={{ lg: 4, md: 3, sm: 2, xs: 1 }}
-            rowHeight={120}
-            isDraggable={isEditMode}
-            isResizable={false}
-            onLayoutChange={handleLayoutChange}
-            onDragStop={handleLayoutChangeEnd}
-            compactType="vertical"
-            margin={[12, 12]}
-            containerPadding={[0, 0]}
-            preventCollision={false}
-            useCSSTransforms={true}
-          >
-            {widgets.map((widget) => (
-              <div key={widget.id} className={isEditMode ? "cursor-move" : ""}>
-                <DashboardWidget
-                  type={widget.widget_type}
-                  onRemove={() => handleRemoveWidget(widget.id)}
-                  isEditMode={isEditMode}
-                />
-              </div>
-            ))}
-          </ResponsiveGridLayout>
+          <div ref={gridContainerRef}>
+            <ResponsiveGridLayout
+              className="layout"
+              layouts={{ lg: generateLayout() }}
+              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
+              cols={{ lg: 4, md: 3, sm: 2, xs: 1 }}
+              rowHeight={ROW_HEIGHT}
+              isDraggable={isEditMode}
+              isResizable={false}
+              onLayoutChange={handleLayoutChange}
+              onDragStop={handleLayoutChangeEnd}
+              compactType="vertical"
+              margin={[GRID_GAP, GRID_GAP]}
+              containerPadding={[0, 0]}
+              preventCollision={false}
+              useCSSTransforms={true}
+              draggableHandle=".drag-handle"
+            >
+              {widgets.map((widget) => (
+                <div key={widget.id}>
+                  <DashboardWidget
+                    type={widget.widget_type}
+                    onRemove={() => handleRemoveWidget(widget.id)}
+                    isEditMode={isEditMode}
+                  />
+                </div>
+              ))}
+            </ResponsiveGridLayout>
+          </div>
         )}
       </div>
     </Layout>
