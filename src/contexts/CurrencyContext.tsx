@@ -48,6 +48,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
       // Fetch fresh rates in the background
       const rates = await fetchExchangeRates(baseCurrency);
+      console.log(`[Currency] Loaded exchange rates for base ${baseCurrency}:`, rates);
       setExchangeRates(rates);
     } catch (error) {
       console.error('Failed to fetch exchange rates:', error);

@@ -124,18 +124,27 @@ export function convertAmount(
     return amount;
   }
 
-  // Convert to base currency (assumed to be in the rates object)
-  // Then convert to target currency
   const fromRate = rates[fromCurrency];
   const toRate = rates[toCurrency];
 
   if (!fromRate || !toRate) {
-    console.warn(`Missing rate for ${fromCurrency} or ${toCurrency}`);
+    console.warn(`[Currency] Missing rate for ${fromCurrency} or ${toCurrency}`, { rates });
     return amount;
   }
 
-  // Convert: amount in fromCurrency -> base currency -> toCurrency
-  return (amount / fromRate) * toRate;
+  // The rates are relative to a base currency
+  // If base is the toCurrency, we just need to divide by fromRate
+  // Otherwise, we convert through the base: amount -> base -> target
+  const converted = (amount / fromRate) * toRate;
+  
+  console.log(`[Currency] Converting ${amount} ${fromCurrency} to ${toCurrency}`, {
+    fromRate,
+    toRate,
+    result: converted,
+    allRates: rates
+  });
+
+  return converted;
 }
 
 export function getCurrencySymbol(currencyCode: CurrencyCode): string {
