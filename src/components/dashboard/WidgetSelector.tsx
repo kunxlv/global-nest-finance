@@ -35,7 +35,7 @@ export const WIDGET_METADATA: Record<WidgetType, WidgetMeta> = {
     description: "Days until next salary",
     icon: CalendarDays,
     defaultWidth: 2,
-    defaultHeight: 2,
+    defaultHeight: 1,
   },
   "upcoming-payments": {
     type: "upcoming-payments",
