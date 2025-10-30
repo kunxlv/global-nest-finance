@@ -102,6 +102,23 @@ export default function Payments() {
     }
   };
 
+  const handleMarkAsUnpaid = async (historyId: string) => {
+    const { error } = await supabase
+      .from("payment_history")
+      .update({ 
+        status: "UPCOMING", 
+        paid_date: null 
+      })
+      .eq("id", historyId);
+
+    if (error) {
+      toast.error("Failed to mark payment as unpaid");
+    } else {
+      toast.success("Payment marked as unpaid");
+      fetchData();
+    }
+  };
+
   const handleToggleActive = async (paymentId: string, isActive: boolean) => {
     const { error } = await supabase
       .from("recurring_payments")
@@ -234,6 +251,7 @@ export default function Payments() {
                         <TableHead>Due Date</TableHead>
                         <TableHead>Paid Date</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -270,6 +288,17 @@ export default function Payments() {
                             >
                               {payment.status}
                             </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {payment.status === "PAID" && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleMarkAsUnpaid(payment.id)}
+                              >
+                                Mark as Unpaid
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
