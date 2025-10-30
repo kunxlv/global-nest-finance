@@ -6,6 +6,7 @@ import PaymentAlert from "@/components/PaymentAlert";
 import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
 import CurrencySelector from "@/components/CurrencySelector";
 import CurrencyAmount from "@/components/CurrencyAmount";
+import ConversionRate from "@/components/ConversionRate";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { supabase, PaymentHistory, RecurringPayment, Goal } from "@/lib/supabase";
@@ -83,10 +84,8 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold">Dashboard.</h1>
-          <div className="flex gap-2 sm:gap-3">
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
-              Widgets
-            </Button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ConversionRate />
             <CurrencySelector />
           </div>
         </div>
