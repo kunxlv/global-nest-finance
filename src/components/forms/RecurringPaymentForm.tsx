@@ -155,10 +155,10 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
       start_date: values.start_date,
       end_date: values.end_date || null,
       next_due_date: nextDueDate,
-      linked_asset_id: values.linked_asset_id || null,
-      linked_liability_id: values.linked_liability_id || null,
-      linked_card_id: values.linked_card_id || null,
-      linked_bank_account_id: values.linked_bank_account_id || null,
+      linked_asset_id: values.linked_asset_id && values.linked_asset_id !== "none" ? values.linked_asset_id : null,
+      linked_liability_id: values.linked_liability_id && values.linked_liability_id !== "none" ? values.linked_liability_id : null,
+      linked_card_id: values.linked_card_id && values.linked_card_id !== "none" ? values.linked_card_id : null,
+      linked_bank_account_id: values.linked_bank_account_id && values.linked_bank_account_id !== "none" ? values.linked_bank_account_id : null,
       auto_pay_enabled: values.auto_pay_enabled,
       notify_days_before: parseInt(values.notify_days_before),
       notification_enabled: values.notification_enabled,
@@ -433,14 +433,14 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Asset</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value || "none"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="None" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {assets.map((asset) => (
                             <SelectItem key={asset.id} value={asset.id}>
                               {asset.description}
@@ -458,14 +458,14 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Liability</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value || "none"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="None" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {liabilities.map((liability) => (
                             <SelectItem key={liability.id} value={liability.id}>
                               {liability.description}
@@ -483,14 +483,14 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Card</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value || "none"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="None" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {cards.map((card) => (
                             <SelectItem key={card.id} value={card.id}>
                               {card.bank_name} ****{card.last_four}
@@ -508,14 +508,14 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Bank Account</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value || "none"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="None" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {bankAccounts.map((account) => (
                             <SelectItem key={account.id} value={account.id}>
                               {account.name}
