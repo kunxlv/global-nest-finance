@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useEffect } from "react";
 
 const formSchema = z.object({
@@ -541,7 +542,18 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                         <FormLabel>Enable Notifications</FormLabel>
                       </div>
                       <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Get notified before payment is due</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </FormControl>
                     </FormItem>
                   )}
@@ -570,7 +582,18 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                       <FormLabel>Enable Auto-Pay</FormLabel>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Automatically process payment when due</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormControl>
                   </FormItem>
                 )}
