@@ -3,9 +3,10 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, FileDown, ChevronDown, Pencil, Trash } from "lucide-react";
+import { Plus, FileDown, ChevronDown, Pencil, Trash, Bell } from "lucide-react";
 import AssetForm from "@/components/forms/AssetForm";
-import { supabase, Asset } from "@/lib/supabase";
+import RecurringPaymentForm from "@/components/forms/RecurringPaymentForm";
+import { supabase, Asset, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import {
@@ -22,6 +23,7 @@ import {
 
 export default function Assets() {
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [linkedPayments, setLinkedPayments] = useState<Record<string, RecurringPayment[]>>({});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -39,6 +41,26 @@ export default function Assets() {
       console.error(error);
     } else {
       setAssets(data || []);
+      
+      if (data && data.length > 0) {
+        const { data: payments } = await supabase
+          .from("recurring_payments")
+          .select("*")
+          .eq("user_id", user.id)
+          .not("linked_asset_id", "is", null)
+          .eq("is_active", true);
+
+        if (payments) {
+          const grouped = payments.reduce((acc, payment) => {
+            if (payment.linked_asset_id) {
+              if (!acc[payment.linked_asset_id]) acc[payment.linked_asset_id] = [];
+              acc[payment.linked_asset_id].push(payment);
+            }
+            return acc;
+          }, {} as Record<string, RecurringPayment[]>);
+          setLinkedPayments(grouped);
+        }
+      }
     }
     setLoading(false);
   };
@@ -115,6 +137,7 @@ export default function Assets() {
                   <TableHead>Country</TableHead>
                   <TableHead>Holder</TableHead>
                   <TableHead>Purchase Date</TableHead>
+                  <TableHead>Linked Payments</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -134,6 +157,14 @@ export default function Assets() {
                       {asset.purchase_date
                         ? new Date(asset.purchase_date).toLocaleDateString()
                         : "NA"}
+                    </TableCell>
+                    <TableCell>
+                      {linkedPayments[asset.id]?.length > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          <Bell className="w-3 h-3 mr-1" />
+                          {linkedPayments[asset.id].length} payment{linkedPayments[asset.id].length !== 1 ? 's' : ''}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

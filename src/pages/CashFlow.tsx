@@ -5,11 +5,11 @@ import CreditCardDisplay from "@/components/CreditCardDisplay";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash } from "lucide-react";
+import { Plus, Pencil, Trash, Bell } from "lucide-react";
 import IncomeStreamForm from "@/components/forms/IncomeStreamForm";
 import BankAccountForm from "@/components/forms/BankAccountForm";
 import CardForm from "@/components/forms/CardForm";
-import { supabase, IncomeStream, BankAccount, Card } from "@/lib/supabase";
+import { supabase, IncomeStream, BankAccount, Card, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import {
@@ -28,6 +28,7 @@ export default function CashFlow() {
   const [incomeStreams, setIncomeStreams] = useState<IncomeStream[]>([]);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [cards, setCards] = useState<Card[]>([]);
+  const [linkedPayments, setLinkedPayments] = useState<Record<string, RecurringPayment[]>>({});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -35,10 +36,11 @@ export default function CashFlow() {
     if (!user) return;
     setLoading(true);
 
-    const [incomeRes, bankRes, cardsRes] = await Promise.all([
+    const [incomeRes, bankRes, cardsRes, paymentsRes] = await Promise.all([
       supabase.from("income_streams").select("*").eq("user_id", user.id),
       supabase.from("bank_accounts").select("*").eq("user_id", user.id),
       supabase.from("cards").select("*").eq("user_id", user.id),
+      supabase.from("recurring_payments").select("*").eq("user_id", user.id).eq("is_active", true),
     ]);
 
     if (incomeRes.error) toast.error("Failed to load income streams");
@@ -49,6 +51,17 @@ export default function CashFlow() {
 
     if (cardsRes.error) toast.error("Failed to load cards");
     else setCards(cardsRes.data || []);
+
+    if (paymentsRes.data) {
+      const grouped = paymentsRes.data.reduce((acc, payment) => {
+        if (payment.linked_card_id) {
+          if (!acc[payment.linked_card_id]) acc[payment.linked_card_id] = [];
+          acc[payment.linked_card_id].push(payment);
+        }
+        return acc;
+      }, {} as Record<string, RecurringPayment[]>);
+      setLinkedPayments(grouped);
+    }
 
     setLoading(false);
   };
@@ -271,6 +284,12 @@ export default function CashFlow() {
                           expiry={card.expiry}
                           variant={card.color_variant as "purple" | "blue" | "black" | "pink"}
                         />
+                        {linkedPayments[card.id]?.length > 0 && (
+                          <Badge variant="secondary" className="absolute bottom-2 left-2 text-xs">
+                            <Bell className="w-3 h-3 mr-1" />
+                            {linkedPayments[card.id].length} payment{linkedPayments[card.id].length !== 1 ? 's' : ''}
+                          </Badge>
+                        )}
                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <CardForm card={card} onSuccess={fetchData}>
                             <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-white hover:bg-white/20">

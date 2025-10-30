@@ -58,7 +58,6 @@ export default function Dashboard() {
   const overdueCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) < 0).length;
   const dueTodayCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) === 0).length;
 
-export default function Dashboard() {
   return (
     <Layout>
       <div className="space-y-6">

@@ -3,9 +3,9 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ChevronDown, Pencil, Trash } from "lucide-react";
+import { Plus, ChevronDown, Pencil, Trash, Bell } from "lucide-react";
 import LiabilityForm from "@/components/forms/LiabilityForm";
-import { supabase, Liability } from "@/lib/supabase";
+import { supabase, Liability, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import {
@@ -22,6 +22,7 @@ import {
 
 export default function Liabilities() {
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
+  const [linkedPayments, setLinkedPayments] = useState<Record<string, RecurringPayment[]>>({});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -39,6 +40,26 @@ export default function Liabilities() {
       console.error(error);
     } else {
       setLiabilities(data || []);
+      
+      if (data && data.length > 0) {
+        const { data: payments } = await supabase
+          .from("recurring_payments")
+          .select("*")
+          .eq("user_id", user.id)
+          .not("linked_liability_id", "is", null)
+          .eq("is_active", true);
+
+        if (payments) {
+          const grouped = payments.reduce((acc, payment) => {
+            if (payment.linked_liability_id) {
+              if (!acc[payment.linked_liability_id]) acc[payment.linked_liability_id] = [];
+              acc[payment.linked_liability_id].push(payment);
+            }
+            return acc;
+          }, {} as Record<string, RecurringPayment[]>);
+          setLinkedPayments(grouped);
+        }
+      }
     }
     setLoading(false);
   };
@@ -112,6 +133,7 @@ export default function Liabilities() {
                   <TableHead>Lender</TableHead>
                   <TableHead>Interest Rate</TableHead>
                   <TableHead>Start Date</TableHead>
+                  <TableHead>Linked Payments</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -134,6 +156,14 @@ export default function Liabilities() {
                       {liability.start_date
                         ? new Date(liability.start_date).toLocaleDateString()
                         : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {linkedPayments[liability.id]?.length > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          <Bell className="w-3 h-3 mr-1" />
+                          {linkedPayments[liability.id].length} payment{linkedPayments[liability.id].length !== 1 ? 's' : ''}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
