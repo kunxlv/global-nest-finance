@@ -24,7 +24,7 @@ All colors MUST be HSL.
     --secondary-foreground: 0 0% 15%;
 
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 48%;
 
     --accent: 142 76% 36%;
     --accent-foreground: 0 0% 100%;
@@ -33,7 +33,7 @@ All colors MUST be HSL.
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 90%;
-    --input: 0 0% 90%;
+    --input: 0 0% 88%;
     --ring: 142 76% 36%;
 
     --success: 142 76% 36%;
@@ -49,22 +49,15 @@ All colors MUST be HSL.
     --sidebar-text: 0 0% 100%;
     --sidebar-hover: 0 0% 20%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -72,10 +65,10 @@ All colors MUST be HSL.
     --background: 0 0% 15%;
     --foreground: 0 0% 100%;
 
-    --card: 0 0% 15%;
+    --card: 0 0% 18%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 15%;
+    --popover: 0 0% 18%;
     --popover-foreground: 0 0% 100%;
 
     --primary: 0 0% 100%;
@@ -85,7 +78,7 @@ All colors MUST be HSL.
     --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted-foreground: 0 0% 65%;
 
     --accent: 142 76% 36%;
     --accent-foreground: 0 0% 100%;
@@ -94,7 +87,7 @@ All colors MUST be HSL.
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 25%;
-    --input: 0 0% 25%;
+    --input: 0 0% 22%;
     --ring: 142 76% 36%;
 
     --success: 142 76% 36%;
@@ -112,6 +105,20 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    @apply transition-all duration-200 ease-in-out;
   }
 }
