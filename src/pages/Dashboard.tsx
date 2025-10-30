@@ -4,22 +4,29 @@ import StatCard from "@/components/StatCard";
 import GoalCard from "@/components/GoalCard";
 import PaymentAlert from "@/components/PaymentAlert";
 import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
+import CurrencySelector from "@/components/CurrencySelector";
+import CurrencyAmount from "@/components/CurrencyAmount";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { supabase, PaymentHistory, RecurringPayment, Goal } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useFinancialSummary } from "@/hooks/useFinancialSummary";
 import { toast } from "sonner";
 import { differenceInDays } from "date-fns";
 import { Link } from "react-router-dom";
+import { CurrencyCode } from "@/lib/currencyConversion";
 
 type PaymentWithRecurring = PaymentHistory & {
   recurring_payment: RecurringPayment;
 };
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  const { formatCurrency } = useCurrency();
+  const { totalAssets, totalLiabilities, netWorth, isLoading: summaryLoading } = useFinancialSummary();
   const [upcomingPayments, setUpcomingPayments] = useState<PaymentWithRecurring[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
-  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
@@ -80,9 +87,7 @@ export default function Dashboard() {
             <Button variant="outline" size="sm" className="text-xs sm:text-sm">
               Widgets
             </Button>
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
-              $ USD
-            </Button>
+            <CurrencySelector />
           </div>
         </div>
 
@@ -90,17 +95,15 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard 
             title="NET WORTH" 
-            value="$ 37,457.4" 
-            trend={11.9}
+            value={summaryLoading ? "Loading..." : formatCurrency(netWorth)}
           />
           <StatCard 
             title="ASSETS" 
-            value="$ 52,257.2" 
-            trend={29.1}
+            value={summaryLoading ? "Loading..." : formatCurrency(totalAssets)}
           />
           <StatCard 
             title="DEBT" 
-            value="$ 14,799.8" 
+            value={summaryLoading ? "Loading..." : formatCurrency(totalLiabilities)}
           />
           <div className="bg-[#2a2a2a] rounded-3xl p-6 text-white flex flex-col justify-center items-center text-center">
             <p className="text-sm mb-2 text-white/70">Get more features and strategies.</p>
@@ -158,15 +161,48 @@ export default function Dashboard() {
                   : 0;
                 
                 return (
-                  <GoalCard
-                    key={goal.id}
-                    title={goal.title}
-                    target={`${goal.currency} ${Number(goal.target_amount).toFixed(2)}`}
-                    current={`${goal.currency} ${Number(goal.current_amount).toFixed(2)}`}
-                    progress={progress}
-                    timeframe={goal.timeframe || undefined}
-                    assetLinked={goal.asset_linked || false}
-                  />
+                  <div key={goal.id} className="bg-card rounded-2xl p-5 shadow-sm border border-border transition-all duration-200 hover:shadow-md">
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-card-foreground text-base">
+                            {goal.title} {goal.timeframe && <span className="text-muted-foreground font-normal">· {goal.timeframe}</span>}
+                          </h3>
+                          <p className="text-3xl font-semibold tracking-tight mt-2">
+                            <CurrencyAmount 
+                              amount={Number(goal.current_amount)} 
+                              originalCurrency={goal.currency as CurrencyCode}
+                              showOriginal
+                            />
+                          </p>
+                        </div>
+                        {goal.asset_linked && (
+                          <span className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] px-2 py-1 rounded-md text-xs font-medium shrink-0">
+                            Asset Linked
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground font-medium">{progress}% complete</span>
+                          <span className="text-muted-foreground font-medium">
+                            <CurrencyAmount 
+                              amount={Number(goal.target_amount)} 
+                              originalCurrency={goal.currency as CurrencyCode}
+                              showOriginal
+                            />
+                          </span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="h-full bg-[hsl(var(--success))] rounded-full transition-all duration-500"
+                            style={{ width: `${Math.min(progress, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 );
               })}
             </div>

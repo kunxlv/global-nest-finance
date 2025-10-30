@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Plus, Search, Filter } from "lucide-react";
 import RecurringPaymentForm from "@/components/forms/RecurringPaymentForm";
 import PaymentAlert from "@/components/PaymentAlert";
+import CurrencyAmount from "@/components/CurrencyAmount";
 import { supabase, PaymentHistory, RecurringPayment } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { CurrencyCode } from "@/lib/currencyConversion";
 import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -147,18 +149,6 @@ export default function Payments() {
     }
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
-    const symbols: Record<string, string> = {
-      USD: "$",
-      EUR: "€",
-      GBP: "£",
-      INR: "₹",
-      JPY: "¥",
-      AUD: "A$",
-      CAD: "C$",
-    };
-    return `${symbols[currency] || currency} ${amount.toLocaleString()}`;
-  };
 
   const filteredUpcoming = upcomingPayments.filter(p =>
     p.recurring_payment.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -267,7 +257,11 @@ export default function Payments() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            {formatCurrency(Number(payment.amount), payment.currency)}
+                            <CurrencyAmount 
+                              amount={Number(payment.amount)} 
+                              originalCurrency={payment.currency as CurrencyCode}
+                              showOriginal
+                            />
                           </TableCell>
                           <TableCell>
                             {format(new Date(payment.due_date), "MMM d, yyyy")}
@@ -338,7 +332,11 @@ export default function Payments() {
                             <Badge variant="secondary">{payment.category}</Badge>
                           </TableCell>
                           <TableCell>
-                            {formatCurrency(Number(payment.amount), payment.currency)}
+                            <CurrencyAmount 
+                              amount={Number(payment.amount)} 
+                              originalCurrency={payment.currency as CurrencyCode}
+                              showOriginal
+                            />
                           </TableCell>
                           <TableCell>{payment.frequency}</TableCell>
                           <TableCell>

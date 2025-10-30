@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { ReactNode } from "react";
 
 interface GoalCardProps {
   title: string;
-  target: string;
-  current: string;
+  target: string | ReactNode;
+  current: string | ReactNode;
   progress: number;
   timeframe?: string;
   assetLinked?: boolean;
