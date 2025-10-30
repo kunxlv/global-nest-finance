@@ -13,6 +13,7 @@ import "react-resizable/css/styles.css";
 import { WidgetSelector, WidgetType, WIDGET_METADATA } from "@/components/dashboard/WidgetSelector";
 import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
 import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
+import { FixedStatsRow } from "@/components/dashboard/FixedStatsRow";
 import { differenceInDays } from "date-fns";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -34,18 +35,16 @@ type PaymentWithRecurring = PaymentHistory & {
   recurring_payment: RecurringPayment;
 };
 
-const DEFAULT_WIDGETS: WidgetType[] = ["net-worth", "salary-countdown", "upcoming-payments", "goals"];
+const DEFAULT_WIDGETS: WidgetType[] = ["salary-countdown", "upcoming-payments", "goals"];
 
 const getDefaultPosition = (type: WidgetType, index: number) => {
   switch(type) {
-    case "net-worth":
-      return { x: 0, y: 0 };
     case "salary-countdown":
-      return { x: 2, y: 0 };
+      return { x: 0, y: 0 };
     case "upcoming-payments":
-      return { x: 0, y: 2 };
+      return { x: 2, y: 0 };
     case "goals":
-      return { x: 0, y: 5 };
+      return { x: 0, y: 4 };
     default:
       return { x: 0, y: index * 2 };
   }
@@ -297,6 +296,9 @@ export default function Dashboard() {
         </div>
 
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
+
+        {/* Fixed Stats Row - Not Editable */}
+        <FixedStatsRow />
 
         {/* Widget Grid */}
         {widgets.length === 0 ? (
