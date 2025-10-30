@@ -5,8 +5,8 @@ import GoalCard from "@/components/GoalCard";
 import PaymentAlert from "@/components/PaymentAlert";
 import PaymentNotificationBanner from "@/components/PaymentNotificationBanner";
 import { Button } from "@/components/ui/button";
-import { X, ArrowRight } from "lucide-react";
-import { supabase, PaymentHistory, RecurringPayment } from "@/lib/supabase";
+import { ArrowRight } from "lucide-react";
+import { supabase, PaymentHistory, RecurringPayment, Goal } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { differenceInDays } from "date-fns";
@@ -18,6 +18,7 @@ type PaymentWithRecurring = PaymentHistory & {
 
 export default function Dashboard() {
   const [upcomingPayments, setUpcomingPayments] = useState<PaymentWithRecurring[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -38,7 +39,18 @@ export default function Dashboard() {
       if (data) setUpcomingPayments(data as PaymentWithRecurring[]);
     };
 
+    const fetchGoals = async () => {
+      const { data } = await supabase
+        .from("goals")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (data) setGoals(data);
+    };
+
     fetchUpcoming();
+    fetchGoals();
   }, [user]);
 
   const handleMarkAsPaid = async (historyId: string) => {
@@ -99,10 +111,7 @@ export default function Dashboard() {
         </div>
 
         {/* Salary Countdown */}
-        <div className="bg-white rounded-3xl p-4 sm:p-6 relative">
-          <Button variant="ghost" size="icon" className="absolute top-2 right-2 sm:top-4 sm:right-4">
-            <X className="w-4 h-4" />
-          </Button>
+        <div className="bg-white rounded-3xl p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-baseline gap-2">
               <span className="text-4xl sm:text-6xl font-bold">19</span>
@@ -116,10 +125,7 @@ export default function Dashboard() {
 
         {/* Gainers and Losers */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-3xl p-6 relative">
-            <Button variant="ghost" size="icon" className="absolute top-4 right-4">
-              <X className="w-4 h-4" />
-            </Button>
+          <div className="bg-white rounded-3xl p-6">
             <h2 className="text-2xl font-bold mb-4">Top gainers</h2>
             <div className="flex justify-center items-center h-40">
               <div className="w-full max-w-xs h-32 bg-black rounded-2xl flex items-end p-4 relative">
@@ -147,10 +153,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 relative">
-            <Button variant="ghost" size="icon" className="absolute top-4 right-4">
-              <X className="w-4 h-4" />
-            </Button>
+          <div className="bg-white rounded-3xl p-6">
             <h2 className="text-2xl font-bold mb-4">Top losers</h2>
             <div className="flex justify-center items-center h-40">
               <div className="w-full max-w-xs h-32 bg-black rounded-2xl flex items-end p-4 relative">
@@ -202,27 +205,31 @@ export default function Dashboard() {
         </div>
 
         {/* Goals */}
-        <div className="bg-white rounded-3xl p-6 relative">
-          <Button variant="ghost" size="icon" className="absolute top-4 right-4">
-            <X className="w-4 h-4" />
-          </Button>
+        <div className="bg-white rounded-3xl p-6">
           <h2 className="text-2xl font-bold mb-6">Goals</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <GoalCard
-              title="Travel Fund"
-              target="$500"
-              current="$345"
-              progress={69}
-            />
-            <GoalCard
-              title="Retirement Fund"
-              target="$20,000"
-              current="$2740"
-              progress={14}
-              timeframe="16 years"
-              assetLinked
-            />
-          </div>
+          {goals.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No goals set yet</p>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {goals.map((goal) => {
+                const progress = goal.target_amount > 0 
+                  ? Math.round((Number(goal.current_amount) / Number(goal.target_amount)) * 100)
+                  : 0;
+                
+                return (
+                  <GoalCard
+                    key={goal.id}
+                    title={goal.title}
+                    target={`${goal.currency} ${Number(goal.target_amount).toFixed(2)}`}
+                    current={`${goal.currency} ${Number(goal.current_amount).toFixed(2)}`}
+                    progress={progress}
+                    timeframe={goal.timeframe || undefined}
+                    assetLinked={goal.asset_linked || false}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </Layout>
