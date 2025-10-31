@@ -104,16 +104,16 @@ export default function Dashboard() {
             title="DEBT" 
             value={summaryLoading ? "Loading..." : formatCurrency(totalLiabilities)}
           />
-          <div className="bg-[#2a2a2a] rounded-3xl p-6 text-white flex flex-col justify-center items-center text-center">
-            <p className="text-sm mb-2 text-white/70">Get more features and strategies.</p>
-            <Button variant="secondary" size="sm" className="bg-white text-black hover:bg-white/90">
+          <div className="bg-accent rounded-lg p-6 text-accent-foreground flex flex-col justify-center items-center text-center shadow-md">
+            <p className="text-sm mb-2 opacity-90">Get more features and strategies.</p>
+            <Button variant="secondary" size="sm">
               GO PRO
             </Button>
           </div>
         </div>
 
         {/* Salary Countdown */}
-        <div className="bg-white rounded-3xl p-4 sm:p-6">
+        <div className="bg-card rounded-lg p-4 sm:p-6 border shadow-md">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-baseline gap-2">
               <span className="text-4xl sm:text-6xl font-bold">19</span>
@@ -127,7 +127,7 @@ export default function Dashboard() {
 
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
 
-        <div className="bg-white rounded-3xl p-4 sm:p-6">
+        <div className="bg-card rounded-lg p-4 sm:p-6 border shadow-md">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl sm:text-2xl font-bold">Upcoming Payments</h2>
             <Link to="/payments">
@@ -148,7 +148,7 @@ export default function Dashboard() {
         </div>
 
         {/* Goals */}
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-card rounded-lg p-6 border shadow-md">
           <h2 className="text-2xl font-bold mb-6">Goals</h2>
           {goals.length === 0 ? (
             <p className="text-muted-foreground text-sm">No goals set yet</p>

@@ -167,7 +167,7 @@ export default function Payments() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold">Payments.</h1>
           <RecurringPaymentForm onSuccess={fetchData}>
-            <Button className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Add Recurring Payment</span>
               <span className="sm:hidden">Add Payment</span>

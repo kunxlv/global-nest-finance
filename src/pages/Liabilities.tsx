@@ -88,7 +88,7 @@ export default function Liabilities() {
           <h1 className="text-3xl sm:text-4xl font-bold">Liabilities.</h1>
           <div className="flex gap-3">
             <LiabilityForm onSuccess={fetchLiabilities}>
-              <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
+              <Button size="sm" className="w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Add Liability</span>
                 <span className="sm:hidden">Add</span>
@@ -98,7 +98,7 @@ export default function Liabilities() {
         </div>
 
         {/* Liabilities Table */}
-        <div className="bg-white rounded-3xl p-4 sm:p-6">
+        <div className="bg-card rounded-lg p-4 sm:p-6 border shadow-md">
           <div className="flex items-center gap-2 mb-6">
             <h2 className="text-lg sm:text-xl font-semibold">All liabilities</h2>
             <ChevronDown className="w-5 h-5" />

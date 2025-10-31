@@ -68,7 +68,7 @@ export default function Goals() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold">Goals.</h1>
           <GoalForm onSuccess={fetchGoals}>
-            <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
+            <Button size="sm" className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Add Goal
             </Button>
@@ -82,7 +82,7 @@ export default function Goals() {
         ) : (
           <>
             {/* Short term goals */}
-            <div className="bg-white rounded-3xl p-6">
+            <div className="bg-card rounded-lg p-6 border shadow-md">
               <h2 className="text-2xl font-bold mb-6">Short term goals</h2>
               {shortTermGoals.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
@@ -141,7 +141,7 @@ export default function Goals() {
             </div>
 
             {/* Long term goals */}
-            <div className="bg-white rounded-3xl p-6">
+            <div className="bg-card rounded-lg p-6 border shadow-md">
               <h2 className="text-2xl font-bold mb-6">Long term goals</h2>
               {longTermGoals.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">

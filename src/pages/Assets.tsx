@@ -89,7 +89,7 @@ export default function Assets() {
           <h1 className="text-3xl sm:text-4xl font-bold">Assets.</h1>
           <div className="flex gap-2 sm:gap-3">
             <AssetForm onSuccess={fetchAssets}>
-              <Button size="sm" className="bg-black text-white hover:bg-black/90 flex-1 sm:flex-initial">
+              <Button size="sm" className="flex-1 sm:flex-initial">
                 <Plus className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Add Asset</span>
                 <span className="sm:hidden">Add</span>
@@ -103,7 +103,7 @@ export default function Assets() {
         </div>
 
         {/* Assets Table */}
-        <div className="bg-white rounded-3xl p-4 sm:p-6">
+        <div className="bg-card rounded-lg p-4 sm:p-6 border shadow-md">
           <div className="flex items-center gap-2 mb-6">
             <h2 className="text-lg sm:text-xl font-semibold">All assets</h2>
             <ChevronDown className="w-5 h-5" />

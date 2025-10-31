@@ -124,7 +124,7 @@ export default function CashFlow() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                   <h2 className="text-xl sm:text-2xl font-bold">Income</h2>
                   <IncomeStreamForm onSuccess={fetchData}>
-                    <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
+                    <Button size="sm" className="w-full sm:w-auto">
                       <Plus className="w-4 h-4 mr-2" />
                       <span className="hidden sm:inline">Add Income Stream</span>
                       <span className="sm:hidden">Add Income</span>
@@ -133,29 +133,29 @@ export default function CashFlow() {
                 </div>
 
                 {incomeStreams.length === 0 ? (
-                  <div className="text-center py-8 bg-muted rounded-3xl">
+                  <div className="text-center py-8 bg-muted rounded-lg">
                     <p className="text-muted-foreground">No income streams yet. Add one to get started!</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {incomeStreams.map((income) => (
-                      <div key={income.id} className="bg-[#2a2a2a] rounded-3xl p-6 text-white relative">
+                      <div key={income.id} className="bg-card rounded-lg p-6 border shadow-md relative">
                         <div className="flex items-start justify-between mb-4">
                           <h3 className="font-semibold">{income.name}</h3>
                           <div className="flex gap-1">
                             {income.is_primary && (
-                              <Badge className="bg-[hsl(var(--success))]/20 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/30">
+                              <Badge variant="success">
                                 Primary
                               </Badge>
                             )}
                             <IncomeStreamForm incomeStream={income} onSuccess={fetchData}>
-                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-white hover:bg-white/10">
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                                 <Pencil className="w-3 h-3" />
                               </Button>
                             </IncomeStreamForm>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-white hover:bg-white/10">
+                                <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                                   <Trash className="w-3 h-3" />
                                 </Button>
                               </AlertDialogTrigger>
@@ -179,7 +179,7 @@ export default function CashFlow() {
                         <p className="text-3xl font-bold">
                           {formatCurrency(Number(income.amount), income.currency as CurrencyCode)}
                         </p>
-                        <p className="text-xs text-white/60 mt-2 uppercase">{income.frequency}</p>
+                        <p className="text-xs text-muted-foreground mt-2 uppercase">{income.frequency}</p>
                       </div>
                     ))}
                   </div>
@@ -191,7 +191,7 @@ export default function CashFlow() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                   <h2 className="text-xl sm:text-2xl font-bold">Bank Accounts</h2>
                   <BankAccountForm onSuccess={fetchData}>
-                    <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
+                    <Button size="sm" className="w-full sm:w-auto">
                       <Plus className="w-4 h-4 mr-2" />
                       <span className="hidden sm:inline">Add Bank Account</span>
                       <span className="sm:hidden">Add Account</span>
@@ -200,7 +200,7 @@ export default function CashFlow() {
                 </div>
 
                 {bankAccounts.length === 0 ? (
-                  <div className="text-center py-8 bg-muted rounded-3xl">
+                  <div className="text-center py-8 bg-muted rounded-lg">
                     <p className="text-muted-foreground">No bank accounts yet. Add one to track your balances!</p>
                   </div>
                 ) : (
@@ -253,7 +253,7 @@ export default function CashFlow() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                   <h2 className="text-xl sm:text-2xl font-bold">Cards</h2>
                   <CardForm onSuccess={fetchData}>
-                    <Button size="sm" className="bg-black text-white hover:bg-black/90 w-full sm:w-auto">
+                    <Button size="sm" className="w-full sm:w-auto">
                       <Plus className="w-4 h-4 mr-2" />
                       Add Card
                     </Button>
@@ -261,7 +261,7 @@ export default function CashFlow() {
                 </div>
 
                 {cards.length === 0 ? (
-                  <div className="text-center py-8 bg-muted rounded-3xl">
+                  <div className="text-center py-8 bg-muted rounded-lg">
                     <p className="text-muted-foreground">No cards yet. Add one to track your credit cards!</p>
                   </div>
                 ) : (
