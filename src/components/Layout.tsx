@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { 
   LayoutDashboard, 
   RefreshCw, 
@@ -11,7 +11,7 @@ import {
   Settings,
   Bell,
   Menu,
-  ChevronRight
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Redirect to onboarding if not completed
   useEffect(() => {
@@ -40,6 +41,35 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       navigate('/onboarding');
     }
   }, [profile, loading, navigate]);
+
+  // Auto-close sidebar after 10 seconds
+  useEffect(() => {
+    if (sidebarExpanded) {
+      closeTimerRef.current = setTimeout(() => {
+        setSidebarExpanded(false);
+      }, 10000);
+    }
+    
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, [sidebarExpanded]);
+
+  const handleSidebarToggle = () => {
+    setSidebarExpanded(!sidebarExpanded);
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+    }
+  };
+
+  const handleCloseSidebar = () => {
+    setSidebarExpanded(false);
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+    }
+  };
 
   if (loading) {
     return (
@@ -54,19 +84,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const DesktopSidebarContent = () => (
     <>
-      {/* Logo/Brand */}
-      <div className="mb-8 px-4">
+      {/* Logo/Brand with Close Button */}
+      <div className="mb-8 px-4 flex items-center justify-between">
         {sidebarExpanded ? (
-          <h1 className={cn(
-            "text-xl font-bold text-sidebar-primary whitespace-nowrap transition-all duration-300",
-            sidebarExpanded ? "opacity-100 delay-150" : "opacity-0"
-          )}>
-            finance.
-          </h1>
+          <>
+            <h1 className={cn(
+              "text-xl font-bold text-sidebar-primary whitespace-nowrap transition-all duration-300",
+              sidebarExpanded ? "opacity-100 delay-100" : "opacity-0"
+            )}>
+              finance.
+            </h1>
+            <button
+              onClick={handleCloseSidebar}
+              className={cn(
+                "p-1.5 rounded-lg hover:bg-sidebar-accent transition-all duration-300",
+                sidebarExpanded ? "opacity-100 delay-150" : "opacity-0"
+              )}
+            >
+              <X className="w-4 h-4 text-sidebar-foreground" />
+            </button>
+          </>
         ) : (
-          <div className="w-10 h-10 rounded-lg bg-sidebar-accent flex items-center justify-center shadow-sm">
+          <button
+            onClick={handleSidebarToggle}
+            className="w-10 h-10 rounded-lg bg-sidebar-accent flex items-center justify-center shadow-sm hover:bg-sidebar-accent/80 transition-colors"
+          >
             <span className="text-base font-bold text-sidebar-accent-foreground">F</span>
-          </div>
+          </button>
         )}
       </div>
 
@@ -203,20 +247,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Sheet>
       </div>
 
-      {/* Desktop Sidebar - Collapsible with Hover */}
+      {/* Desktop Sidebar - Collapsible with Manual Control */}
       <aside 
         className={cn(
           "hidden lg:flex bg-sidebar text-sidebar-foreground py-6 flex-col fixed h-screen border-r border-sidebar-border z-40 shadow-lg",
           "transition-all duration-500 ease-in-out",
           sidebarExpanded ? "w-[220px]" : "w-[76px]"
         )}
-        onMouseEnter={() => setSidebarExpanded(true)}
-        onMouseLeave={() => setSidebarExpanded(false)}
+        onMouseEnter={() => !sidebarExpanded && setSidebarExpanded(true)}
       >
         <DesktopSidebarContent />
       </aside>
 
-      {/* Main Content */}
+      {/* Main Content with Page Transition */}
       <main 
         className={cn(
           "flex-1 w-full p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8",
@@ -224,7 +267,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           sidebarExpanded ? "lg:ml-[220px]" : "lg:ml-[76px]"
         )}
       >
-        {children}
+        <div className="animate-fade-in">
+          {children}
+        </div>
       </main>
     </div>
   );
