@@ -55,18 +55,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const DesktopSidebarContent = () => (
     <>
       {/* Logo/Brand */}
-      <div className="mb-6 px-4">
+      <div className="mb-8 px-4">
         {sidebarExpanded ? (
-          <h1 className="text-xl font-semibold text-sidebar-primary">finance.</h1>
+          <h1 className={cn(
+            "text-xl font-bold text-sidebar-primary whitespace-nowrap transition-all duration-300",
+            sidebarExpanded ? "opacity-100 delay-150" : "opacity-0"
+          )}>
+            finance.
+          </h1>
         ) : (
-          <div className="w-8 h-8 rounded-md bg-sidebar-accent flex items-center justify-center">
-            <span className="text-sm font-bold text-sidebar-accent-foreground">F</span>
+          <div className="w-10 h-10 rounded-lg bg-sidebar-accent flex items-center justify-center shadow-sm">
+            <span className="text-base font-bold text-sidebar-accent-foreground">F</span>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-2">
+      <nav className="flex-1 space-y-1.5 px-3">
         {navigation.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -76,29 +81,42 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               key={item.name}
               to={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-md transition-all text-sm",
+                "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden",
                 isActive 
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" 
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-primary"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm" 
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-primary hover:shadow-sm"
               )}
               title={!sidebarExpanded ? item.name : undefined}
             >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              {sidebarExpanded && <span>{item.name}</span>}
+              <Icon className={cn(
+                "w-5 h-5 flex-shrink-0 transition-transform duration-300",
+                isActive && "scale-110"
+              )} />
+              <span className={cn(
+                "text-sm font-semibold whitespace-nowrap transition-all duration-300",
+                sidebarExpanded ? "opacity-100 delay-150 translate-x-0" : "opacity-0 -translate-x-2 absolute"
+              )}>
+                {item.name}
+              </span>
             </Link>
           );
         })}
       </nav>
 
       {/* Settings */}
-      <div className="px-2 pb-4">
+      <div className="px-3 pb-4">
         <Link
           to="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-primary transition-all text-sm"
+          className="flex items-center gap-4 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-primary transition-all duration-300 hover:shadow-sm group"
           title={!sidebarExpanded ? "Settings" : undefined}
         >
-          <Settings className="w-4 h-4 flex-shrink-0" />
-          {sidebarExpanded && <span>Settings</span>}
+          <Settings className="w-5 h-5 flex-shrink-0 transition-transform duration-300 group-hover:rotate-90" />
+          <span className={cn(
+            "text-sm font-semibold whitespace-nowrap transition-all duration-300",
+            sidebarExpanded ? "opacity-100 delay-150 translate-x-0" : "opacity-0 -translate-x-2 absolute"
+          )}>
+            Settings
+          </span>
         </Link>
       </div>
     </>
@@ -188,8 +206,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Desktop Sidebar - Collapsible with Hover */}
       <aside 
         className={cn(
-          "hidden lg:flex bg-sidebar text-sidebar-foreground py-6 flex-col fixed h-screen border-r border-sidebar-border transition-all duration-300 z-40",
-          sidebarExpanded ? "w-[200px]" : "w-[64px]"
+          "hidden lg:flex bg-sidebar text-sidebar-foreground py-6 flex-col fixed h-screen border-r border-sidebar-border z-40 shadow-lg",
+          "transition-all duration-500 ease-in-out",
+          sidebarExpanded ? "w-[220px]" : "w-[76px]"
         )}
         onMouseEnter={() => setSidebarExpanded(true)}
         onMouseLeave={() => setSidebarExpanded(false)}
@@ -200,8 +219,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <main 
         className={cn(
-          "flex-1 w-full p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 transition-all duration-300",
-          sidebarExpanded ? "lg:ml-[200px]" : "lg:ml-[64px]"
+          "flex-1 w-full p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8",
+          "transition-all duration-500 ease-in-out",
+          sidebarExpanded ? "lg:ml-[220px]" : "lg:ml-[76px]"
         )}
       >
         {children}
