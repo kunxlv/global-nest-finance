@@ -42,9 +42,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [profile, loading, navigate]);
 
-  // Auto-close sidebar after 10 seconds
+  // Auto-close sidebar after 10 seconds, reset timer on any interaction
   useEffect(() => {
     if (sidebarExpanded) {
+      // Clear existing timer
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+      
+      // Set new timer
       closeTimerRef.current = setTimeout(() => {
         setSidebarExpanded(false);
       }, 10000);
@@ -55,7 +61,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         clearTimeout(closeTimerRef.current);
       }
     };
-  }, [sidebarExpanded]);
+  }, [sidebarExpanded, location.pathname]); // Reset timer when route changes
 
   const handleSidebarToggle = () => {
     setSidebarExpanded(!sidebarExpanded);
@@ -68,6 +74,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setSidebarExpanded(false);
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
+    }
+  };
+
+  const handleNavClick = () => {
+    // Reset the auto-close timer when navigating
+    if (sidebarExpanded && closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = setTimeout(() => {
+        setSidebarExpanded(false);
+      }, 10000);
     }
   };
 
@@ -124,6 +140,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link
               key={item.name}
               to={item.href}
+              onClick={handleNavClick}
               className={cn(
                 "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden",
                 isActive 
@@ -151,6 +168,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="px-3 pb-4">
         <Link
           to="/settings"
+          onClick={handleNavClick}
           className="flex items-center gap-4 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-primary transition-all duration-300 hover:shadow-sm group"
           title={!sidebarExpanded ? "Settings" : undefined}
         >
