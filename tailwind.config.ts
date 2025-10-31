@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Rubik", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        sans: ["Poppins", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
       },
       spacing: {
         xs: "4px",
@@ -90,9 +90,9 @@ export default {
         "2xl": "var(--radius)",
       },
       boxShadow: {
-        sm: "0 1px 2px rgba(0,0,0,0.05)",
-        md: "0 4px 8px rgba(0,0,0,0.06)",
-        lg: "0 8px 20px rgba(0,0,0,0.08)",
+        sm: "0 1px 2px rgba(0,0,0,0.02)",
+        md: "0 2px 4px rgba(0,0,0,0.04)",
+        lg: "0 4px 8px rgba(0,0,0,0.05)",
       },
       keyframes: {
         "accordion-down": {

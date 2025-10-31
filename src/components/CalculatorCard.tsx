@@ -9,7 +9,7 @@ interface CalculatorCardProps {
 export default function CalculatorCard({ title, description, href }: CalculatorCardProps) {
   return (
     <Link to={href}>
-      <div className="bg-card rounded-lg p-6 border hover:border-accent transition-colors min-h-[140px] flex flex-col justify-between shadow-md">
+      <div className="bg-card rounded-lg p-6 hover:shadow-md transition-all min-h-[140px] flex flex-col justify-between shadow-sm">
         <h3 className="text-xl font-semibold mb-2">{title}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
       </div>
