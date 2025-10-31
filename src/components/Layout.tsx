@@ -32,7 +32,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const { profile, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(() => {
+    // Initialize from localStorage
+    const saved = localStorage.getItem('sidebarExpanded');
+    return saved ? JSON.parse(saved) : false;
+  });
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Redirect to onboarding if not completed
@@ -41,6 +45,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       navigate('/onboarding');
     }
   }, [profile, loading, navigate]);
+
+  // Save sidebar state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('sidebarExpanded', JSON.stringify(sidebarExpanded));
+  }, [sidebarExpanded]);
 
   // Auto-close sidebar after 10 seconds, reset timer on any interaction
   useEffect(() => {
