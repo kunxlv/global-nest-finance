@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import GoalCard from "@/components/GoalCard";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash } from "lucide-react";
+import { Plus, Pencil, Trash, MoreVertical } from "lucide-react";
 import GoalForm from "@/components/forms/GoalForm";
 import { supabase, Goal } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +19,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Goals() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -130,46 +136,56 @@ export default function Goals() {
                       (Number(goal.current_amount) / Number(goal.target_amount)) * 100
                     );
                     return (
-                      <div key={goal.id} className="relative">
-                        <GoalCard
-                          title={goal.title}
-                          target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
-                          current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
-                          progress={progress}
-                          timeframe={goal.timeframe || undefined}
-                          assetLinkedCount={goalAssetCounts[goal.id] || 0}
-                          assetNames={goalAssetNames[goal.id] || []}
-                        />
-                        <div className="absolute top-14 right-2 flex gap-1">
-                          <GoalForm goal={goal} onSuccess={fetchGoals}>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <Pencil className="w-3 h-3" />
-                            </Button>
-                          </GoalForm>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
+                      <GoalCard
+                        key={goal.id}
+                        title={goal.title}
+                        target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
+                        current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
+                        progress={progress}
+                        timeframe={goal.timeframe || undefined}
+                        assetLinkedCount={goalAssetCounts[goal.id] || 0}
+                        assetNames={goalAssetNames[goal.id] || []}
+                        actionsMenu={
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Trash className="w-3 h-3" />
+                                <MoreVertical className="w-4 h-4" />
                               </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Goal</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete "{goal.title}"? This action cannot be
-                                  undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(goal.id)}>
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                              <GoalForm goal={goal} onSuccess={fetchGoals}>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <Pencil className="w-4 h-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                              </GoalForm>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Trash className="w-4 h-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Goal</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{goal.title}"? This action cannot be
+                                      undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(goal.id)}>
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        }
+                      />
                     );
                   })}
                 </div>
@@ -190,46 +206,56 @@ export default function Goals() {
                       (Number(goal.current_amount) / Number(goal.target_amount)) * 100
                     );
                     return (
-                      <div key={goal.id} className="relative">
-                        <GoalCard
-                          title={goal.title}
-                          target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
-                          current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
-                          progress={progress}
-                          timeframe={goal.timeframe || undefined}
-                          assetLinkedCount={goalAssetCounts[goal.id] || 0}
-                          assetNames={goalAssetNames[goal.id] || []}
-                        />
-                        <div className="absolute top-14 right-2 flex gap-1">
-                          <GoalForm goal={goal} onSuccess={fetchGoals}>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <Pencil className="w-3 h-3" />
-                            </Button>
-                          </GoalForm>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
+                      <GoalCard
+                        key={goal.id}
+                        title={goal.title}
+                        target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
+                        current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
+                        progress={progress}
+                        timeframe={goal.timeframe || undefined}
+                        assetLinkedCount={goalAssetCounts[goal.id] || 0}
+                        assetNames={goalAssetNames[goal.id] || []}
+                        actionsMenu={
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Trash className="w-3 h-3" />
+                                <MoreVertical className="w-4 h-4" />
                               </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Goal</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete "{goal.title}"? This action cannot be
-                                  undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(goal.id)}>
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                              <GoalForm goal={goal} onSuccess={fetchGoals}>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <Pencil className="w-4 h-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                              </GoalForm>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Trash className="w-4 h-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Goal</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{goal.title}"? This action cannot be
+                                      undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(goal.id)}>
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        }
+                      />
                     );
                   })}
                 </div>
