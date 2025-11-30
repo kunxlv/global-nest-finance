@@ -22,24 +22,47 @@ import {
 
 export default function Goals() {
   const [goals, setGoals] = useState<Goal[]>([]);
+  const [goalAssetCounts, setGoalAssetCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   const fetchGoals = async () => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await supabase
+    
+    // Fetch goals
+    const { data: goalsData, error: goalsError } = await supabase
       .from("goals")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (error) {
+    if (goalsError) {
       toast.error("Failed to load goals");
-      console.error(error);
-    } else {
-      setGoals(data || []);
+      console.error(goalsError);
+      setLoading(false);
+      return;
     }
+
+    setGoals(goalsData || []);
+
+    // Fetch linked asset counts for all goals
+    if (goalsData && goalsData.length > 0) {
+      const { data: goalAssetsData, error: goalAssetsError } = await supabase
+        .from("goal_assets")
+        .select("goal_id")
+        .in("goal_id", goalsData.map(g => g.id));
+
+      if (!goalAssetsError && goalAssetsData) {
+        // Count assets per goal
+        const counts: Record<string, number> = {};
+        goalAssetsData.forEach(ga => {
+          counts[ga.goal_id] = (counts[ga.goal_id] || 0) + 1;
+        });
+        setGoalAssetCounts(counts);
+      }
+    }
+
     setLoading(false);
   };
 
@@ -102,7 +125,7 @@ export default function Goals() {
                           current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
                           progress={progress}
                           timeframe={goal.timeframe || undefined}
-                          assetLinked={goal.asset_linked}
+                          assetLinkedCount={goalAssetCounts[goal.id] || 0}
                         />
                         <div className="absolute top-2 right-2 flex gap-1">
                           <GoalForm goal={goal} onSuccess={fetchGoals}>
@@ -161,7 +184,7 @@ export default function Goals() {
                           current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
                           progress={progress}
                           timeframe={goal.timeframe || undefined}
-                          assetLinked={goal.asset_linked}
+                          assetLinkedCount={goalAssetCounts[goal.id] || 0}
                         />
                         <div className="absolute top-2 right-2 flex gap-1">
                           <GoalForm goal={goal} onSuccess={fetchGoals}>

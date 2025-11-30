@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { supabase, Goal } from "@/lib/supabase";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase, Goal, Asset } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 
 const goalSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -19,6 +21,7 @@ const goalSchema = z.object({
   currency: z.string().min(1, "Currency is required"),
   timeframe: z.string().optional(),
   is_long_term: z.boolean(),
+  linked_assets: z.array(z.string()).optional(),
 });
 
 type GoalFormData = z.infer<typeof goalSchema>;
@@ -31,6 +34,8 @@ interface GoalFormProps {
 
 export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
   const [open, setOpen] = useState(false);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [linkedAssetIds, setLinkedAssetIds] = useState<string[]>([]);
   const { user } = useAuth();
 
   const form = useForm<GoalFormData>({
@@ -42,8 +47,46 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
       currency: goal?.currency || "USD",
       timeframe: goal?.timeframe || "",
       is_long_term: goal?.is_long_term || false,
+      linked_assets: [],
     },
   });
+
+  // Fetch user's assets
+  useEffect(() => {
+    const fetchAssets = async () => {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from("assets")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      
+      if (!error && data) {
+        setAssets(data);
+      }
+    };
+
+    const fetchLinkedAssets = async () => {
+      if (!goal?.id) return;
+      const { data, error } = await supabase
+        .from("goal_assets")
+        .select("asset_id")
+        .eq("goal_id", goal.id);
+      
+      if (!error && data) {
+        const assetIds = data.map(ga => ga.asset_id);
+        setLinkedAssetIds(assetIds);
+        form.setValue("linked_assets", assetIds);
+      }
+    };
+
+    if (open) {
+      fetchAssets();
+      if (goal) {
+        fetchLinkedAssets();
+      }
+    }
+  }, [open, user, goal, form]);
 
   const onSubmit = async (data: GoalFormData) => {
     if (!user) return;
@@ -56,21 +99,48 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
       currency: data.currency as "USD" | "EUR" | "GBP" | "INR" | "JPY" | "AUD" | "CAD",
       timeframe: data.timeframe || null,
       is_long_term: data.is_long_term,
+      asset_linked: (data.linked_assets && data.linked_assets.length > 0) || false,
     };
 
-    const { error } = goal
-      ? await supabase.from("goals").update(payload).eq("id", goal.id)
-      : await supabase.from("goals").insert(payload);
+    // Save or update the goal
+    const { data: goalData, error: goalError } = goal
+      ? await supabase.from("goals").update(payload).eq("id", goal.id).select().single()
+      : await supabase.from("goals").insert(payload).select().single();
 
-    if (error) {
+    if (goalError) {
       toast.error("Failed to save goal");
-      console.error(error);
-    } else {
-      toast.success(goal ? "Goal updated successfully" : "Goal created successfully");
-      setOpen(false);
-      form.reset();
-      onSuccess();
+      console.error(goalError);
+      return;
     }
+
+    // Handle linked assets
+    const goalId = goal?.id || goalData.id;
+    
+    // Delete existing links
+    await supabase.from("goal_assets").delete().eq("goal_id", goalId);
+
+    // Insert new links
+    if (data.linked_assets && data.linked_assets.length > 0) {
+      const goalAssetLinks = data.linked_assets.map(assetId => ({
+        goal_id: goalId,
+        asset_id: assetId,
+        user_id: user.id,
+      }));
+
+      const { error: linkError } = await supabase.from("goal_assets").insert(goalAssetLinks);
+
+      if (linkError) {
+        toast.error("Failed to link assets");
+        console.error(linkError);
+        return;
+      }
+    }
+
+    toast.success(goal ? "Goal updated successfully" : "Goal created successfully");
+    setOpen(false);
+    form.reset();
+    setLinkedAssetIds([]);
+    onSuccess();
   };
 
   return (
@@ -177,6 +247,67 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                 </FormItem>
               )}
             />
+            
+            {/* Linked Assets Section */}
+            {assets.length > 0 && (
+              <FormField
+                control={form.control}
+                name="linked_assets"
+                render={() => (
+                  <FormItem>
+                    <div className="mb-4">
+                      <FormLabel className="text-base">Link Assets to Goal</FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        Select assets that contribute to this goal
+                      </p>
+                    </div>
+                    <ScrollArea className="h-[200px] rounded-md border p-4">
+                      <div className="space-y-3">
+                        {assets.map((asset) => (
+                          <FormField
+                            key={asset.id}
+                            control={form.control}
+                            name="linked_assets"
+                            render={({ field }) => {
+                              return (
+                                <FormItem
+                                  key={asset.id}
+                                  className="flex items-start space-x-3 space-y-0 rounded-lg border p-3 hover:bg-accent/50 transition-colors"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(asset.id)}
+                                      onCheckedChange={(checked) => {
+                                        const currentValue = field.value || [];
+                                        return checked
+                                          ? field.onChange([...currentValue, asset.id])
+                                          : field.onChange(
+                                              currentValue.filter((value) => value !== asset.id)
+                                            );
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <div className="flex-1 space-y-1 leading-none">
+                                    <FormLabel className="text-sm font-medium cursor-pointer">
+                                      {asset.description}
+                                    </FormLabel>
+                                    <p className="text-xs text-muted-foreground">
+                                      {formatCurrency(Number(asset.valuation), asset.currency as CurrencyCode)} · {asset.type}
+                                    </p>
+                                  </div>
+                                </FormItem>
+                              );
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </ScrollArea>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
