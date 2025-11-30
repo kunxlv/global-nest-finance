@@ -140,7 +140,7 @@ export default function Goals() {
                           assetLinkedCount={goalAssetCounts[goal.id] || 0}
                           assetNames={goalAssetNames[goal.id] || []}
                         />
-                        <div className="absolute top-2 right-2 flex gap-1">
+                        <div className="absolute top-14 right-2 flex gap-1">
                           <GoalForm goal={goal} onSuccess={fetchGoals}>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <Pencil className="w-3 h-3" />
@@ -200,7 +200,7 @@ export default function Goals() {
                           assetLinkedCount={goalAssetCounts[goal.id] || 0}
                           assetNames={goalAssetNames[goal.id] || []}
                         />
-                        <div className="absolute top-2 right-2 flex gap-1">
+                        <div className="absolute top-14 right-2 flex gap-1">
                           <GoalForm goal={goal} onSuccess={fetchGoals}>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <Pencil className="w-3 h-3" />
