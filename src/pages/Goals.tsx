@@ -23,6 +23,7 @@ import {
 export default function Goals() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [goalAssetCounts, setGoalAssetCounts] = useState<Record<string, number>>({});
+  const [goalAssetNames, setGoalAssetNames] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -46,20 +47,31 @@ export default function Goals() {
 
     setGoals(goalsData || []);
 
-    // Fetch linked asset counts for all goals
+    // Fetch linked asset counts and names for all goals
     if (goalsData && goalsData.length > 0) {
       const { data: goalAssetsData, error: goalAssetsError } = await supabase
         .from("goal_assets")
-        .select("goal_id")
+        .select("goal_id, assets(description)")
         .in("goal_id", goalsData.map(g => g.id));
 
       if (!goalAssetsError && goalAssetsData) {
-        // Count assets per goal
+        // Count assets per goal and collect names
         const counts: Record<string, number> = {};
-        goalAssetsData.forEach(ga => {
+        const names: Record<string, string[]> = {};
+        
+        goalAssetsData.forEach((ga: any) => {
           counts[ga.goal_id] = (counts[ga.goal_id] || 0) + 1;
+          
+          if (!names[ga.goal_id]) {
+            names[ga.goal_id] = [];
+          }
+          if (ga.assets?.description) {
+            names[ga.goal_id].push(ga.assets.description);
+          }
         });
+        
         setGoalAssetCounts(counts);
+        setGoalAssetNames(names);
       }
     }
 
@@ -126,6 +138,7 @@ export default function Goals() {
                           progress={progress}
                           timeframe={goal.timeframe || undefined}
                           assetLinkedCount={goalAssetCounts[goal.id] || 0}
+                          assetNames={goalAssetNames[goal.id] || []}
                         />
                         <div className="absolute top-2 right-2 flex gap-1">
                           <GoalForm goal={goal} onSuccess={fetchGoals}>
@@ -185,6 +198,7 @@ export default function Goals() {
                           progress={progress}
                           timeframe={goal.timeframe || undefined}
                           assetLinkedCount={goalAssetCounts[goal.id] || 0}
+                          assetNames={goalAssetNames[goal.id] || []}
                         />
                         <div className="absolute top-2 right-2 flex gap-1">
                           <GoalForm goal={goal} onSuccess={fetchGoals}>
