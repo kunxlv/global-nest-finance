@@ -114,11 +114,32 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
   const onSubmit = async (data: GoalFormData) => {
     if (!user) return;
 
+    // Calculate current_amount from linked assets
+    let calculatedCurrentAmount = 0;
+    if (data.linked_assets && data.linked_assets.length > 0) {
+      const linkedAssets = assets.filter(asset => data.linked_assets?.includes(asset.id));
+      
+      // Fetch exchange rates for conversion
+      const { fetchExchangeRates, convertAmount } = await import("@/lib/currencyConversion");
+      const rates = await fetchExchangeRates(data.currency as CurrencyCode);
+      
+      // Sum up asset valuations (convert to goal currency)
+      calculatedCurrentAmount = linkedAssets.reduce((sum, asset) => {
+        const convertedValue = convertAmount(
+          Number(asset.valuation),
+          asset.currency as CurrencyCode,
+          data.currency as CurrencyCode,
+          rates
+        );
+        return sum + convertedValue;
+      }, 0);
+    }
+
     const payload = {
       user_id: user.id,
       title: data.title,
       target_amount: parseFloat(data.target_amount),
-      current_amount: data.current_amount ? parseFloat(data.current_amount) : 0,
+      current_amount: calculatedCurrentAmount,
       currency: data.currency as "USD" | "EUR" | "GBP" | "INR" | "JPY" | "AUD" | "CAD",
       timeframe: data.timeframe || null,
       is_long_term: data.is_long_term,
@@ -209,8 +230,11 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                   <FormItem>
                     <FormLabel>Current Amount</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" placeholder="0" {...field} />
+                      <Input type="number" step="0.01" placeholder="0" {...field} disabled />
                     </FormControl>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Auto-calculated from linked assets
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
