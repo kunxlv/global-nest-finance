@@ -8,7 +8,7 @@ interface GoalCardProps {
   current: string | ReactNode;
   progress: number;
   timeframe?: string;
-  assetLinked?: boolean;
+  assetLinkedCount?: number;
 }
 
 export default function GoalCard({ 
@@ -17,7 +17,7 @@ export default function GoalCard({
   current, 
   progress,
   timeframe,
-  assetLinked 
+  assetLinkedCount = 0
 }: GoalCardProps) {
   return (
     <div className="bg-card rounded-2xl p-5 shadow-sm border border-border transition-all duration-200 hover:shadow-md">
@@ -29,9 +29,9 @@ export default function GoalCard({
             </h3>
             <p className="text-3xl font-semibold tracking-tight mt-2">{current}</p>
           </div>
-          {assetLinked && (
+          {assetLinkedCount > 0 && (
             <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0 shrink-0">
-              Asset Linked
+              {assetLinkedCount} {assetLinkedCount === 1 ? 'Asset' : 'Assets'} Linked
             </Badge>
           )}
         </div>
