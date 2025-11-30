@@ -223,7 +223,7 @@ export type Database = {
           {
             foreignKeyName: "goal_assets_asset_id_fkey"
             columns: ["asset_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "assets"
             referencedColumns: ["id"]
           },

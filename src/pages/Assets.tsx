@@ -25,6 +25,7 @@ import {
 export default function Assets() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [linkedPayments, setLinkedPayments] = useState<Record<string, RecurringPayment[]>>({});
+  const [linkedGoals, setLinkedGoals] = useState<Record<string, { id: string; title: string }>>({});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -60,6 +61,25 @@ export default function Assets() {
             return acc;
           }, {} as Record<string, RecurringPayment[]>);
           setLinkedPayments(grouped);
+        }
+
+        // Fetch linked goals
+        const { data: goalLinks } = await supabase
+          .from("goal_assets")
+          .select("asset_id, goals(id, title)")
+          .eq("user_id", user.id);
+
+        if (goalLinks) {
+          const goalsMap: Record<string, { id: string; title: string }> = {};
+          goalLinks.forEach((link: any) => {
+            if (link.goals) {
+              goalsMap[link.asset_id] = {
+                id: link.goals.id,
+                title: link.goals.title
+              };
+            }
+          });
+          setLinkedGoals(goalsMap);
         }
       }
     }
@@ -128,6 +148,7 @@ export default function Assets() {
                     <TableHead className="min-w-[100px]">Country</TableHead>
                     <TableHead className="min-w-[100px]">Holder</TableHead>
                     <TableHead className="min-w-[120px]">Purchase Date</TableHead>
+                    <TableHead className="min-w-[120px]">Linked Goal</TableHead>
                     <TableHead className="min-w-[120px]">Linked Payments</TableHead>
                     <TableHead className="text-right min-w-[100px]">Actions</TableHead>
                   </TableRow>
@@ -148,6 +169,15 @@ export default function Assets() {
                         {asset.purchase_date
                           ? new Date(asset.purchase_date).toLocaleDateString()
                           : "NA"}
+                      </TableCell>
+                      <TableCell>
+                        {linkedGoals[asset.id] ? (
+                          <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0">
+                            {linkedGoals[asset.id].title}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         {linkedPayments[asset.id]?.length > 0 && (

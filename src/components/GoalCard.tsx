@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ReactNode } from "react";
 
 interface GoalCardProps {
@@ -9,6 +10,7 @@ interface GoalCardProps {
   progress: number;
   timeframe?: string;
   assetLinkedCount?: number;
+  assetNames?: string[];
 }
 
 export default function GoalCard({ 
@@ -17,7 +19,8 @@ export default function GoalCard({
   current, 
   progress,
   timeframe,
-  assetLinkedCount = 0
+  assetLinkedCount = 0,
+  assetNames = []
 }: GoalCardProps) {
   return (
     <div className="bg-card rounded-2xl p-5 shadow-sm border border-border transition-all duration-200 hover:shadow-md">
@@ -30,9 +33,22 @@ export default function GoalCard({
             <p className="text-3xl font-semibold tracking-tight mt-2">{current}</p>
           </div>
           {assetLinkedCount > 0 && (
-            <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0 shrink-0">
-              {assetLinkedCount} {assetLinkedCount === 1 ? 'Asset' : 'Assets'} Linked
-            </Badge>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0 shrink-0 cursor-help">
+                    {assetLinkedCount} {assetLinkedCount === 1 ? 'Asset' : 'Assets'} Linked
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="space-y-1">
+                    {assetNames.map((name, index) => (
+                      <p key={index} className="text-sm">{name}</p>
+                    ))}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
         

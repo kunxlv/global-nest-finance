@@ -36,6 +36,7 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
   const [open, setOpen] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [linkedAssetIds, setLinkedAssetIds] = useState<string[]>([]);
+  const [unavailableAssets, setUnavailableAssets] = useState<Map<string, string>>(new Map());
   const { user } = useAuth();
 
   const form = useForm<GoalFormData>({
@@ -80,8 +81,30 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
       }
     };
 
+    const fetchUnavailableAssets = async () => {
+      if (!user) return;
+      
+      // Fetch assets linked to OTHER goals (not the current one being edited)
+      const { data, error } = await supabase
+        .from("goal_assets")
+        .select("asset_id, goals(title)")
+        .eq("user_id", user.id)
+        .neq("goal_id", goal?.id || "none");
+      
+      if (!error && data) {
+        const unavailable = new Map<string, string>();
+        data.forEach((ga: any) => {
+          if (ga.goals) {
+            unavailable.set(ga.asset_id, ga.goals.title);
+          }
+        });
+        setUnavailableAssets(unavailable);
+      }
+    };
+
     if (open) {
       fetchAssets();
+      fetchUnavailableAssets();
       if (goal) {
         fetchLinkedAssets();
       }
@@ -263,43 +286,58 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                     </div>
                     <ScrollArea className="h-[200px] rounded-md border p-4">
                       <div className="space-y-3">
-                        {assets.map((asset) => (
-                          <FormField
-                            key={asset.id}
-                            control={form.control}
-                            name="linked_assets"
-                            render={({ field }) => {
-                              return (
-                                <FormItem
-                                  key={asset.id}
-                                  className="flex items-start space-x-3 space-y-0 rounded-lg border p-3 hover:bg-accent/50 transition-colors"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(asset.id)}
-                                      onCheckedChange={(checked) => {
-                                        const currentValue = field.value || [];
-                                        return checked
-                                          ? field.onChange([...currentValue, asset.id])
-                                          : field.onChange(
-                                              currentValue.filter((value) => value !== asset.id)
-                                            );
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <div className="flex-1 space-y-1 leading-none">
-                                    <FormLabel className="text-sm font-medium cursor-pointer">
-                                      {asset.description}
-                                    </FormLabel>
-                                    <p className="text-xs text-muted-foreground">
-                                      {formatCurrency(Number(asset.valuation), asset.currency as CurrencyCode)} · {asset.type}
-                                    </p>
-                                  </div>
-                                </FormItem>
-                              );
-                            }}
-                          />
-                        ))}
+                        {assets.map((asset) => {
+                          const isUnavailable = unavailableAssets.has(asset.id);
+                          const linkedGoalTitle = unavailableAssets.get(asset.id);
+                          
+                          return (
+                            <FormField
+                              key={asset.id}
+                              control={form.control}
+                              name="linked_assets"
+                              render={({ field }) => {
+                                return (
+                                  <FormItem
+                                    key={asset.id}
+                                    className={`flex items-start space-x-3 space-y-0 rounded-lg border p-3 transition-colors ${
+                                      isUnavailable 
+                                        ? 'bg-muted/50 cursor-not-allowed' 
+                                        : 'hover:bg-accent/50'
+                                    }`}
+                                  >
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(asset.id)}
+                                        disabled={isUnavailable}
+                                        onCheckedChange={(checked) => {
+                                          const currentValue = field.value || [];
+                                          return checked
+                                            ? field.onChange([...currentValue, asset.id])
+                                            : field.onChange(
+                                                currentValue.filter((value) => value !== asset.id)
+                                              );
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <div className="flex-1 space-y-1 leading-none">
+                                      <FormLabel className={`text-sm font-medium ${isUnavailable ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                        {asset.description}
+                                      </FormLabel>
+                                      <p className="text-xs text-muted-foreground">
+                                        {formatCurrency(Number(asset.valuation), asset.currency as CurrencyCode)} · {asset.type}
+                                        {isUnavailable && (
+                                          <span className="ml-2 text-[hsl(var(--warning))] font-medium">
+                                            → {linkedGoalTitle}
+                                          </span>
+                                        )}
+                                      </p>
+                                    </div>
+                                  </FormItem>
+                                );
+                              }}
+                            />
+                          );
+                        })}
                       </div>
                     </ScrollArea>
                     <FormMessage />
