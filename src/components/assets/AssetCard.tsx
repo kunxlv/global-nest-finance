@@ -30,22 +30,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-// Country flag mapping
-const COUNTRY_FLAGS: Record<string, string> = {
-  India: "🇮🇳",
-  USA: "🇺🇸",
-  Ireland: "🇮🇪",
-  UAE: "🇦🇪",
-  UK: "🇬🇧",
-  Germany: "🇩🇪",
-  France: "🇫🇷",
-  Japan: "🇯🇵",
-  Australia: "🇦🇺",
-  Canada: "🇨🇦",
-  Singapore: "🇸🇬",
-  Switzerland: "🇨🇭",
-};
-
 // Asset type icons and colors
 const ASSET_CONFIG: Record<string, { icon: React.ElementType; gradient: string; bgColor: string }> = {
   CASH: {
@@ -94,7 +78,6 @@ export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEd
 
   const config = ASSET_CONFIG[asset.type] || ASSET_CONFIG.OTHER;
   const Icon = config.icon;
-  const countryFlag = asset.country ? COUNTRY_FLAGS[asset.country] || "🌍" : null;
 
   const originalAmount = Number(asset.valuation);
   const convertedAmount = convertToDisplayCurrency(originalAmount, asset.currency as CurrencyCode);
@@ -189,63 +172,6 @@ export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEd
             </div>
           </div>
         </div>
-
-        {/* Expand button */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="mt-4 w-full flex items-center justify-center gap-1 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50"
-        >
-          {expanded ? (
-            <>
-              <ChevronUp className="w-4 h-4" />
-              Show less
-            </>
-          ) : (
-            <>
-              <ChevronDown className="w-4 h-4" />
-              Show details
-            </>
-          )}
-        </button>
-
-        {/* Expanded content */}
-        {expanded && (
-          <div className="mt-4 pt-4 border-t border-border/50 space-y-3 animate-fade-in">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              {asset.purchase_date && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="w-4 h-4" />
-                  <span>Purchased: {new Date(asset.purchase_date).toLocaleDateString()}</span>
-                </div>
-              )}
-              {asset.country && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  <span>{asset.country}</span>
-                </div>
-              )}
-            </div>
-
-            {linkedPayments.length > 0 && (
-              <div className="pt-2">
-                <p className="text-xs font-medium text-muted-foreground mb-2">Linked Payments</p>
-                <div className="space-y-1">
-                  {linkedPayments.map((payment) => (
-                    <div
-                      key={payment.id}
-                      className="flex items-center justify-between text-sm bg-muted/30 rounded-lg px-3 py-2"
-                    >
-                      <span>{payment.name}</span>
-                      <span className="font-medium">
-                        {formatCurrency(Number(payment.amount), payment.currency as CurrencyCode)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
