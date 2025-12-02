@@ -24,13 +24,18 @@ const assetSchema = z.object({
 type AssetFormData = z.infer<typeof assetSchema>;
 
 interface AssetFormProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   asset?: Asset;
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export default function AssetForm({ children, asset, onSuccess }: AssetFormProps) {
-  const [open, setOpen] = useState(false);
+export default function AssetForm({ children, asset, onSuccess, open: controlledOpen, onOpenChange }: AssetFormProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? (onOpenChange || (() => {})) : setInternalOpen;
   const { user } = useAuth();
 
   const form = useForm<AssetFormData>({
@@ -77,7 +82,7 @@ export default function AssetForm({ children, asset, onSuccess }: AssetFormProps
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{asset ? "Edit Asset" : "Add Asset"}</DialogTitle>
