@@ -68,13 +68,16 @@ export default function Assets() {
           .eq("is_active", true);
 
         if (payments) {
-          const grouped = payments.reduce((acc, payment) => {
-            if (payment.linked_asset_id) {
-              if (!acc[payment.linked_asset_id]) acc[payment.linked_asset_id] = [];
-              acc[payment.linked_asset_id].push(payment);
-            }
-            return acc;
-          }, {} as Record<string, RecurringPayment[]>);
+          const grouped = payments.reduce(
+            (acc, payment) => {
+              if (payment.linked_asset_id) {
+                if (!acc[payment.linked_asset_id]) acc[payment.linked_asset_id] = [];
+                acc[payment.linked_asset_id].push(payment);
+              }
+              return acc;
+            },
+            {} as Record<string, RecurringPayment[]>,
+          );
           setLinkedPayments(grouped);
         }
 
@@ -152,11 +155,15 @@ export default function Assets() {
             convertToDisplayCurrency(Number(b.valuation), b.currency as CurrencyCode)
           );
         case "date_desc":
-          return new Date(b.purchase_date || b.created_at || 0).getTime() -
-                 new Date(a.purchase_date || a.created_at || 0).getTime();
+          return (
+            new Date(b.purchase_date || b.created_at || 0).getTime() -
+            new Date(a.purchase_date || a.created_at || 0).getTime()
+          );
         case "date_asc":
-          return new Date(a.purchase_date || a.created_at || 0).getTime() -
-                 new Date(b.purchase_date || b.created_at || 0).getTime();
+          return (
+            new Date(a.purchase_date || a.created_at || 0).getTime() -
+            new Date(b.purchase_date || b.created_at || 0).getTime()
+          );
         case "name_asc":
           return a.description.localeCompare(b.description);
         case "name_desc":
@@ -175,10 +182,8 @@ export default function Assets() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Assets</h1>
-            <p className="text-muted-foreground mt-1">
-              Track and manage your portfolio
-            </p>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Assets.</h1>
+            <p className="text-muted-foreground mt-1">Track and manage your portfolio</p>
           </div>
           <div className="flex gap-2 sm:gap-3">
             <AssetForm onSuccess={fetchAssets}>
@@ -215,10 +220,7 @@ export default function Assets() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div
-                key={i}
-                className="bg-card rounded-2xl p-6 border border-border/50 animate-pulse"
-              >
+              <div key={i} className="bg-card rounded-2xl p-6 border border-border/50 animate-pulse">
                 <div className="flex gap-4">
                   <div className="w-12 h-12 bg-muted rounded-xl" />
                   <div className="flex-1 space-y-3">
