@@ -48,35 +48,35 @@ const COUNTRY_FLAGS: Record<string, string> = {
 
 // Asset type icons and colors
 const ASSET_CONFIG: Record<string, { icon: React.ElementType; gradient: string; bgColor: string }> = {
-  CASH: { 
-    icon: Banknote, 
+  CASH: {
+    icon: Banknote,
     gradient: "from-emerald-500/20 to-emerald-600/10",
-    bgColor: "bg-emerald-500/10"
+    bgColor: "bg-emerald-500/10",
   },
-  EQUITY: { 
-    icon: TrendingUp, 
+  EQUITY: {
+    icon: TrendingUp,
     gradient: "from-blue-500/20 to-blue-600/10",
-    bgColor: "bg-blue-500/10"
+    bgColor: "bg-blue-500/10",
   },
-  CRYPTO: { 
-    icon: Coins, 
+  CRYPTO: {
+    icon: Coins,
     gradient: "from-orange-500/20 to-amber-600/10",
-    bgColor: "bg-orange-500/10"
+    bgColor: "bg-orange-500/10",
   },
-  GOLD: { 
-    icon: Gem, 
+  GOLD: {
+    icon: Gem,
     gradient: "from-yellow-500/20 to-yellow-600/10",
-    bgColor: "bg-yellow-500/10"
+    bgColor: "bg-yellow-500/10",
   },
-  REAL_ESTATE: { 
-    icon: Building2, 
+  REAL_ESTATE: {
+    icon: Building2,
     gradient: "from-violet-500/20 to-purple-600/10",
-    bgColor: "bg-violet-500/10"
+    bgColor: "bg-violet-500/10",
   },
-  OTHER: { 
-    icon: Package, 
+  OTHER: {
+    icon: Package,
     gradient: "from-slate-500/20 to-slate-600/10",
-    bgColor: "bg-slate-500/10"
+    bgColor: "bg-slate-500/10",
   },
 };
 
@@ -88,13 +88,7 @@ interface AssetCardProps {
   onDelete: () => void;
 }
 
-export default function AssetCard({
-  asset,
-  linkedPayments = [],
-  linkedGoal,
-  onEdit,
-  onDelete,
-}: AssetCardProps) {
+export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEdit, onDelete }: AssetCardProps) {
   const [expanded, setExpanded] = useState(false);
   const { convertToDisplayCurrency, formatCurrency: formatDisplayCurrency, displayCurrency } = useCurrency();
 
@@ -112,20 +106,16 @@ export default function AssetCard({
         "group relative bg-card rounded-2xl border border-border/50 overflow-hidden",
         "transition-all duration-300 ease-out",
         "hover:shadow-xl hover:shadow-black/5 hover:border-border hover:-translate-y-0.5",
-        expanded && "ring-1 ring-primary/10"
+        expanded && "ring-1 ring-primary/10",
       )}
     >
       {/* Gradient accent bar */}
-      <div className={cn("absolute top-0 left-0 right-0 h-1 bg-gradient-to-r", config.gradient)} />
 
       <div className="p-5">
         {/* Main content row */}
         <div className="flex items-start gap-4">
           {/* Icon */}
-          <div className={cn(
-            "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center",
-            config.bgColor
-          )}>
+          <div className={cn("flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center", config.bgColor)}>
             <Icon className="w-6 h-6 text-foreground/80" />
           </div>
 
@@ -135,14 +125,7 @@ export default function AssetCard({
               <div className="min-w-0">
                 {/* Asset name and country */}
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-foreground truncate">
-                    {asset.description}
-                  </h3>
-                  {countryFlag && (
-                    <span className="text-base flex-shrink-0" title={asset.country || ""}>
-                      {countryFlag}
-                    </span>
-                  )}
+                  <h3 className="font-semibold text-foreground truncate">{asset.description}</h3>
                 </div>
 
                 {/* Tags row */}
@@ -176,9 +159,7 @@ export default function AssetCard({
                     {formatCurrency(originalAmount, asset.currency as CurrencyCode)}
                   </p>
                   {showConverted && (
-                    <p className="text-sm text-muted-foreground">
-                      ≈ {formatDisplayCurrency(convertedAmount)}
-                    </p>
+                    <p className="text-sm text-muted-foreground">≈ {formatDisplayCurrency(convertedAmount)}</p>
                   )}
                 </div>
               </div>
@@ -199,10 +180,7 @@ export default function AssetCard({
                     <Pencil className="w-4 h-4 mr-2" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={onDelete}
-                    className="text-destructive focus:text-destructive"
-                  >
+                  <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive">
                     <Trash className="w-4 h-4 mr-2" />
                     Delete
                   </DropdownMenuItem>
