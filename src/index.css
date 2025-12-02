@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +11,7 @@ All colors MUST be HSL.
   :root {
     --background: 0 0% 100%;
     --foreground: 220 39% 11%;
-    
+
     --background-alt: 210 17% 98%;
 
     --card: 0 0% 100%;
@@ -42,10 +43,10 @@ All colors MUST be HSL.
 
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
-    
+
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     --error: 0 84% 60%;
     --error-foreground: 0 0% 100%;
 
@@ -65,12 +66,13 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 13% 20%;
     --sidebar-ring: 0 0% 100%;
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 
   .dark {
     --background: 220 39% 11%;
     --foreground: 0 0% 98%;
-    
+
     --background-alt: 220 30% 15%;
 
     --card: 220 30% 15%;
@@ -102,10 +104,10 @@ All colors MUST be HSL.
 
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
-    
+
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     --error: 0 84% 60%;
     --error-foreground: 0 0% 100%;
 
@@ -117,6 +119,7 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 13% 20%;
     --sidebar-ring: 0 0% 100%;
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 }
 
@@ -142,11 +145,11 @@ All colors MUST be HSL.
   .transition-smooth {
     @apply transition-all duration-200 ease-in-out;
   }
-  
+
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98];
   }
-  
+
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
   }
