@@ -27,7 +27,8 @@ export function DatePickerInput({
 }: DatePickerInputProps) {
   const [open, setOpen] = React.useState(false);
   
-  const date = value ? new Date(value) : undefined;
+  const parsedDate = value ? new Date(value) : undefined;
+  const date = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate : undefined;
 
   const handleSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
