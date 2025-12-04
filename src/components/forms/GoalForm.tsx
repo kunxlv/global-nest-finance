@@ -6,13 +6,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Progress } from "@/components/ui/progress";
 import { supabase, Goal, Asset } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
+import { CurrencyAmountInput, DatePickerInput } from "./inputs";
+import { Target, TrendingUp, Clock, Banknote, Building2, Bitcoin, Coins, Package } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const goalSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -31,6 +34,15 @@ interface GoalFormProps {
   goal?: Goal;
   onSuccess: () => void;
 }
+
+const assetTypeIcons: Record<string, React.ReactNode> = {
+  CASH: <Banknote className="h-4 w-4" />,
+  EQUITY: <TrendingUp className="h-4 w-4" />,
+  CRYPTO: <Bitcoin className="h-4 w-4" />,
+  GOLD: <Coins className="h-4 w-4" />,
+  REAL_ESTATE: <Building2 className="h-4 w-4" />,
+  OTHER: <Package className="h-4 w-4" />,
+};
 
 export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
   const [open, setOpen] = useState(false);
@@ -51,6 +63,19 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
       linked_assets: [],
     },
   });
+
+  const watchedLinkedAssets = form.watch("linked_assets") || [];
+  const watchedTargetAmount = form.watch("target_amount");
+  const watchedCurrency = form.watch("currency");
+
+  // Calculate current amount from linked assets
+  const calculatedCurrentAmount = assets
+    .filter(asset => watchedLinkedAssets.includes(asset.id))
+    .reduce((sum, asset) => sum + Number(asset.valuation), 0);
+
+  const progressPercentage = watchedTargetAmount 
+    ? Math.min((calculatedCurrentAmount / parseFloat(watchedTargetAmount)) * 100, 100)
+    : 0;
 
   // Fetch user's assets
   useEffect(() => {
@@ -84,7 +109,6 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
     const fetchUnavailableAssets = async () => {
       if (!user) return;
       
-      // Fetch assets linked to OTHER goals (not the current one being edited)
       const { data, error } = await supabase
         .from("goal_assets")
         .select("asset_id, goals(title)")
@@ -119,11 +143,9 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
     if (data.linked_assets && data.linked_assets.length > 0) {
       const linkedAssets = assets.filter(asset => data.linked_assets?.includes(asset.id));
       
-      // Fetch exchange rates for conversion
       const { fetchExchangeRates, convertAmount } = await import("@/lib/currencyConversion");
       const rates = await fetchExchangeRates(data.currency as CurrencyCode);
       
-      // Sum up asset valuations (convert to goal currency)
       calculatedCurrentAmount = linkedAssets.reduce((sum, asset) => {
         const convertedValue = convertAmount(
           Number(asset.valuation),
@@ -146,7 +168,6 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
       asset_linked: (data.linked_assets && data.linked_assets.length > 0) || false,
     };
 
-    // Save or update the goal
     const { data: goalData, error: goalError } = goal
       ? await supabase.from("goals").update(payload).eq("id", goal.id).select().single()
       : await supabase.from("goals").insert(payload).select().single();
@@ -157,13 +178,10 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
       return;
     }
 
-    // Handle linked assets
     const goalId = goal?.id || goalData.id;
     
-    // Delete existing links
     await supabase.from("goal_assets").delete().eq("goal_id", goalId);
 
-    // Insert new links
     if (data.linked_assets && data.linked_assets.length > 0) {
       const goalAssetLinks = data.linked_assets.map(assetId => ({
         goal_id: goalId,
@@ -190,110 +208,144 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{goal ? "Edit Goal" : "Add Goal"}</DialogTitle>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <Target className="h-5 w-5 text-foreground" />
+            {goal ? "Edit Goal" : "Create New Goal"}
+          </DialogTitle>
         </DialogHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+            {/* Goal Title */}
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                    Goal Name
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Travel Fund" {...field} />
+                    <Input 
+                      placeholder="e.g., Emergency Fund, Dream Vacation, Retirement..." 
+                      className="h-12 rounded-xl border-2 text-base"
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="target_amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Target Amount</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" placeholder="5000" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="current_amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Amount</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" placeholder="0" {...field} disabled />
-                    </FormControl>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Auto-calculated from linked assets
-                    </p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Currency</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select currency" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="USD">USD</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="GBP">GBP</SelectItem>
-                        <SelectItem value="INR">INR</SelectItem>
-                        <SelectItem value="JPY">JPY</SelectItem>
-                        <SelectItem value="AUD">AUD</SelectItem>
-                        <SelectItem value="CAD">CAD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+            {/* Target Amount */}
+            <FormField
+              control={form.control}
+              name="target_amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                    Target Amount
+                  </FormLabel>
+                  <FormControl>
+                    <CurrencyAmountInput
+                      amount={field.value}
+                      currency={watchedCurrency}
+                      onAmountChange={field.onChange}
+                      onCurrencyChange={(value) => form.setValue("currency", value)}
+                      placeholder="100,000"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Live Progress Preview */}
+            {watchedTargetAmount && parseFloat(watchedTargetAmount) > 0 && (
+              <div className="p-4 rounded-xl bg-muted/50 border-2 border-dashed space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Progress Preview</span>
+                  <span className="font-semibold">{progressPercentage.toFixed(1)}%</span>
+                </div>
+                <Progress value={progressPercentage} className="h-3" />
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>
+                    {formatCurrency(calculatedCurrentAmount, watchedCurrency as CurrencyCode)} saved
+                  </span>
+                  <span>
+                    {formatCurrency(parseFloat(watchedTargetAmount), watchedCurrency as CurrencyCode)} target
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Timeframe & Long-term Toggle */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="timeframe"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Timeframe (Optional)</FormLabel>
+                    <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Target Date
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="12 months" {...field} />
+                      <DatePickerInput
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="When do you want to achieve this?"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="is_long_term"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Goal Type
+                    </FormLabel>
+                    <FormControl>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => field.onChange(false)}
+                          className={cn(
+                            "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all duration-200",
+                            !field.value
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border bg-background text-muted-foreground hover:border-foreground/20"
+                          )}
+                        >
+                          <Clock className="h-4 w-4" />
+                          <span className="text-sm font-medium">Short-term</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => field.onChange(true)}
+                          className={cn(
+                            "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all duration-200",
+                            field.value
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border bg-background text-muted-foreground hover:border-foreground/20"
+                          )}
+                        >
+                          <TrendingUp className="h-4 w-4" />
+                          <span className="text-sm font-medium">Long-term</span>
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="is_long_term"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormControl>
-                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                  <FormLabel className="!mt-0">Long-term goal</FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             
             {/* Linked Assets Section */}
             {assets.length > 0 && (
@@ -302,14 +354,16 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                 name="linked_assets"
                 render={() => (
                   <FormItem>
-                    <div className="mb-4">
-                      <FormLabel className="text-base">Link Assets to Goal</FormLabel>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="mb-3">
+                      <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                        Link Assets
+                      </FormLabel>
+                      <p className="text-xs text-muted-foreground mt-1">
                         Select assets that contribute to this goal
                       </p>
                     </div>
-                    <ScrollArea className="h-[200px] rounded-md border p-4">
-                      <div className="space-y-3">
+                    <ScrollArea className="h-[200px] rounded-xl border-2 p-3">
+                      <div className="space-y-2">
                         {assets.map((asset) => {
                           const isUnavailable = unavailableAssets.has(asset.id);
                           const linkedGoalTitle = unavailableAssets.get(asset.id);
@@ -320,18 +374,22 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                               control={form.control}
                               name="linked_assets"
                               render={({ field }) => {
+                                const isChecked = field.value?.includes(asset.id);
                                 return (
                                   <FormItem
                                     key={asset.id}
-                                    className={`flex items-start space-x-3 space-y-0 rounded-lg border p-3 transition-colors ${
+                                    className={cn(
+                                      "flex items-center gap-3 rounded-xl border-2 p-3 transition-all duration-200",
                                       isUnavailable 
-                                        ? 'bg-muted/50 cursor-not-allowed' 
-                                        : 'hover:bg-accent/50'
-                                    }`}
+                                        ? 'bg-muted/30 border-dashed cursor-not-allowed opacity-60' 
+                                        : isChecked
+                                          ? 'bg-foreground/5 border-foreground'
+                                          : 'hover:bg-muted/50 hover:border-muted-foreground/30'
+                                    )}
                                   >
                                     <FormControl>
                                       <Checkbox
-                                        checked={field.value?.includes(asset.id)}
+                                        checked={isChecked}
                                         disabled={isUnavailable}
                                         onCheckedChange={(checked) => {
                                           const currentValue = field.value || [];
@@ -341,17 +399,27 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                                                 currentValue.filter((value) => value !== asset.id)
                                               );
                                         }}
+                                        className="h-5 w-5"
                                       />
                                     </FormControl>
-                                    <div className="flex-1 space-y-1 leading-none">
-                                      <FormLabel className={`text-sm font-medium ${isUnavailable ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                    <div className={cn(
+                                      "p-2 rounded-lg",
+                                      isChecked ? "bg-foreground text-background" : "bg-muted"
+                                    )}>
+                                      {assetTypeIcons[asset.type]}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className={cn(
+                                        "text-sm font-medium truncate",
+                                        isUnavailable && "text-muted-foreground"
+                                      )}>
                                         {asset.description}
-                                      </FormLabel>
+                                      </p>
                                       <p className="text-xs text-muted-foreground">
-                                        {formatCurrency(Number(asset.valuation), asset.currency as CurrencyCode)} · {asset.type}
+                                        {formatCurrency(Number(asset.valuation), asset.currency as CurrencyCode)}
                                         {isUnavailable && (
-                                          <span className="ml-2 text-[hsl(var(--warning))] font-medium">
-                                            → {linkedGoalTitle}
+                                          <span className="ml-2 text-warning">
+                                            → Linked to "{linkedGoalTitle}"
                                           </span>
                                         )}
                                       </p>
@@ -370,11 +438,22 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
               />
             )}
 
-            <div className="flex justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            {/* Actions */}
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button 
+                type="button" 
+                variant="ghost" 
+                onClick={() => setOpen(false)}
+                className="rounded-xl px-6"
+              >
                 Cancel
               </Button>
-              <Button type="submit">{goal ? "Update" : "Create"}</Button>
+              <Button 
+                type="submit"
+                className="rounded-xl px-8 bg-foreground text-background hover:bg-foreground/90"
+              >
+                {goal ? "Update Goal" : "Create Goal"}
+              </Button>
             </div>
           </form>
         </Form>

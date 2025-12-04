@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,8 +25,21 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useEffect } from "react";
+import { TypeSelector, CurrencyAmountInput, FrequencySelector, DatePickerInput } from "./inputs";
+import { cn } from "@/lib/utils";
+import { 
+  CalendarClock, 
+  ChevronLeft, 
+  ChevronRight, 
+  Check, 
+  Bell, 
+  Link2, 
+  Wallet,
+  CreditCard,
+  Building,
+  Landmark,
+  FileText
+} from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -54,8 +67,26 @@ interface RecurringPaymentFormProps {
   onSuccess?: () => void;
 }
 
+const steps = [
+  { id: 1, title: "Basic Info", icon: FileText },
+  { id: 2, title: "Schedule", icon: CalendarClock },
+  { id: 3, title: "Link", icon: Link2 },
+  { id: 4, title: "Alerts", icon: Bell },
+];
+
+const daysOfWeek = [
+  { value: "0", label: "Sun" },
+  { value: "1", label: "Mon" },
+  { value: "2", label: "Tue" },
+  { value: "3", label: "Wed" },
+  { value: "4", label: "Thu" },
+  { value: "5", label: "Fri" },
+  { value: "6", label: "Sat" },
+];
+
 export default function RecurringPaymentForm({ children, payment, onSuccess }: RecurringPaymentFormProps) {
   const [open, setOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
   const { user } = useAuth();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
@@ -100,6 +131,12 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
       });
     }
   }, [open, user]);
+
+  useEffect(() => {
+    if (!open) {
+      setCurrentStep(1);
+    }
+  }, [open]);
 
   const calculateNextDueDate = (startDate: string, frequency: string, dayOfMonth?: number, dayOfWeek?: number) => {
     const start = new Date(startDate);
@@ -211,400 +248,549 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
 
   const frequency = form.watch("frequency");
 
+  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 4));
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return form.watch("name") && form.watch("category") && form.watch("amount");
+      case 2:
+        return form.watch("frequency") && form.watch("start_date");
+      default:
+        return true;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{payment ? "Edit" : "Add"} Recurring Payment</DialogTitle>
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <CalendarClock className="h-5 w-5 text-foreground" />
+            {payment ? "Edit" : "New"} Recurring Payment
+          </DialogTitle>
         </DialogHeader>
+
+        {/* Step Indicator */}
+        <div className="flex items-center justify-between py-4">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            const isActive = currentStep === step.id;
+            const isCompleted = currentStep > step.id;
+            
+            return (
+              <div key={step.id} className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(step.id)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200",
+                    isActive && "bg-foreground text-background",
+                    isCompleted && "bg-success/10 text-success",
+                    !isActive && !isCompleted && "text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  {isCompleted ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Icon className="h-4 w-4" />
+                  )}
+                  <span className="text-sm font-medium hidden sm:inline">{step.title}</span>
+                </button>
+                {index < steps.length - 1 && (
+                  <div className={cn(
+                    "w-8 h-0.5 mx-1",
+                    currentStep > step.id ? "bg-success" : "bg-border"
+                  )} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Payment Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Netflix Subscription" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="SIP">SIP</SelectItem>
-                        <SelectItem value="CREDIT_CARD_BILL">Credit Card Bill</SelectItem>
-                        <SelectItem value="LOAN_INSTALLMENT">Loan Installment</SelectItem>
-                        <SelectItem value="SUBSCRIPTION">Subscription</SelectItem>
-                        <SelectItem value="INSURANCE">Insurance</SelectItem>
-                        <SelectItem value="UTILITY">Utility</SelectItem>
-                        <SelectItem value="RENT">Rent</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Optional notes..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Amount</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" placeholder="99.99" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Currency</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="USD">USD</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="GBP">GBP</SelectItem>
-                        <SelectItem value="INR">INR</SelectItem>
-                        <SelectItem value="JPY">JPY</SelectItem>
-                        <SelectItem value="AUD">AUD</SelectItem>
-                        <SelectItem value="CAD">CAD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="frequency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Frequency</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="DAILY">Daily</SelectItem>
-                        <SelectItem value="WEEKLY">Weekly</SelectItem>
-                        <SelectItem value="BIWEEKLY">Biweekly</SelectItem>
-                        <SelectItem value="MONTHLY">Monthly</SelectItem>
-                        <SelectItem value="QUARTERLY">Quarterly</SelectItem>
-                        <SelectItem value="HALF_YEARLY">Half-Yearly</SelectItem>
-                        <SelectItem value="YEARLY">Yearly</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {frequency === "WEEKLY" && (
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Step 1: Basic Info */}
+            {currentStep === 1 && (
+              <div className="space-y-6 animate-fade-in">
                 <FormField
                   control={form.control}
-                  name="day_of_week"
+                  name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Day of Week</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="0">Sunday</SelectItem>
-                          <SelectItem value="1">Monday</SelectItem>
-                          <SelectItem value="2">Tuesday</SelectItem>
-                          <SelectItem value="3">Wednesday</SelectItem>
-                          <SelectItem value="4">Thursday</SelectItem>
-                          <SelectItem value="5">Friday</SelectItem>
-                          <SelectItem value="6">Saturday</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {["MONTHLY", "QUARTERLY", "HALF_YEARLY", "YEARLY"].includes(frequency) && (
-                <FormField
-                  control={form.control}
-                  name="day_of_month"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Day of Month</FormLabel>
+                      <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                        Category
+                      </FormLabel>
                       <FormControl>
-                        <Input type="number" min="1" max="31" {...field} />
+                        <TypeSelector
+                          type="payment"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="start_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="end_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>End Date (Optional)</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="space-y-3 pt-2">
-              <h3 className="text-sm font-medium">Link to Entity (Optional)</h3>
-              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="linked_asset_id"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Asset</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || "none"}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="None" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          {assets.map((asset) => (
-                            <SelectItem key={asset.id} value={asset.id}>
-                              {asset.description}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                        Payment Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="e.g., Netflix, Rent, SIP Investment..." 
+                          className="h-12 rounded-xl border-2 text-base"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
 
                 <FormField
                   control={form.control}
-                  name="linked_liability_id"
+                  name="amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Liability</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || "none"}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="None" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          {liabilities.map((liability) => (
-                            <SelectItem key={liability.id} value={liability.id}>
-                              {liability.description}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                        Amount
+                      </FormLabel>
+                      <FormControl>
+                        <CurrencyAmountInput
+                          amount={field.value}
+                          currency={form.watch("currency")}
+                          onAmountChange={field.onChange}
+                          onCurrencyChange={(value) => form.setValue("currency", value)}
+                          placeholder="0.00"
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
 
                 <FormField
                   control={form.control}
-                  name="linked_card_id"
+                  name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Card</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || "none"}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="None" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          {cards.map((card) => (
-                            <SelectItem key={card.id} value={card.id}>
-                              {card.bank_name} ****{card.last_four}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="linked_bank_account_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bank Account</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || "none"}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="None" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          {bankAccounts.map((account) => (
-                            <SelectItem key={account.id} value={account.id}>
-                              {account.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                        Notes (Optional)
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Add any notes about this payment..." 
+                          className="rounded-xl border-2 resize-none"
+                          rows={2}
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
+            )}
 
-            <div className="space-y-3 pt-2">
-              <h3 className="text-sm font-medium">Notification Settings</h3>
-              <div className="grid grid-cols-2 gap-4">
+            {/* Step 2: Schedule */}
+            {currentStep === 2 && (
+              <div className="space-y-6 animate-fade-in">
+                <FormField
+                  control={form.control}
+                  name="frequency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                        Repeat Frequency
+                      </FormLabel>
+                      <FormControl>
+                        <FrequencySelector
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {frequency === "WEEKLY" && (
+                  <FormField
+                    control={form.control}
+                    name="day_of_week"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          Day of Week
+                        </FormLabel>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            {daysOfWeek.map((day) => (
+                              <button
+                                key={day.value}
+                                type="button"
+                                onClick={() => field.onChange(day.value)}
+                                className={cn(
+                                  "flex-1 py-3 rounded-xl border-2 text-sm font-medium transition-all",
+                                  field.value === day.value
+                                    ? "border-foreground bg-foreground text-background"
+                                    : "border-border hover:border-foreground/20"
+                                )}
+                              >
+                                {day.label}
+                              </button>
+                            ))}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {["MONTHLY", "QUARTERLY", "HALF_YEARLY", "YEARLY"].includes(frequency) && (
+                  <FormField
+                    control={form.control}
+                    name="day_of_month"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          Day of Month
+                        </FormLabel>
+                        <FormControl>
+                          <div className="flex flex-wrap gap-2">
+                            {[1, 5, 10, 15, 20, 25, 28].map((day) => (
+                              <button
+                                key={day}
+                                type="button"
+                                onClick={() => field.onChange(day.toString())}
+                                className={cn(
+                                  "w-12 h-12 rounded-xl border-2 text-sm font-medium transition-all",
+                                  field.value === day.toString()
+                                    ? "border-foreground bg-foreground text-background"
+                                    : "border-border hover:border-foreground/20"
+                                )}
+                              >
+                                {day}
+                              </button>
+                            ))}
+                            <Input 
+                              type="number"
+                              min="1"
+                              max="31"
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              placeholder="Other"
+                              className="w-20 h-12 rounded-xl border-2 text-center"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="start_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          Start Date
+                        </FormLabel>
+                        <FormControl>
+                          <DatePickerInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="When does it start?"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="end_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          End Date (Optional)
+                        </FormLabel>
+                        <FormControl>
+                          <DatePickerInput
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            placeholder="Leave empty for no end"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Link Entities */}
+            {currentStep === 3 && (
+              <div className="space-y-4 animate-fade-in">
+                <p className="text-sm text-muted-foreground">
+                  Link this payment to related financial entities (optional)
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="linked_asset_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                          <Wallet className="h-4 w-4" />
+                          Asset
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || "none"}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 rounded-xl border-2">
+                              <SelectValue placeholder="None" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-popover border shadow-lg">
+                            <SelectItem value="none">None</SelectItem>
+                            {assets.map((asset) => (
+                              <SelectItem key={asset.id} value={asset.id}>
+                                {asset.description}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="linked_liability_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                          <FileText className="h-4 w-4" />
+                          Liability
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || "none"}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 rounded-xl border-2">
+                              <SelectValue placeholder="None" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-popover border shadow-lg">
+                            <SelectItem value="none">None</SelectItem>
+                            {liabilities.map((liability) => (
+                              <SelectItem key={liability.id} value={liability.id}>
+                                {liability.description}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="linked_card_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                          <CreditCard className="h-4 w-4" />
+                          Card
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || "none"}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 rounded-xl border-2">
+                              <SelectValue placeholder="None" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-popover border shadow-lg">
+                            <SelectItem value="none">None</SelectItem>
+                            {cards.map((card) => (
+                              <SelectItem key={card.id} value={card.id}>
+                                {card.bank_name} ****{card.last_four}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="linked_bank_account_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                          <Landmark className="h-4 w-4" />
+                          Bank Account
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || "none"}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 rounded-xl border-2">
+                              <SelectValue placeholder="None" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-popover border shadow-lg">
+                            <SelectItem value="none">None</SelectItem>
+                            {bankAccounts.map((account) => (
+                              <SelectItem key={account.id} value={account.id}>
+                                {account.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Notifications */}
+            {currentStep === 4 && (
+              <div className="space-y-4 animate-fade-in">
                 <FormField
                   control={form.control}
                   name="notification_enabled"
                   render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                      <div className="space-y-0.5">
-                        <FormLabel>Enable Notifications</FormLabel>
+                    <FormItem className={cn(
+                      "flex items-center justify-between rounded-xl border-2 p-4 transition-all",
+                      field.value && "border-foreground bg-foreground/5"
+                    )}>
+                      <div className="space-y-1">
+                        <FormLabel className="text-base font-medium">Payment Reminders</FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          Get notified before payment is due
+                        </p>
                       </div>
                       <FormControl>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div>
-                                <Switch checked={field.value} onCheckedChange={field.onChange} />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Get notified before payment is due</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <Switch 
+                          checked={field.value} 
+                          onCheckedChange={field.onChange}
+                          className="data-[state=checked]:bg-foreground"
+                        />
                       </FormControl>
                     </FormItem>
                   )}
                 />
 
+                {form.watch("notification_enabled") && (
+                  <FormField
+                    control={form.control}
+                    name="notify_days_before"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          Remind me
+                        </FormLabel>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            {["1", "3", "5", "7"].map((days) => (
+                              <button
+                                key={days}
+                                type="button"
+                                onClick={() => field.onChange(days)}
+                                className={cn(
+                                  "flex-1 py-3 rounded-xl border-2 text-sm font-medium transition-all",
+                                  field.value === days
+                                    ? "border-foreground bg-foreground text-background"
+                                    : "border-border hover:border-foreground/20"
+                                )}
+                              >
+                                {days} day{parseInt(days) > 1 ? "s" : ""} before
+                              </button>
+                            ))}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
-                  name="notify_days_before"
+                  name="auto_pay_enabled"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Notify Days Before</FormLabel>
+                    <FormItem className={cn(
+                      "flex items-center justify-between rounded-xl border-2 p-4 transition-all",
+                      field.value && "border-success bg-success/5"
+                    )}>
+                      <div className="space-y-1">
+                        <FormLabel className="text-base font-medium">Auto-Pay</FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          Automatically mark as paid when due
+                        </p>
+                      </div>
                       <FormControl>
-                        <Input type="number" min="1" max="30" {...field} />
+                        <Switch 
+                          checked={field.value} 
+                          onCheckedChange={field.onChange}
+                          className="data-[state=checked]:bg-success"
+                        />
                       </FormControl>
                     </FormItem>
                   )}
                 />
               </div>
+            )}
 
-              <FormField
-                control={form.control}
-                name="auto_pay_enabled"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Enable Auto-Pay</FormLabel>
-                    </div>
-                    <FormControl>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Automatically process payment when due</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </FormControl>
-                  </FormItem>
+            {/* Navigation */}
+            <div className="flex justify-between pt-4 border-t">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={currentStep === 1 ? () => setOpen(false) : prevStep}
+                className="rounded-xl px-6"
+              >
+                {currentStep === 1 ? (
+                  "Cancel"
+                ) : (
+                  <>
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Back
+                  </>
                 )}
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Cancel
               </Button>
-              <Button type="submit">{payment ? "Update" : "Create"} Payment</Button>
+
+              {currentStep < 4 ? (
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={!canProceed()}
+                  className="rounded-xl px-6 bg-foreground text-background hover:bg-foreground/90"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  className="rounded-xl px-8 bg-foreground text-background hover:bg-foreground/90"
+                >
+                  {payment ? "Update" : "Create"} Payment
+                </Button>
+              )}
             </div>
           </form>
         </Form>
