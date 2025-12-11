@@ -46,21 +46,22 @@ export function DatePickerInput({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "w-full justify-start text-left font-normal h-12 rounded-xl border-2",
-            "hover:bg-muted/50 transition-colors",
+            "w-full justify-start text-left font-normal h-12 rounded-xl",
+            "bg-muted/50 border border-border/30 shadow-sm",
+            "hover:bg-muted/70 hover:border-border/50 transition-all duration-200",
             !value && "text-muted-foreground",
             className
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
           {date ? (
-            <span>{format(date, "PPP")}</span>
+            <span className="text-card-foreground">{format(date, "PPP")}</span>
           ) : (
             <span>{placeholder}</span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-popover border shadow-lg" align="start">
+      <PopoverContent className="w-auto p-0 rounded-xl border border-border/30 shadow-lg" align="start">
         <Calendar
           mode="single"
           selected={date}
