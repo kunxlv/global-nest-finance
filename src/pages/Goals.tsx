@@ -84,7 +84,7 @@ export default function Goals() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold">Goals.</h1>
           <GoalForm onSuccess={fetchGoals}>
-            <Button size="sm" className="w-full sm:w-auto">
+            <Button size="sm" className="w-full sm:w-auto text-center">
               <Plus className="w-4 h-4 mr-2" />
               Add Goal
             </Button>
@@ -95,7 +95,7 @@ export default function Goals() {
             <p className="text-muted-foreground">Loading goals...</p>
           </div> : <>
             {/* Short term goals */}
-            <div className="bg-card p-6 border shadow-md rounded-xl">
+            <div className="bg-card p-6 border rounded-xl shadow-xl">
               <h2 className="text-2xl font-bold mb-6 text-secondary-foreground">Short term goals</h2>
               {shortTermGoals.length === 0 ? <p className="text-muted-foreground text-center py-8">
                   No short-term goals yet. Add one to start tracking!
@@ -139,13 +139,13 @@ export default function Goals() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             </DropdownMenuContent>
-                          </DropdownMenu>} className="rounded-xl" />;
+                          </DropdownMenu>} className="rounded-xl shadow-xl" />;
             })}
                 </div>}
             </div>
 
             {/* Long term goals */}
-            <div className="bg-card p-6 border shadow-md rounded-xl">
+            <div className="bg-card p-6 border rounded-xl shadow-xl">
               <h2 className="text-2xl font-bold mb-6 text-secondary-foreground">Long term goals</h2>
               {longTermGoals.length === 0 ? <p className="text-muted-foreground text-center py-8">
                   No long-term goals yet. Add one to start tracking!
@@ -189,7 +189,7 @@ export default function Goals() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             </DropdownMenuContent>
-                          </DropdownMenu>} className="rounded-xl" />;
+                          </DropdownMenu>} className="rounded-xl border-0 shadow-xl" />;
             })}
                 </div>}
             </div>
