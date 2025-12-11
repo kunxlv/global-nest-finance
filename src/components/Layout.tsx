@@ -71,11 +71,8 @@ export default function Layout({
     const Icon = item.icon;
     const isActive = location.pathname === item.href;
     return <Link to={item.href} onClick={onClick} className="relative flex items-center justify-center w-12 h-12 group" title={item.name}>
-        {/* Active indicator - vertical line on left */}
-        <div className={cn("absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full transition-all duration-300", isActive ? "bg-primary opacity-100" : "bg-transparent opacity-0")} />
-        
         {/* Icon container */}
-        <div className={cn("flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200", isActive ? "bg-secondary text-primary" : "text-sidebar-foreground hover:bg-secondary/50 hover:text-primary")}>
+        <div className={cn("flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200", isActive ? "bg-card text-card-foreground shadow-md" : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground")}>
           <Icon className="w-5 h-5" />
         </div>
       </Link>;
@@ -111,7 +108,7 @@ export default function Layout({
         {navigation.map(item => {
         const Icon = item.icon;
         const isActive = location.pathname === item.href;
-        return <Link key={item.name} to={item.href} onClick={() => setMobileMenuOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200", isActive ? "bg-secondary text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground")}>
+        return <Link key={item.name} to={item.href} onClick={() => setMobileMenuOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200", isActive ? "bg-card text-card-foreground font-medium shadow-sm" : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground")}>
               <Icon className="w-5 h-5" />
               <span className="text-sm">{item.name}</span>
             </Link>;
@@ -119,8 +116,8 @@ export default function Layout({
       </nav>
 
       {/* Settings */}
-      <div className="px-4 pt-4 border-t border-border">
-        <Link to="/settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all duration-200">
+      <div className="px-4 pt-4">
+        <Link to="/settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-2xl text-muted-foreground hover:bg-card/50 hover:text-card-foreground transition-all duration-200">
           <Settings className="w-5 h-5" />
           <span className="text-sm">Settings</span>
         </Link>
@@ -128,7 +125,7 @@ export default function Layout({
     </div>;
   return <div className="flex min-h-screen bg-background">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-background flex items-center justify-between px-4 z-50 border-b border-border">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-background flex items-center justify-between px-4 z-50">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center">
             <Wallet className="w-3.5 h-3.5 text-accent-foreground" />
@@ -148,7 +145,7 @@ export default function Layout({
       </div>
 
       {/* Desktop Sidebar - Minimal Icon Only */}
-      <aside className="hidden lg:flex w-[72px] bg-background py-6 flex-col fixed h-screen border-r border-border z-40 border-0">
+      <aside className="hidden lg:flex w-[72px] bg-background py-6 flex-col fixed h-screen z-40">
         {/* Logo */}
         <div className="flex items-center justify-center mb-6">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-lg shadow-accent/20">
@@ -164,8 +161,7 @@ export default function Layout({
         {/* Settings */}
         <div className="flex flex-col items-center px-2">
           <Link to="/settings" className="relative flex items-center justify-center w-12 h-12 group" title="Settings">
-            <div className={cn("absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full transition-all duration-300", location.pathname === "/settings" ? "bg-primary opacity-100" : "bg-transparent opacity-0")} />
-            <div className={cn("flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200", location.pathname === "/settings" ? "bg-secondary text-primary" : "text-sidebar-foreground hover:bg-secondary/50 hover:text-primary")}>
+            <div className={cn("flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200", location.pathname === "/settings" ? "bg-card text-card-foreground shadow-md" : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground")}>
               <Settings className="w-5 h-5" />
             </div>
           </Link>
