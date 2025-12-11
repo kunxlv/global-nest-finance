@@ -82,10 +82,10 @@ export default function Dashboard() {
     <Layout>
       <div className="space-y-6 max-w-7xl mx-auto">
         {/* Welcome Banner */}
-        <div className="bg-secondary rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-card rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-border/50 shadow-md">
           <div>
             <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">GETTING STARTED</p>
-            <p className="text-foreground font-medium">Welcome to your personal finance dashboard</p>
+            <p className="text-card-foreground font-medium">Welcome to your personal finance dashboard</p>
           </div>
           <div className="flex items-center gap-3">
             <ConversionRate />
@@ -94,14 +94,14 @@ export default function Dashboard() {
         </div>
 
         {/* Balance Section */}
-        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border/50 shadow-md">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
             <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Balance</h2>
             <div className="flex items-center gap-3">
-              <Button variant="outline" className="border-card-foreground/20 text-card-foreground hover:bg-card-foreground/5">
+              <Button variant="outline">
                 Options
               </Button>
-              <Button className="bg-card-foreground text-card hover:bg-card-foreground/90">
+              <Button>
                 <Bell className="w-4 h-4 mr-2" />
                 View Alerts
               </Button>
@@ -110,7 +110,7 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Net Worth Card */}
-            <div className="bg-background/5 border border-card-foreground/10 rounded-xl p-6">
+            <div className="bg-muted/50 rounded-xl p-6 border border-border/30">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-medium tracking-widest text-muted-foreground">AVAILABLE NOW</p>
                 <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">
@@ -121,7 +121,7 @@ export default function Dashboard() {
                 {summaryLoading ? "..." : formatCurrency(netWorth)}
               </p>
               
-              <div className="mt-6 pt-6 border-t border-card-foreground/10 grid grid-cols-2 gap-4">
+              <div className="mt-6 pt-6 border-t border-border/50 grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">ASSETS</p>
                   <p className="text-xl font-semibold text-card-foreground">
@@ -139,7 +139,7 @@ export default function Dashboard() {
 
             {/* Quick Actions Card */}
             <div className="space-y-4">
-              <div className="bg-background/5 border border-card-foreground/10 rounded-xl p-6">
+              <div className="bg-muted/50 rounded-xl p-6 border border-border/30">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
                     <Target className="w-4 h-4 text-accent" />
@@ -158,9 +158,9 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <div className="bg-accent rounded-xl p-6 text-accent-foreground">
+              <div className="bg-primary rounded-xl p-6 text-primary-foreground shadow-md">
                 <p className="text-sm mb-3 opacity-90">Unlock premium features and strategies</p>
-                <Button variant="secondary" size="sm" className="bg-white text-accent hover:bg-white/90">
+                <Button variant="secondary" size="sm">
                   Upgrade to Pro
                 </Button>
               </div>
@@ -171,11 +171,11 @@ export default function Dashboard() {
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
 
         {/* Transactions / Upcoming Payments */}
-        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border/50 shadow-md">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground">Upcoming Payments</h2>
             <Link to="/payments">
-              <Button variant="ghost" size="sm" className="text-card-foreground hover:bg-card-foreground/5">
+              <Button variant="ghost" size="sm">
                 View All <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
@@ -195,7 +195,7 @@ export default function Dashboard() {
         </div>
 
         {/* Goals */}
-        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border/50 shadow-md">
           <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-6">Goals</h2>
           {goals.length === 0 ? (
             <p className="text-muted-foreground text-sm">No goals set yet</p>
@@ -207,48 +207,27 @@ export default function Dashboard() {
                   : 0;
                 
                 return (
-                  <div key={goal.id} className="bg-card rounded-2xl p-5 shadow-sm border border-border transition-all duration-200 hover:shadow-md">
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-card-foreground text-base">
-                            {goal.title} {goal.timeframe && <span className="text-muted-foreground font-normal">· {goal.timeframe}</span>}
-                          </h3>
-                          <p className="text-3xl font-semibold tracking-tight mt-2">
-                            <CurrencyAmount 
-                              amount={Number(goal.current_amount)} 
-                              originalCurrency={goal.currency as CurrencyCode}
-                              showOriginal
-                            />
-                          </p>
-                        </div>
-                        {goal.asset_linked && (
-                          <span className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] px-2 py-1 rounded-md text-xs font-medium shrink-0">
-                            Asset Linked
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground font-medium">{progress}% complete</span>
-                          <span className="text-muted-foreground font-medium">
-                            <CurrencyAmount 
-                              amount={Number(goal.target_amount)} 
-                              originalCurrency={goal.currency as CurrencyCode}
-                              showOriginal
-                            />
-                          </span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-[hsl(var(--success))] rounded-full transition-all duration-500"
-                            style={{ width: `${Math.min(progress, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <GoalCard
+                    key={goal.id}
+                    title={goal.title}
+                    timeframe={goal.timeframe || undefined}
+                    current={
+                      <CurrencyAmount 
+                        amount={Number(goal.current_amount)} 
+                        originalCurrency={goal.currency as CurrencyCode}
+                        showOriginal
+                      />
+                    }
+                    target={
+                      <CurrencyAmount 
+                        amount={Number(goal.target_amount)} 
+                        originalCurrency={goal.currency as CurrencyCode}
+                        showOriginal
+                      />
+                    }
+                    progress={progress}
+                    assetLinkedCount={goal.asset_linked ? 1 : 0}
+                  />
                 );
               })}
             </div>
