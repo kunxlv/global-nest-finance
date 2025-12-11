@@ -21,36 +21,30 @@ type PaymentWithRecurring = PaymentHistory & {
   recurring_payment: RecurringPayment;
 };
 export default function Dashboard() {
-  const {
-    user
-  } = useAuth();
-  const {
-    formatCurrency
-  } = useCurrency();
-  const {
-    totalAssets,
-    totalLiabilities,
-    netWorth,
-    isLoading: summaryLoading
-  } = useFinancialSummary();
+  const { user } = useAuth();
+  const { formatCurrency } = useCurrency();
+  const { totalAssets, totalLiabilities, netWorth, isLoading: summaryLoading } = useFinancialSummary();
   const [upcomingPayments, setUpcomingPayments] = useState<PaymentWithRecurring[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   useEffect(() => {
     if (!user) return;
     const fetchUpcoming = async () => {
-      const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const {
-        data
-      } = await supabase.from("payment_history").select("*, recurring_payment:recurring_payments(*)").eq("user_id", user.id).eq("status", "UPCOMING").lte("due_date", sevenDaysLater).order("due_date", {
-        ascending: true
-      }).limit(3);
+      const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      const { data } = await supabase
+        .from("payment_history")
+        .select("*, recurring_payment:recurring_payments(*)")
+        .eq("user_id", user.id)
+        .eq("status", "UPCOMING")
+        .lte("due_date", sevenDaysLater)
+        .order("due_date", {
+          ascending: true,
+        })
+        .limit(3);
       if (data) setUpcomingPayments(data as PaymentWithRecurring[]);
     };
     const fetchGoals = async () => {
-      const {
-        data
-      } = await supabase.from("goals").select("*").eq("user_id", user.id).order("created_at", {
-        ascending: false
+      const { data } = await supabase.from("goals").select("*").eq("user_id", user.id).order("created_at", {
+        ascending: false,
       });
       if (data) setGoals(data);
     };
@@ -58,22 +52,24 @@ export default function Dashboard() {
     fetchGoals();
   }, [user]);
   const handleMarkAsPaid = async (historyId: string) => {
-    const {
-      error
-    } = await supabase.from("payment_history").update({
-      status: "PAID",
-      paid_date: new Date().toISOString().split('T')[0]
-    }).eq("id", historyId);
+    const { error } = await supabase
+      .from("payment_history")
+      .update({
+        status: "PAID",
+        paid_date: new Date().toISOString().split("T")[0],
+      })
+      .eq("id", historyId);
     if (error) {
       toast.error("Failed to mark payment as paid");
     } else {
       toast.success("Payment marked as paid");
-      setUpcomingPayments(prev => prev.filter(p => p.id !== historyId));
+      setUpcomingPayments((prev) => prev.filter((p) => p.id !== historyId));
     }
   };
-  const overdueCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) < 0).length;
-  const dueTodayCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) === 0).length;
-  return <Layout>
+  const overdueCount = upcomingPayments.filter((p) => differenceInDays(new Date(p.due_date), new Date()) < 0).length;
+  const dueTodayCount = upcomingPayments.filter((p) => differenceInDays(new Date(p.due_date), new Date()) === 0).length;
+  return (
+    <Layout>
       <div className="space-y-6 max-w-7xl mx-auto">
         {/* Dashboard Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -88,15 +84,11 @@ export default function Dashboard() {
         <div className="bg-card p-6 sm:p-8 border border-border/50 rounded-xl shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8 shadow-none">
             <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Balance</h2>
-            <div className="flex items-center gap-3">
-              <Button variant="outline">
-                Options
-              </Button>
-              <Button>
-                <Bell className="w-4 h-4 mr-2" />
-                View Alerts
-              </Button>
-            </div>
+
+            <Button variant="outline">
+              <Bell className="w-4 h-4 mr-2" />
+              View Alerts
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -104,14 +96,12 @@ export default function Dashboard() {
             <div className="bg-muted/50 rounded-xl p-6 border border-border/30 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-medium tracking-widest text-muted-foreground">AVAILABLE NOW</p>
-                <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">
-                  NET WORTH
-                </span>
+                <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH</span>
               </div>
               <p className="text-4xl sm:text-5xl font-bold text-card-foreground tracking-tight">
                 {summaryLoading ? "..." : formatCurrency(netWorth)}
               </p>
-              
+
               <div className="mt-6 pt-6 border-t border-border/50 grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">ASSETS</p>
@@ -148,7 +138,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-primary rounded-xl p-6 text-primary-foreground shadow-2xl">
                 <p className="text-sm mb-3 opacity-90">Unlock premium features and strategies</p>
                 <Button variant="secondary" size="sm">
@@ -171,24 +161,61 @@ export default function Dashboard() {
               </Button>
             </Link>
           </div>
-          
+
           <p className="text-xs font-medium tracking-widest text-muted-foreground mb-4">PENDING</p>
-          
-          {upcomingPayments.length === 0 ? <p className="text-muted-foreground text-sm py-4">No upcoming payments in the next 7 days</p> : <div className="space-y-3">
-              {upcomingPayments.map(payment => <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />)}
-            </div>}
+
+          {upcomingPayments.length === 0 ? (
+            <p className="text-muted-foreground text-sm py-4">No upcoming payments in the next 7 days</p>
+          ) : (
+            <div className="space-y-3">
+              {upcomingPayments.map((payment) => (
+                <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Goals */}
         <div className="bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-xl">
           <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-6">Goals</h2>
-          {goals.length === 0 ? <p className="text-muted-foreground text-sm">No goals set yet</p> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {goals.map(goal => {
-            const progress = goal.target_amount > 0 ? Math.round(Number(goal.current_amount) / Number(goal.target_amount) * 100) : 0;
-            return <GoalCard key={goal.id} title={goal.title} timeframe={goal.timeframe || undefined} current={<CurrencyAmount amount={Number(goal.current_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} target={<CurrencyAmount amount={Number(goal.target_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} progress={progress} assetLinkedCount={goal.asset_linked ? 1 : 0} className="bg-[#f4f4f6] rounded-xl shadow-xl" />;
-          })}
-            </div>}
+          {goals.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No goals set yet</p>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {goals.map((goal) => {
+                const progress =
+                  goal.target_amount > 0
+                    ? Math.round((Number(goal.current_amount) / Number(goal.target_amount)) * 100)
+                    : 0;
+                return (
+                  <GoalCard
+                    key={goal.id}
+                    title={goal.title}
+                    timeframe={goal.timeframe || undefined}
+                    current={
+                      <CurrencyAmount
+                        amount={Number(goal.current_amount)}
+                        originalCurrency={goal.currency as CurrencyCode}
+                        showOriginal
+                      />
+                    }
+                    target={
+                      <CurrencyAmount
+                        amount={Number(goal.target_amount)}
+                        originalCurrency={goal.currency as CurrencyCode}
+                        showOriginal
+                      />
+                    }
+                    progress={progress}
+                    assetLinkedCount={goal.asset_linked ? 1 : 0}
+                    className="bg-[#f4f4f6] rounded-xl shadow-xl"
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
-    </Layout>;
+    </Layout>
+  );
 }
