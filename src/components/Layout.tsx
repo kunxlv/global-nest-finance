@@ -194,7 +194,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="flex items-center justify-center mb-6">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-lg shadow-accent/20">
-            <Wallet className="w-5 h-5 text-accent-foreground" />
+            f.
           </div>
         </div>
 
