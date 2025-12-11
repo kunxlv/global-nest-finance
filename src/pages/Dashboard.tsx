@@ -75,12 +75,9 @@ export default function Dashboard() {
   const dueTodayCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) === 0).length;
   return <Layout>
       <div className="space-y-6 max-w-7xl mx-auto">
-        {/* Welcome Banner */}
-        <div className="bg-card p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-border/50 shadow-md rounded-xl">
-          <div>
-            <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">GETTING STARTED</p>
-            <p className="text-card-foreground font-medium">Welcome to your personal finance dashboard</p>
-          </div>
+        {/* Dashboard Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">Dashboard.</h1>
           <div className="flex items-center gap-3">
             <ConversionRate />
             <CurrencySelector />
