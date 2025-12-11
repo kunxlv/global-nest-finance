@@ -24,7 +24,7 @@ export default function GoalCard({
   actionsMenu,
 }: GoalCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-border/50 transition-all duration-200 hover:shadow-lg">
+    <div className="bg-card text-card-foreground rounded-2xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
@@ -61,7 +61,7 @@ export default function GoalCard({
 
         {/* Current Amount - Large muted value */}
         <div>
-          <p className="text-3xl font-semibold text-muted-foreground/60 tracking-tight">
+          <p className="text-3xl font-semibold text-muted-foreground tracking-tight">
             {current}
           </p>
         </div>
@@ -75,11 +75,11 @@ export default function GoalCard({
           {/* Two-tone progress bar */}
           <div className="w-full h-2.5 rounded-full overflow-hidden flex">
             <div
-              className="h-full bg-[hsl(var(--success))] transition-all duration-500"
+              className="h-full bg-primary transition-all duration-500"
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
             <div
-              className="h-full bg-foreground"
+              className="h-full bg-card-foreground"
               style={{ width: `${100 - Math.min(progress, 100)}%` }}
             />
           </div>
