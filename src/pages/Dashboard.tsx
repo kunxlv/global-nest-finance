@@ -8,7 +8,7 @@ import CurrencySelector from "@/components/CurrencySelector";
 import CurrencyAmount from "@/components/CurrencyAmount";
 import ConversionRate from "@/components/ConversionRate";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Bell, Target } from "lucide-react";
 import { supabase, PaymentHistory, RecurringPayment, Goal } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -80,66 +80,113 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h1 className="text-3xl sm:text-4xl font-bold">Dashboard.</h1>
-          <div className="flex items-center gap-2 sm:gap-3">
+      <div className="space-y-6 max-w-7xl mx-auto">
+        {/* Welcome Banner */}
+        <div className="bg-secondary rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">GETTING STARTED</p>
+            <p className="text-foreground font-medium">Welcome to your personal finance dashboard</p>
+          </div>
+          <div className="flex items-center gap-3">
             <ConversionRate />
             <CurrencySelector />
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard 
-            title="NET WORTH" 
-            value={summaryLoading ? "Loading..." : formatCurrency(netWorth)}
-          />
-          <StatCard 
-            title="ASSETS" 
-            value={summaryLoading ? "Loading..." : formatCurrency(totalAssets)}
-          />
-          <StatCard 
-            title="DEBT" 
-            value={summaryLoading ? "Loading..." : formatCurrency(totalLiabilities)}
-          />
-          <div className="bg-accent rounded-lg p-6 text-accent-foreground flex flex-col justify-center items-center text-center shadow-md">
-            <p className="text-sm mb-2 opacity-90">Get more features and strategies.</p>
-            <Button variant="secondary" size="sm">
-              GO PRO
-            </Button>
-          </div>
-        </div>
-
-        {/* Salary Countdown */}
-        <div className="bg-card rounded-lg p-4 sm:p-6 border shadow-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-6xl font-bold">19</span>
-              <span className="text-sm sm:text-xl">days until the next salary...</span>
+        {/* Balance Section */}
+        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Balance</h2>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" className="border-card-foreground/20 text-card-foreground hover:bg-card-foreground/5">
+                Options
+              </Button>
+              <Button className="bg-card-foreground text-card hover:bg-card-foreground/90">
+                <Bell className="w-4 h-4 mr-2" />
+                View Alerts
+              </Button>
             </div>
-            <Button variant="link" className="underline text-sm">
-              Manage Budget
-            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Net Worth Card */}
+            <div className="bg-background/5 border border-card-foreground/10 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-medium tracking-widest text-muted-foreground">AVAILABLE NOW</p>
+                <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                  NET WORTH
+                </span>
+              </div>
+              <p className="text-4xl sm:text-5xl font-bold text-card-foreground tracking-tight">
+                {summaryLoading ? "..." : formatCurrency(netWorth)}
+              </p>
+              
+              <div className="mt-6 pt-6 border-t border-card-foreground/10 grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">ASSETS</p>
+                  <p className="text-xl font-semibold text-card-foreground">
+                    {summaryLoading ? "..." : formatCurrency(totalAssets)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">LIABILITIES</p>
+                  <p className="text-xl font-semibold text-card-foreground">
+                    {summaryLoading ? "..." : formatCurrency(totalLiabilities)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions Card */}
+            <div className="space-y-4">
+              <div className="bg-background/5 border border-card-foreground/10 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
+                    <Target className="w-4 h-4 text-accent" />
+                  </div>
+                  <h3 className="font-semibold text-card-foreground">Account Details</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Total Goals</span>
+                    <span className="text-sm font-medium text-card-foreground">{goals.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Upcoming Payments</span>
+                    <span className="text-sm font-medium text-card-foreground">{upcomingPayments.length}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-accent rounded-xl p-6 text-accent-foreground">
+                <p className="text-sm mb-3 opacity-90">Unlock premium features and strategies</p>
+                <Button variant="secondary" size="sm" className="bg-white text-accent hover:bg-white/90">
+                  Upgrade to Pro
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
 
-        <div className="bg-card rounded-lg p-4 sm:p-6 border shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl sm:text-2xl font-bold">Upcoming Payments</h2>
+        {/* Transactions / Upcoming Payments */}
+        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground">Upcoming Payments</h2>
             <Link to="/payments">
-              <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+              <Button variant="ghost" size="sm" className="text-card-foreground hover:bg-card-foreground/5">
                 View All <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
           </div>
+          
+          <p className="text-xs font-medium tracking-widest text-muted-foreground mb-4">PENDING</p>
+          
           {upcomingPayments.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No upcoming payments in the next 7 days</p>
+            <p className="text-muted-foreground text-sm py-4">No upcoming payments in the next 7 days</p>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="space-y-3">
               {upcomingPayments.map((payment) => (
                 <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
               ))}
@@ -148,8 +195,8 @@ export default function Dashboard() {
         </div>
 
         {/* Goals */}
-        <div className="bg-card rounded-lg p-6 border shadow-md">
-          <h2 className="text-2xl font-bold mb-6">Goals</h2>
+        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-sm">
+          <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-6">Goals</h2>
           {goals.length === 0 ? (
             <p className="text-muted-foreground text-sm">No goals set yet</p>
           ) : (

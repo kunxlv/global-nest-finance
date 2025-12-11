@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { 
   LayoutDashboard, 
   RefreshCw, 
@@ -11,7 +11,7 @@ import {
   Settings,
   Bell,
   Menu,
-  X
+  Wallet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,12 +32,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const { profile, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(() => {
-    // Initialize from localStorage
-    const saved = localStorage.getItem('sidebarExpanded');
-    return saved ? JSON.parse(saved) : false;
-  });
-  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Redirect to onboarding if not completed
   useEffect(() => {
@@ -46,182 +40,84 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [profile, loading, navigate]);
 
-  // Save sidebar state to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('sidebarExpanded', JSON.stringify(sidebarExpanded));
-  }, [sidebarExpanded]);
-
-  // Auto-close sidebar after 10 seconds, reset timer on any interaction
-  useEffect(() => {
-    if (sidebarExpanded) {
-      // Clear existing timer
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current);
-      }
-      
-      // Set new timer
-      closeTimerRef.current = setTimeout(() => {
-        setSidebarExpanded(false);
-      }, 10000);
-    }
-    
-    return () => {
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current);
-      }
-    };
-  }, [sidebarExpanded, location.pathname]); // Reset timer when route changes
-
-  const handleSidebarToggle = () => {
-    setSidebarExpanded(!sidebarExpanded);
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-    }
-  };
-
-  const handleCloseSidebar = () => {
-    setSidebarExpanded(false);
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-    }
-  };
-
-  const handleNavClick = () => {
-    // Reset the auto-close timer when navigating
-    if (sidebarExpanded && closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = setTimeout(() => {
-        setSidebarExpanded(false);
-      }, 10000);
-    }
-  };
-
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="w-12 h-12 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground text-sm">Loading...</p>
         </div>
       </div>
     );
   }
 
-  const DesktopSidebarContent = () => (
-    <>
-      {/* Logo/Brand with Close Button */}
-      <div className="mb-8 px-4 flex items-center justify-between">
-        {sidebarExpanded ? (
-          <>
-            <h1 className={cn(
-              "text-xl font-bold text-sidebar-primary whitespace-nowrap transition-all duration-300",
-              sidebarExpanded ? "opacity-100 delay-100" : "opacity-0"
-            )}>
-              finance.
-            </h1>
-            <button
-              onClick={handleCloseSidebar}
-              className={cn(
-                "p-1.5 rounded-lg hover:bg-sidebar-accent transition-all duration-300",
-                sidebarExpanded ? "opacity-100 delay-150" : "opacity-0"
-              )}
-            >
-              <X className="w-4 h-4 text-sidebar-foreground" />
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={handleSidebarToggle}
-            className="w-10 h-10 rounded-lg bg-sidebar-accent flex items-center justify-center shadow-sm hover:bg-sidebar-accent/80 transition-colors"
-          >
-            <span className="text-base font-bold text-sidebar-accent-foreground">F</span>
-          </button>
-        )}
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1.5 px-3">
-        {navigation.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.href;
-          
-          return (
-            <Link
-              key={item.name}
-              to={item.href}
-              onClick={handleNavClick}
-              className={cn(
-                "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden",
-                isActive 
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm" 
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-primary hover:shadow-sm"
-              )}
-              title={!sidebarExpanded ? item.name : undefined}
-            >
-              <Icon className={cn(
-                "w-5 h-5 flex-shrink-0 transition-transform duration-300",
-                isActive && "scale-110"
-              )} />
-              <span className={cn(
-                "text-sm font-semibold whitespace-nowrap transition-all duration-300",
-                sidebarExpanded ? "opacity-100 delay-150 translate-x-0" : "opacity-0 -translate-x-2 absolute"
-              )}>
-                {item.name}
-              </span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Settings */}
-      <div className="px-3 pb-4">
-        <Link
-          to="/settings"
-          onClick={handleNavClick}
-          className="flex items-center gap-4 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-primary transition-all duration-300 hover:shadow-sm group"
-          title={!sidebarExpanded ? "Settings" : undefined}
-        >
-          <Settings className="w-5 h-5 flex-shrink-0 transition-transform duration-300 group-hover:rotate-90" />
-          <span className={cn(
-            "text-sm font-semibold whitespace-nowrap transition-all duration-300",
-            sidebarExpanded ? "opacity-100 delay-150 translate-x-0" : "opacity-0 -translate-x-2 absolute"
-          )}>
-            Settings
-          </span>
-        </Link>
-      </div>
-    </>
-  );
+  const NavItem = ({ item, onClick }: { item: typeof navigation[0]; onClick?: () => void }) => {
+    const Icon = item.icon;
+    const isActive = location.pathname === item.href;
+    
+    return (
+      <Link
+        to={item.href}
+        onClick={onClick}
+        className="relative flex items-center justify-center w-12 h-12 group"
+        title={item.name}
+      >
+        {/* Active indicator - vertical line on left */}
+        <div className={cn(
+          "absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full transition-all duration-300",
+          isActive ? "bg-primary opacity-100" : "bg-transparent opacity-0"
+        )} />
+        
+        {/* Icon container */}
+        <div className={cn(
+          "flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200",
+          isActive 
+            ? "bg-secondary text-primary" 
+            : "text-sidebar-foreground hover:bg-secondary/50 hover:text-primary"
+        )}>
+          <Icon className="w-5 h-5" />
+        </div>
+      </Link>
+    );
+  };
 
   const MobileSidebarContent = () => (
-    <>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">finance.</h1>
+    <div className="flex flex-col h-full py-6">
+      {/* Logo */}
+      <div className="px-6 mb-8">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center">
+            <Wallet className="w-4 h-4 text-accent-foreground" />
+          </div>
+          <span className="text-lg font-semibold text-foreground">FINANCE</span>
+        </div>
       </div>
 
       {/* User Profile */}
-      <div className="mb-8 flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full bg-muted overflow-hidden">
-          {profile?.avatar_url ? (
-            <img 
-              src={profile.avatar_url} 
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-accent/10 text-accent font-bold text-lg">
-              {profile?.display_name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-          )}
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">Welcome back,</p>
-          <p className="font-semibold text-foreground">{profile?.display_name || 'User'}</p>
+      <div className="px-6 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden">
+            {profile?.avatar_url ? (
+              <img 
+                src={profile.avatar_url} 
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-accent/20 text-accent font-semibold">
+                {profile?.display_name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+            )}
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Welcome back,</p>
+            <p className="font-medium text-foreground">{profile?.display_name || 'User'}</p>
+          </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 px-4 space-y-1">
         {navigation.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -232,70 +128,100 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               to={item.href}
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-md transition-colors",
+                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
                 isActive 
-                  ? "bg-secondary text-accent font-medium" 
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-secondary text-primary font-medium" 
+                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
               )}
             >
               <Icon className="w-5 h-5" />
-              <span>{item.name}</span>
+              <span className="text-sm">{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
       {/* Settings */}
-      <Link
-        to="/settings"
-        onClick={() => setMobileMenuOpen(false)}
-        className="flex items-center gap-3 px-4 py-3 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-      >
-        <Settings className="w-5 h-5" />
-        <span>Settings</span>
-      </Link>
-    </>
+      <div className="px-4 pt-4 border-t border-border">
+        <Link
+          to="/settings"
+          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all duration-200"
+        >
+          <Settings className="w-5 h-5" />
+          <span className="text-sm">Settings</span>
+        </Link>
+      </div>
+    </div>
   );
 
   return (
     <div className="flex min-h-screen bg-background">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-sidebar text-sidebar-foreground flex items-center justify-between px-4 z-50 border-b border-sidebar-border">
-        <h1 className="text-xl font-bold text-sidebar-primary">finance.</h1>
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-background flex items-center justify-between px-4 z-50 border-b border-border">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center">
+            <Wallet className="w-3.5 h-3.5 text-accent-foreground" />
+          </div>
+          <span className="text-sm font-semibold text-foreground">FINANCE</span>
+        </div>
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Menu className="w-6 h-6" />
+            <Button variant="ghost" size="icon" className="text-foreground">
+              <Menu className="w-5 h-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 bg-card text-foreground p-6 border-r">
+          <SheetContent side="left" className="w-72 bg-background border-r border-border p-0">
             <MobileSidebarContent />
           </SheetContent>
         </Sheet>
       </div>
 
-      {/* Desktop Sidebar - Collapsible with Manual Control */}
-      <aside 
-        className={cn(
-          "hidden lg:flex bg-sidebar text-sidebar-foreground py-6 flex-col fixed h-screen border-r border-sidebar-border z-40 shadow-lg",
-          "transition-all duration-500 ease-in-out",
-          sidebarExpanded ? "w-[220px]" : "w-[76px]"
-        )}
-        onMouseEnter={() => !sidebarExpanded && setSidebarExpanded(true)}
-      >
-        <DesktopSidebarContent />
+      {/* Desktop Sidebar - Minimal Icon Only */}
+      <aside className="hidden lg:flex w-[72px] bg-background py-6 flex-col fixed h-screen border-r border-border z-40">
+        {/* Logo */}
+        <div className="flex items-center justify-center mb-6">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-lg shadow-accent/20">
+            <Wallet className="w-5 h-5 text-accent-foreground" />
+          </div>
+        </div>
+
+        {/* Navigation Icons */}
+        <nav className="flex-1 flex flex-col items-center gap-1 px-2">
+          {navigation.map((item) => (
+            <NavItem key={item.name} item={item} />
+          ))}
+        </nav>
+
+        {/* Settings */}
+        <div className="flex flex-col items-center px-2">
+          <Link
+            to="/settings"
+            className="relative flex items-center justify-center w-12 h-12 group"
+            title="Settings"
+          >
+            <div className={cn(
+              "absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full transition-all duration-300",
+              location.pathname === "/settings" ? "bg-primary opacity-100" : "bg-transparent opacity-0"
+            )} />
+            <div className={cn(
+              "flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200",
+              location.pathname === "/settings"
+                ? "bg-secondary text-primary" 
+                : "text-sidebar-foreground hover:bg-secondary/50 hover:text-primary"
+            )}>
+              <Settings className="w-5 h-5" />
+            </div>
+          </Link>
+        </div>
       </aside>
 
-      {/* Main Content with Page Transition */}
-      <main 
-        className={cn(
-          "flex-1 w-full p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8",
-          "transition-all duration-500 ease-in-out",
-          sidebarExpanded ? "lg:ml-[220px]" : "lg:ml-[76px]"
-        )}
-      >
-        <div className="animate-fade-in">
-          {children}
+      {/* Main Content */}
+      <main className="flex-1 w-full pt-14 lg:pt-0 lg:ml-[72px]">
+        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+          <div className="animate-fade-in">
+            {children}
+          </div>
         </div>
       </main>
     </div>
