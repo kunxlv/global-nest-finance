@@ -52,7 +52,7 @@ export default function GoalCard({
 
         {/* Current Amount - Large muted value */}
         <div>
-          <p className="text-3xl font-semibold text-muted-foreground tracking-tight">
+          <p className="text-3xl font-semibold tracking-tight text-secondary-foreground">
             {current}
           </p>
         </div>
@@ -61,16 +61,16 @@ export default function GoalCard({
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground font-medium">{progress}% complete</span>
-            <span className="text-foreground font-medium">{target}</span>
+            <span className="font-medium text-muted-foreground">{target}</span>
           </div>
           {/* Two-tone progress bar */}
           <div className="w-full h-2.5 rounded-full overflow-hidden flex">
             <div className="h-full bg-primary transition-all duration-500" style={{
             width: `${Math.min(progress, 100)}%`
           }} />
-            <div className="h-full bg-card-foreground" style={{
+            <div style={{
             width: `${100 - Math.min(progress, 100)}%`
-          }} />
+          }} className="h-full bg-secondary-foreground" />
           </div>
         </div>
       </div>

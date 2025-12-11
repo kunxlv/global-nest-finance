@@ -8,66 +8,47 @@ import { supabase, Goal } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 export default function Goals() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [goalAssetCounts, setGoalAssetCounts] = useState<Record<string, number>>({});
   const [goalAssetNames, setGoalAssetNames] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
-
+  const {
+    user
+  } = useAuth();
   const fetchGoals = async () => {
     if (!user) return;
     setLoading(true);
-    
-    // Fetch goals
-    const { data: goalsData, error: goalsError } = await supabase
-      .from("goals")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
 
+    // Fetch goals
+    const {
+      data: goalsData,
+      error: goalsError
+    } = await supabase.from("goals").select("*").eq("user_id", user.id).order("created_at", {
+      ascending: false
+    });
     if (goalsError) {
       toast.error("Failed to load goals");
       console.error(goalsError);
       setLoading(false);
       return;
     }
-
     setGoals(goalsData || []);
 
     // Fetch linked asset counts and names for all goals
     if (goalsData && goalsData.length > 0) {
-      const { data: goalAssetsData, error: goalAssetsError } = await supabase
-        .from("goal_assets")
-        .select("goal_id, assets(description)")
-        .in("goal_id", goalsData.map(g => g.id));
-
+      const {
+        data: goalAssetsData,
+        error: goalAssetsError
+      } = await supabase.from("goal_assets").select("goal_id, assets(description)").in("goal_id", goalsData.map(g => g.id));
       if (!goalAssetsError && goalAssetsData) {
         // Count assets per goal and collect names
         const counts: Record<string, number> = {};
         const names: Record<string, string[]> = {};
-        
         goalAssetsData.forEach((ga: any) => {
           counts[ga.goal_id] = (counts[ga.goal_id] || 0) + 1;
-          
           if (!names[ga.goal_id]) {
             names[ga.goal_id] = [];
           }
@@ -75,21 +56,19 @@ export default function Goals() {
             names[ga.goal_id].push(ga.assets.description);
           }
         });
-        
         setGoalAssetCounts(counts);
         setGoalAssetNames(names);
       }
     }
-
     setLoading(false);
   };
-
   useEffect(() => {
     fetchGoals();
   }, [user]);
-
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("goals").delete().eq("id", id);
+    const {
+      error
+    } = await supabase.from("goals").delete().eq("id", id);
     if (error) {
       toast.error("Failed to delete goal");
     } else {
@@ -97,13 +76,9 @@ export default function Goals() {
       fetchGoals();
     }
   };
-
-
-  const shortTermGoals = goals.filter((g) => !g.is_long_term);
-  const longTermGoals = goals.filter((g) => g.is_long_term);
-
-  return (
-    <Layout>
+  const shortTermGoals = goals.filter(g => !g.is_long_term);
+  const longTermGoals = goals.filter(g => g.is_long_term);
+  return <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -116,37 +91,18 @@ export default function Goals() {
           </GoalForm>
         </div>
 
-        {loading ? (
-          <div className="text-center py-12">
+        {loading ? <div className="text-center py-12">
             <p className="text-muted-foreground">Loading goals...</p>
-          </div>
-        ) : (
-          <>
+          </div> : <>
             {/* Short term goals */}
-            <div className="bg-card rounded-lg p-6 border shadow-md">
-              <h2 className="text-2xl font-bold mb-6">Short term goals</h2>
-              {shortTermGoals.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
+            <div className="bg-card p-6 border shadow-md rounded-xl">
+              <h2 className="text-2xl font-bold mb-6 text-secondary-foreground">Short term goals</h2>
+              {shortTermGoals.length === 0 ? <p className="text-muted-foreground text-center py-8">
                   No short-term goals yet. Add one to start tracking!
-                </p>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {shortTermGoals.map((goal) => {
-                    const progress = Math.round(
-                      (Number(goal.current_amount) / Number(goal.target_amount)) * 100
-                    );
-                    return (
-                      <GoalCard
-                        key={goal.id}
-                        title={goal.title}
-                        target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
-                        current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
-                        progress={progress}
-                        timeframe={goal.timeframe || undefined}
-                        assetLinkedCount={goalAssetCounts[goal.id] || 0}
-                        assetNames={goalAssetNames[goal.id] || []}
-                        actionsMenu={
-                          <DropdownMenu>
+                </p> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {shortTermGoals.map(goal => {
+              const progress = Math.round(Number(goal.current_amount) / Number(goal.target_amount) * 100);
+              return <GoalCard key={goal.id} title={goal.title} target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)} current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)} progress={progress} timeframe={goal.timeframe || undefined} assetLinkedCount={goalAssetCounts[goal.id] || 0} assetNames={goalAssetNames[goal.id] || []} actionsMenu={<DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                 <MoreVertical className="w-4 h-4" />
@@ -154,14 +110,14 @@ export default function Goals() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40">
                               <GoalForm goal={goal} onSuccess={fetchGoals}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <DropdownMenuItem onSelect={e => e.preventDefault()}>
                                   <Pencil className="w-4 h-4 mr-2" />
                                   Edit
                                 </DropdownMenuItem>
                               </GoalForm>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <DropdownMenuItem onSelect={e => e.preventDefault()}>
                                     <Trash className="w-4 h-4 mr-2" />
                                     Delete
                                   </DropdownMenuItem>
@@ -183,40 +139,20 @@ export default function Goals() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             </DropdownMenuContent>
-                          </DropdownMenu>
-                        }
-                      />
-                    );
-                  })}
-                </div>
-              )}
+                          </DropdownMenu>} className="rounded-xl" />;
+            })}
+                </div>}
             </div>
 
             {/* Long term goals */}
-            <div className="bg-card rounded-lg p-6 border shadow-md">
-              <h2 className="text-2xl font-bold mb-6">Long term goals</h2>
-              {longTermGoals.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
+            <div className="bg-card p-6 border shadow-md rounded-xl">
+              <h2 className="text-2xl font-bold mb-6 text-secondary-foreground">Long term goals</h2>
+              {longTermGoals.length === 0 ? <p className="text-muted-foreground text-center py-8">
                   No long-term goals yet. Add one to start tracking!
-                </p>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {longTermGoals.map((goal) => {
-                    const progress = Math.round(
-                      (Number(goal.current_amount) / Number(goal.target_amount)) * 100
-                    );
-                    return (
-                      <GoalCard
-                        key={goal.id}
-                        title={goal.title}
-                        target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)}
-                        current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)}
-                        progress={progress}
-                        timeframe={goal.timeframe || undefined}
-                        assetLinkedCount={goalAssetCounts[goal.id] || 0}
-                        assetNames={goalAssetNames[goal.id] || []}
-                        actionsMenu={
-                          <DropdownMenu>
+                </p> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {longTermGoals.map(goal => {
+              const progress = Math.round(Number(goal.current_amount) / Number(goal.target_amount) * 100);
+              return <GoalCard key={goal.id} title={goal.title} target={formatCurrency(Number(goal.target_amount), goal.currency as CurrencyCode)} current={formatCurrency(Number(goal.current_amount), goal.currency as CurrencyCode)} progress={progress} timeframe={goal.timeframe || undefined} assetLinkedCount={goalAssetCounts[goal.id] || 0} assetNames={goalAssetNames[goal.id] || []} actionsMenu={<DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                 <MoreVertical className="w-4 h-4" />
@@ -224,14 +160,14 @@ export default function Goals() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40">
                               <GoalForm goal={goal} onSuccess={fetchGoals}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <DropdownMenuItem onSelect={e => e.preventDefault()}>
                                   <Pencil className="w-4 h-4 mr-2" />
                                   Edit
                                 </DropdownMenuItem>
                               </GoalForm>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <DropdownMenuItem onSelect={e => e.preventDefault()}>
                                     <Trash className="w-4 h-4 mr-2" />
                                     Delete
                                   </DropdownMenuItem>
@@ -253,17 +189,11 @@ export default function Goals() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             </DropdownMenuContent>
-                          </DropdownMenu>
-                        }
-                      />
-                    );
-                  })}
-                </div>
-              )}
+                          </DropdownMenu>} className="rounded-xl" />;
+            })}
+                </div>}
             </div>
-          </>
-        )}
+          </>}
       </div>
-    </Layout>
-  );
+    </Layout>;
 }
