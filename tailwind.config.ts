@@ -83,16 +83,19 @@ export default {
         },
       },
       borderRadius: {
-        sm: "6px",
-        md: "12px",
-        lg: "20px",
-        xl: "28px",
-        "2xl": "var(--radius)",
+        sm: "8px",
+        md: "16px",
+        lg: "24px",
+        xl: "32px",
+        "2xl": "40px",
+        "3xl": "var(--radius-card)",
       },
       boxShadow: {
         sm: "0 1px 2px rgba(0,0,0,0.02)",
         md: "0 2px 4px rgba(0,0,0,0.04)",
         lg: "0 4px 8px rgba(0,0,0,0.05)",
+        card: "var(--shadow-card)",
+        "card-hover": "var(--shadow-card-hover)",
       },
       keyframes: {
         "accordion-down": {
