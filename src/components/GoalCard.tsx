@@ -1,8 +1,6 @@
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ReactNode } from "react";
-import { MoreVertical } from "lucide-react";
 
 interface GoalCardProps {
   title: string;
@@ -26,21 +24,23 @@ export default function GoalCard({
   actionsMenu,
 }: GoalCardProps) {
   return (
-    <div className="bg-card rounded-2xl p-5 shadow-sm border border-border transition-all duration-200 hover:shadow-md">
-      <div className="space-y-4">
+    <div className="bg-white rounded-2xl p-6 border border-border/50 transition-all duration-200 hover:shadow-lg">
+      <div className="space-y-6">
+        {/* Header */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <h3 className="font-semibold text-card-foreground text-base">{title}</h3>
-              {timeframe && <span className="text-muted-foreground text-sm">· {timeframe}</span>}
-            </div>
-            <p className="text-3xl font-semibold tracking-tight mt-2">{current}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="font-semibold text-foreground text-lg">{title}</h3>
+            {timeframe && (
+              <span className="text-muted-foreground text-sm">· {timeframe}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             {assetLinkedCount > 0 && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0 cursor-help text-xs">
-                      {assetLinkedCount} {assetLinkedCount === 1 ? "Asset linked" : "Assets linked"}
+                    <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0 cursor-help text-xs font-medium px-3 py-1">
+                      Asset Linked
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -55,19 +55,32 @@ export default function GoalCard({
                 </Tooltip>
               </TooltipProvider>
             )}
+            {actionsMenu && <div className="shrink-0">{actionsMenu}</div>}
           </div>
-          {actionsMenu && <div className="shrink-0">{actionsMenu}</div>}
         </div>
 
-        <div className="space-y-2">
+        {/* Current Amount - Large muted value */}
+        <div>
+          <p className="text-3xl font-semibold text-muted-foreground/60 tracking-tight">
+            {current}
+          </p>
+        </div>
+
+        {/* Progress Section */}
+        <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground font-medium">{progress}% complete</span>
-            <span className="text-muted-foreground font-medium">{target}</span>
+            <span className="text-foreground font-medium">{target}</span>
           </div>
-          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+          {/* Two-tone progress bar */}
+          <div className="w-full h-2.5 rounded-full overflow-hidden flex">
             <div
-              className="h-full bg-[hsl(var(--success))] rounded-full transition-all duration-500"
+              className="h-full bg-[hsl(var(--success))] transition-all duration-500"
               style={{ width: `${Math.min(progress, 100)}%` }}
+            />
+            <div
+              className="h-full bg-foreground"
+              style={{ width: `${100 - Math.min(progress, 100)}%` }}
             />
           </div>
         </div>
