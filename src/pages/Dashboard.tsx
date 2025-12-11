@@ -136,6 +136,14 @@ export default function Dashboard() {
                     <span className="text-sm text-muted-foreground">Upcoming Payments</span>
                     <span className="text-sm font-medium text-card-foreground">{upcomingPayments.length}</span>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Total Assets</span>
+                    <span className="text-sm font-medium text-card-foreground">{goals.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Total Liabilities</span>
+                    <span className="text-sm font-medium text-card-foreground">{upcomingPayments.length}</span>
+                  </div>
                 </div>
               </div>
             </div>
