@@ -95,8 +95,8 @@ export default function Dashboard() {
             {/* Net Worth Card */}
             <div className="bg-muted/50 rounded-xl p-6 border border-border/30 shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-medium tracking-widest text-muted-foreground">AVAILABLE NOW</p>
-                <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH</span>
+                <p className="text-xs font-medium tracking-widest text-muted-foreground">NET WORTH</p>
+                {/* <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH</span> */}
               </div>
               <p className="text-4xl sm:text-5xl font-bold text-card-foreground tracking-tight">
                 {summaryLoading ? "..." : formatCurrency(netWorth)}
@@ -137,13 +137,6 @@ export default function Dashboard() {
                     <span className="text-sm font-medium text-card-foreground">{upcomingPayments.length}</span>
                   </div>
                 </div>
-              </div>
-
-              <div className="bg-primary rounded-xl p-6 text-primary-foreground shadow-2xl">
-                <p className="text-sm mb-3 opacity-90">Unlock premium features and strategies</p>
-                <Button variant="secondary" size="sm">
-                  Upgrade to Pro
-                </Button>
               </div>
             </div>
           </div>
