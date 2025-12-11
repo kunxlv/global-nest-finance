@@ -30,12 +30,13 @@ export function FrequencySelector({ value, onChange, className }: FrequencySelec
             type="button"
             onClick={() => onChange(freq.value)}
             className={cn(
-              "px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200",
-              "hover:border-foreground/20 hover:bg-muted/50",
-              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+              "px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+              "border border-border/30 shadow-sm",
+              "hover:shadow-md hover:border-border/50 hover:bg-muted/50",
+              "focus:outline-none focus:ring-2 focus:ring-primary/20",
               isSelected
-                ? "border-foreground bg-foreground text-background"
-                : "border-border bg-background text-muted-foreground"
+                ? "bg-card-foreground text-card border-card-foreground shadow-md"
+                : "bg-muted/30 text-muted-foreground"
             )}
           >
             <span className="hidden sm:inline">{freq.label}</span>

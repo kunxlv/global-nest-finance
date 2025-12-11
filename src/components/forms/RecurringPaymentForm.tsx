@@ -266,9 +266,9 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="pb-4 border-b">
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <CalendarClock className="h-5 w-5 text-foreground" />
+        <DialogHeader className="pb-4 border-b border-border/20">
+          <DialogTitle className="flex items-center gap-2 text-xl text-card-foreground">
+            <CalendarClock className="h-5 w-5 text-muted-foreground" />
             {payment ? "Edit" : "New"} Recurring Payment
           </DialogTitle>
         </DialogHeader>
@@ -287,9 +287,9 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                   onClick={() => setCurrentStep(step.id)}
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200",
-                    isActive && "bg-foreground text-background",
-                    isCompleted && "bg-success/10 text-success",
-                    !isActive && !isCompleted && "text-muted-foreground hover:bg-muted"
+                    isActive && "bg-card-foreground text-card shadow-md",
+                    isCompleted && "bg-primary/10 text-primary",
+                    !isActive && !isCompleted && "text-muted-foreground hover:bg-muted/50"
                   )}
                 >
                   {isCompleted ? (
@@ -302,7 +302,7 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                 {index < steps.length - 1 && (
                   <div className={cn(
                     "w-8 h-0.5 mx-1",
-                    currentStep > step.id ? "bg-success" : "bg-border"
+                    currentStep > step.id ? "bg-primary" : "bg-border/30"
                   )} />
                 )}
               </div>
@@ -346,7 +346,7 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                       <FormControl>
                         <Input 
                           placeholder="e.g., Netflix, Rent, SIP Investment..." 
-                          className="h-12 rounded-xl border-2 text-base"
+                          className="h-12 text-base"
                           {...field} 
                         />
                       </FormControl>
@@ -388,7 +388,7 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                       <FormControl>
                         <Textarea 
                           placeholder="Add any notes about this payment..." 
-                          className="rounded-xl border-2 resize-none"
+                          className="resize-none"
                           rows={2}
                           {...field} 
                         />
@@ -439,10 +439,12 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                                 type="button"
                                 onClick={() => field.onChange(day.value)}
                                 className={cn(
-                                  "flex-1 py-3 rounded-xl border-2 text-sm font-medium transition-all",
+                                  "flex-1 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+                                  "border border-border/30 shadow-sm",
+                                  "hover:shadow-md hover:border-border/50",
                                   field.value === day.value
-                                    ? "border-foreground bg-foreground text-background"
-                                    : "border-border hover:border-foreground/20"
+                                    ? "bg-card-foreground text-card border-card-foreground shadow-md"
+                                    : "bg-muted/30 text-muted-foreground"
                                 )}
                               >
                                 {day.label}
@@ -473,10 +475,12 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                                 type="button"
                                 onClick={() => field.onChange(day.toString())}
                                 className={cn(
-                                  "w-12 h-12 rounded-xl border-2 text-sm font-medium transition-all",
+                                  "w-12 h-12 rounded-xl text-sm font-medium transition-all duration-200",
+                                  "border border-border/30 shadow-sm",
+                                  "hover:shadow-md hover:border-border/50",
                                   field.value === day.toString()
-                                    ? "border-foreground bg-foreground text-background"
-                                    : "border-border hover:border-foreground/20"
+                                    ? "bg-card-foreground text-card border-card-foreground shadow-md"
+                                    : "bg-muted/30 text-muted-foreground"
                                 )}
                               >
                                 {day}
@@ -489,7 +493,7 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                               value={field.value}
                               onChange={(e) => field.onChange(e.target.value)}
                               placeholder="Other"
-                              className="w-20 h-12 rounded-xl border-2 text-center"
+                              className="w-20 h-12 text-center"
                             />
                           </div>
                         </FormControl>
@@ -756,7 +760,7 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
             )}
 
             {/* Navigation */}
-            <div className="flex justify-between pt-4 border-t">
+            <div className="flex justify-between pt-4 border-t border-border/20">
               <Button
                 type="button"
                 variant="ghost"
@@ -778,7 +782,7 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
                   type="button"
                   onClick={nextStep}
                   disabled={!canProceed()}
-                  className="rounded-xl px-6 bg-foreground text-background hover:bg-foreground/90"
+                  className="rounded-xl px-6"
                 >
                   Next
                   <ChevronRight className="h-4 w-4 ml-1" />
@@ -786,7 +790,7 @@ export default function RecurringPaymentForm({ children, payment, onSuccess }: R
               ) : (
                 <Button
                   type="submit"
-                  className="rounded-xl px-8 bg-foreground text-background hover:bg-foreground/90"
+                  className="rounded-xl px-8"
                 >
                   {payment ? "Update" : "Create"} Payment
                 </Button>

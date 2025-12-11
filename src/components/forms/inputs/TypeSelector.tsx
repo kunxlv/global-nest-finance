@@ -84,12 +84,13 @@ export function TypeSelector<T extends string>({
           type="button"
           onClick={() => onChange(option.value as T)}
           className={cn(
-            "flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all duration-200",
-            "hover:border-foreground/20 hover:bg-muted/50",
-            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+            "flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-200",
+            "border border-border/30 shadow-sm",
+            "hover:shadow-md hover:border-border/50 hover:bg-muted/50",
+            "focus:outline-none focus:ring-2 focus:ring-primary/20",
             value === option.value
-              ? "border-foreground bg-foreground text-background shadow-md"
-              : "border-border bg-background text-muted-foreground"
+              ? "bg-card-foreground text-card border-card-foreground shadow-md"
+              : "bg-muted/30 text-muted-foreground"
           )}
         >
           <span className={cn(

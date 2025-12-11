@@ -66,8 +66,9 @@ export function CountrySelector({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-full justify-between h-12 rounded-xl border-2 text-left font-normal",
-            "hover:bg-muted/50 transition-colors",
+            "w-full justify-between h-12 rounded-xl text-left font-normal",
+            "bg-muted/50 border border-border/30 shadow-sm",
+            "hover:bg-muted/70 hover:border-border/50 transition-all duration-200",
             !value && "text-muted-foreground",
             className
           )}
@@ -75,7 +76,7 @@ export function CountrySelector({
           {selectedCountry ? (
             <span className="flex items-center gap-2">
               <span className="text-lg">{selectedCountry.flag}</span>
-              <span>{selectedCountry.name}</span>
+              <span className="text-card-foreground">{selectedCountry.name}</span>
             </span>
           ) : (
             <span className="flex items-center gap-2">
@@ -86,7 +87,7 @@ export function CountrySelector({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0 bg-popover border shadow-lg">
+      <PopoverContent className="w-[300px] p-0 rounded-xl border border-border/30 shadow-lg">
         <Command>
           <CommandInput placeholder="Search country..." className="h-10" />
           <CommandList>
@@ -100,11 +101,11 @@ export function CountrySelector({
                     onChange(country.name);
                     setOpen(false);
                   }}
-                  className="cursor-pointer"
+                  className="cursor-pointer rounded-lg"
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "mr-2 h-4 w-4 text-primary",
                       selectedCountry?.code === country.code ? "opacity-100" : "opacity-0"
                     )}
                   />

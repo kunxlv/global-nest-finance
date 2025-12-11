@@ -26,12 +26,13 @@ export function HolderToggle({ value, onChange, className }: HolderToggleProps) 
             type="button"
             onClick={() => onChange(holder.value)}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all duration-200",
-              "hover:border-foreground/20 hover:bg-muted/50",
-              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+              "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-200",
+              "border border-border/30 shadow-sm",
+              "hover:shadow-md hover:border-border/50 hover:bg-muted/50",
+              "focus:outline-none focus:ring-2 focus:ring-primary/20",
               isSelected
-                ? "border-foreground bg-foreground text-background"
-                : "border-border bg-background text-muted-foreground"
+                ? "bg-card-foreground text-card border-card-foreground shadow-md"
+                : "bg-muted/30 text-muted-foreground"
             )}
           >
             <Icon className={cn("h-4 w-4", isSelected && "scale-110")} />
