@@ -17,56 +17,53 @@ import { toast } from "sonner";
 import { differenceInDays } from "date-fns";
 import { Link } from "react-router-dom";
 import { CurrencyCode } from "@/lib/currencyConversion";
-
 type PaymentWithRecurring = PaymentHistory & {
   recurring_payment: RecurringPayment;
 };
-
 export default function Dashboard() {
-  const { user } = useAuth();
-  const { formatCurrency } = useCurrency();
-  const { totalAssets, totalLiabilities, netWorth, isLoading: summaryLoading } = useFinancialSummary();
+  const {
+    user
+  } = useAuth();
+  const {
+    formatCurrency
+  } = useCurrency();
+  const {
+    totalAssets,
+    totalLiabilities,
+    netWorth,
+    isLoading: summaryLoading
+  } = useFinancialSummary();
   const [upcomingPayments, setUpcomingPayments] = useState<PaymentWithRecurring[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
-
   useEffect(() => {
     if (!user) return;
-    
     const fetchUpcoming = async () => {
       const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      
-      const { data } = await supabase
-        .from("payment_history")
-        .select("*, recurring_payment:recurring_payments(*)")
-        .eq("user_id", user.id)
-        .eq("status", "UPCOMING")
-        .lte("due_date", sevenDaysLater)
-        .order("due_date", { ascending: true })
-        .limit(3);
-
+      const {
+        data
+      } = await supabase.from("payment_history").select("*, recurring_payment:recurring_payments(*)").eq("user_id", user.id).eq("status", "UPCOMING").lte("due_date", sevenDaysLater).order("due_date", {
+        ascending: true
+      }).limit(3);
       if (data) setUpcomingPayments(data as PaymentWithRecurring[]);
     };
-
     const fetchGoals = async () => {
-      const { data } = await supabase
-        .from("goals")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
+      const {
+        data
+      } = await supabase.from("goals").select("*").eq("user_id", user.id).order("created_at", {
+        ascending: false
+      });
       if (data) setGoals(data);
     };
-
     fetchUpcoming();
     fetchGoals();
   }, [user]);
-
   const handleMarkAsPaid = async (historyId: string) => {
-    const { error } = await supabase
-      .from("payment_history")
-      .update({ status: "PAID", paid_date: new Date().toISOString().split('T')[0] })
-      .eq("id", historyId);
-
+    const {
+      error
+    } = await supabase.from("payment_history").update({
+      status: "PAID",
+      paid_date: new Date().toISOString().split('T')[0]
+    }).eq("id", historyId);
     if (error) {
       toast.error("Failed to mark payment as paid");
     } else {
@@ -74,15 +71,12 @@ export default function Dashboard() {
       setUpcomingPayments(prev => prev.filter(p => p.id !== historyId));
     }
   };
-
   const overdueCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) < 0).length;
   const dueTodayCount = upcomingPayments.filter(p => differenceInDays(new Date(p.due_date), new Date()) === 0).length;
-
-  return (
-    <Layout>
+  return <Layout>
       <div className="space-y-6 max-w-7xl mx-auto">
         {/* Welcome Banner */}
-        <div className="bg-card rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-border/50 shadow-md">
+        <div className="p-4 sm:p-6 flex flex-col sm:items-center justify-between gap-4 border-border/50 shadow-md bg-secondary-foreground border-0 rounded-xl sm:flex sm:flex-row">
           <div>
             <p className="text-xs font-medium tracking-widest text-muted-foreground mb-1">GETTING STARTED</p>
             <p className="text-card-foreground font-medium">Welcome to your personal finance dashboard</p>
@@ -94,7 +88,7 @@ export default function Dashboard() {
         </div>
 
         {/* Balance Section */}
-        <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border/50 shadow-md">
+        <div className="bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-xl">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
             <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Balance</h2>
             <div className="flex items-center gap-3">
@@ -171,7 +165,7 @@ export default function Dashboard() {
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
 
         {/* Transactions / Upcoming Payments */}
-        <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border/50 shadow-md">
+        <div className="bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-xl">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground">Upcoming Payments</h2>
             <Link to="/payments">
@@ -183,57 +177,21 @@ export default function Dashboard() {
           
           <p className="text-xs font-medium tracking-widest text-muted-foreground mb-4">PENDING</p>
           
-          {upcomingPayments.length === 0 ? (
-            <p className="text-muted-foreground text-sm py-4">No upcoming payments in the next 7 days</p>
-          ) : (
-            <div className="space-y-3">
-              {upcomingPayments.map((payment) => (
-                <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
-              ))}
-            </div>
-          )}
+          {upcomingPayments.length === 0 ? <p className="text-muted-foreground text-sm py-4">No upcoming payments in the next 7 days</p> : <div className="space-y-3">
+              {upcomingPayments.map(payment => <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />)}
+            </div>}
         </div>
 
         {/* Goals */}
-        <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border/50 shadow-md">
+        <div className="bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-xl">
           <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-6">Goals</h2>
-          {goals.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No goals set yet</p>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {goals.map((goal) => {
-                const progress = goal.target_amount > 0 
-                  ? Math.round((Number(goal.current_amount) / Number(goal.target_amount)) * 100)
-                  : 0;
-                
-                return (
-                  <GoalCard
-                    key={goal.id}
-                    title={goal.title}
-                    timeframe={goal.timeframe || undefined}
-                    current={
-                      <CurrencyAmount 
-                        amount={Number(goal.current_amount)} 
-                        originalCurrency={goal.currency as CurrencyCode}
-                        showOriginal
-                      />
-                    }
-                    target={
-                      <CurrencyAmount 
-                        amount={Number(goal.target_amount)} 
-                        originalCurrency={goal.currency as CurrencyCode}
-                        showOriginal
-                      />
-                    }
-                    progress={progress}
-                    assetLinkedCount={goal.asset_linked ? 1 : 0}
-                  />
-                );
-              })}
-            </div>
-          )}
+          {goals.length === 0 ? <p className="text-muted-foreground text-sm">No goals set yet</p> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {goals.map(goal => {
+            const progress = goal.target_amount > 0 ? Math.round(Number(goal.current_amount) / Number(goal.target_amount) * 100) : 0;
+            return <GoalCard key={goal.id} title={goal.title} timeframe={goal.timeframe || undefined} current={<CurrencyAmount amount={Number(goal.current_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} target={<CurrencyAmount amount={Number(goal.target_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} progress={progress} assetLinkedCount={goal.asset_linked ? 1 : 0} />;
+          })}
+            </div>}
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 }
