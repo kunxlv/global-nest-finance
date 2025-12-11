@@ -193,7 +193,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <aside className="hidden lg:flex w-[72px] bg-background py-6 flex-col fixed h-screen z-40">
         {/* Logo */}
         <div className="flex items-center justify-center mb-6">
-          <h2 className="text-2xl sm:text-4xl font-bold text-foreground tracking-tight">f.</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">f.</h2>
         </div>
 
         {/* Navigation Icons */}
