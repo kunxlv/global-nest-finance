@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 interface GoalCardProps {
   title: string;
   target: string | ReactNode;
@@ -10,6 +11,7 @@ interface GoalCardProps {
   assetLinkedCount?: number;
   assetNames?: string[];
   actionsMenu?: ReactNode;
+  className?: string;
 }
 export default function GoalCard({
   title,
@@ -19,9 +21,10 @@ export default function GoalCard({
   timeframe,
   assetLinkedCount = 0,
   assetNames = [],
-  actionsMenu
+  actionsMenu,
+  className
 }: GoalCardProps) {
-  return <div className="bg-card text-card-foreground rounded-2xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg">
+  return <div className={cn("bg-card text-card-foreground rounded-2xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg", className)}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
