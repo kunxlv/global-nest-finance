@@ -8,44 +8,44 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Dark premium theme with light cards */
+    /* Dark premium theme with soft cards */
     --background: 220 14% 10%;
-    --foreground: 0 0% 95%;
+    --foreground: 220 10% 85%;
     
     --background-alt: 220 14% 8%;
 
-    /* Light cards on dark background */
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
+    /* Soft off-white cards - easier on eyes */
+    --card: 220 14% 18%;
+    --card-foreground: 220 10% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
+    --popover: 220 14% 18%;
+    --popover-foreground: 220 10% 90%;
 
     /* Primary = accent green for main actions */
-    --primary: 155 60% 42%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 155 50% 45%;
+    --primary-foreground: 220 14% 10%;
 
-    /* Secondary = subtle gray for secondary actions */
-    --secondary: 220 10% 94%;
-    --secondary-foreground: 220 20% 25%;
+    /* Secondary = subtle dark for secondary actions */
+    --secondary: 220 14% 22%;
+    --secondary-foreground: 220 10% 80%;
 
-    /* Muted for light card contexts */
-    --muted: 220 10% 96%;
-    --muted-foreground: 220 10% 45%;
+    /* Muted for card contexts */
+    --muted: 220 14% 25%;
+    --muted-foreground: 220 10% 55%;
 
-    /* Accent green */
-    --accent: 155 60% 42%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 155 45% 94%;
-    --accent-dark: 155 70% 32%;
+    /* Accent green - softer */
+    --accent: 155 50% 45%;
+    --accent-foreground: 220 14% 10%;
+    --accent-light: 155 30% 25%;
+    --accent-dark: 155 60% 35%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 220 10% 95%;
 
-    /* Very light borders for cards */
-    --border: 220 10% 90%;
-    --input: 220 10% 92%;
-    --ring: 155 60% 42%;
+    /* Subtle borders */
+    --border: 220 14% 25%;
+    --input: 220 14% 22%;
+    --ring: 155 50% 45%;
 
     --success: 155 60% 42%;
     --success-foreground: 0 0% 100%;
@@ -78,36 +78,36 @@ All colors MUST be HSL.
   .dark {
     /* Same as root */
     --background: 220 14% 10%;
-    --foreground: 0 0% 95%;
+    --foreground: 220 10% 85%;
     
     --background-alt: 220 14% 8%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
+    --card: 220 14% 18%;
+    --card-foreground: 220 10% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
+    --popover: 220 14% 18%;
+    --popover-foreground: 220 10% 90%;
 
-    --primary: 155 60% 42%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 155 50% 45%;
+    --primary-foreground: 220 14% 10%;
 
-    --secondary: 220 10% 94%;
-    --secondary-foreground: 220 20% 25%;
+    --secondary: 220 14% 22%;
+    --secondary-foreground: 220 10% 80%;
 
-    --muted: 220 10% 96%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 14% 25%;
+    --muted-foreground: 220 10% 55%;
 
-    --accent: 155 60% 42%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 155 45% 94%;
-    --accent-dark: 155 70% 32%;
+    --accent: 155 50% 45%;
+    --accent-foreground: 220 14% 10%;
+    --accent-light: 155 30% 25%;
+    --accent-dark: 155 60% 35%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 220 10% 95%;
 
-    --border: 220 10% 90%;
-    --input: 220 10% 92%;
-    --ring: 155 60% 42%;
+    --border: 220 14% 25%;
+    --input: 220 14% 22%;
+    --ring: 155 50% 45%;
 
     --success: 155 60% 42%;
     --success-foreground: 0 0% 100%;
