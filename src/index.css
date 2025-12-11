@@ -56,7 +56,12 @@ All colors MUST be HSL.
     --chart-4: 0 84% 60%;
     --chart-5: 220 13% 30%;
 
-    --radius: 0.75rem;
+    --radius: 1.5rem;
+    --radius-card: 1.5rem;
+
+    /* Card shadows for elevation */
+    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.08), 0 2px 8px -2px hsl(0 0% 0% / 0.04);
+    --shadow-card-hover: 0 8px 30px -6px hsl(0 0% 0% / 0.12), 0 4px 12px -4px hsl(0 0% 0% / 0.06);
 
     --sidebar-background: 220 13% 6%;
     --sidebar-foreground: 220 9% 50%;
