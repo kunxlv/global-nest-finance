@@ -88,8 +88,8 @@ export default function Dashboard() {
         </div>
 
         {/* Balance Section */}
-        <div className="bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-xl">
-          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
+        <div className="bg-card p-6 sm:p-8 border border-border/50 rounded-xl shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8 shadow-none">
             <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Balance</h2>
             <div className="flex items-center gap-3">
               <Button variant="outline">
@@ -104,7 +104,7 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Net Worth Card */}
-            <div className="bg-muted/50 rounded-xl p-6 border border-border/30">
+            <div className="bg-muted/50 rounded-xl p-6 border border-border/30 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-medium tracking-widest text-muted-foreground">AVAILABLE NOW</p>
                 <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">
@@ -133,7 +133,7 @@ export default function Dashboard() {
 
             {/* Quick Actions Card */}
             <div className="space-y-4">
-              <div className="bg-muted/50 rounded-xl p-6 border border-border/30">
+              <div className="bg-muted/50 rounded-xl p-6 border border-border/30 shadow-xl">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
                     <Target className="w-4 h-4 text-accent" />
@@ -152,7 +152,7 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <div className="bg-primary rounded-xl p-6 text-primary-foreground shadow-md">
+              <div className="bg-primary rounded-xl p-6 text-primary-foreground shadow-2xl">
                 <p className="text-sm mb-3 opacity-90">Unlock premium features and strategies</p>
                 <Button variant="secondary" size="sm">
                   Upgrade to Pro
@@ -188,7 +188,7 @@ export default function Dashboard() {
           {goals.length === 0 ? <p className="text-muted-foreground text-sm">No goals set yet</p> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {goals.map(goal => {
             const progress = goal.target_amount > 0 ? Math.round(Number(goal.current_amount) / Number(goal.target_amount) * 100) : 0;
-            return <GoalCard key={goal.id} title={goal.title} timeframe={goal.timeframe || undefined} current={<CurrencyAmount amount={Number(goal.current_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} target={<CurrencyAmount amount={Number(goal.target_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} progress={progress} assetLinkedCount={goal.asset_linked ? 1 : 0} />;
+            return <GoalCard key={goal.id} title={goal.title} timeframe={goal.timeframe || undefined} current={<CurrencyAmount amount={Number(goal.current_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} target={<CurrencyAmount amount={Number(goal.target_amount)} originalCurrency={goal.currency as CurrencyCode} showOriginal />} progress={progress} assetLinkedCount={goal.asset_linked ? 1 : 0} className="bg-[#f4f4f6] rounded-xl shadow-xl" />;
           })}
             </div>}
         </div>
