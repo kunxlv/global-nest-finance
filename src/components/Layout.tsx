@@ -174,7 +174,7 @@ export default function Layout({
 
       {/* Main Content */}
       <main className="flex-1 w-full pt-14 lg:pt-0 lg:ml-[72px]">
-        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen p-4 sm:p-6 lg:p-8 border-0">
           <div className="animate-fade-in">
             {children}
           </div>
