@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ReactNode } from "react";
+
 interface GoalCardProps {
   title: string;
   target: string | ReactNode;
@@ -11,6 +12,7 @@ interface GoalCardProps {
   assetNames?: string[];
   actionsMenu?: ReactNode;
 }
+
 export default function GoalCard({
   title,
   target,
@@ -19,18 +21,22 @@ export default function GoalCard({
   timeframe,
   assetLinkedCount = 0,
   assetNames = [],
-  actionsMenu
+  actionsMenu,
 }: GoalCardProps) {
-  return <div className="bg-card text-card-foreground rounded-2xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg">
+  return (
+    <div className="bg-card text-card-foreground rounded-2xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-semibold text-lg text-secondary-foreground">{title}</h3>
-            {timeframe && <span className="text-muted-foreground text-sm">· {timeframe}</span>}
+            <h3 className="font-semibold text-foreground text-lg">{title}</h3>
+            {timeframe && (
+              <span className="text-muted-foreground text-sm">· {timeframe}</span>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            {assetLinkedCount > 0 && <TooltipProvider>
+            {assetLinkedCount > 0 && (
+              <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0 cursor-help text-xs font-medium px-3 py-1">
@@ -39,13 +45,16 @@ export default function GoalCard({
                   </TooltipTrigger>
                   <TooltipContent>
                     <div className="space-y-1">
-                      {assetNames.map((name, index) => <p key={index} className="text-sm">
+                      {assetNames.map((name, index) => (
+                        <p key={index} className="text-sm">
                           {name}
-                        </p>)}
+                        </p>
+                      ))}
                     </div>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>}
+              </TooltipProvider>
+            )}
             {actionsMenu && <div className="shrink-0">{actionsMenu}</div>}
           </div>
         </div>
@@ -65,14 +74,17 @@ export default function GoalCard({
           </div>
           {/* Two-tone progress bar */}
           <div className="w-full h-2.5 rounded-full overflow-hidden flex">
-            <div className="h-full bg-primary transition-all duration-500" style={{
-            width: `${Math.min(progress, 100)}%`
-          }} />
-            <div className="h-full bg-card-foreground" style={{
-            width: `${100 - Math.min(progress, 100)}%`
-          }} />
+            <div
+              className="h-full bg-primary transition-all duration-500"
+              style={{ width: `${Math.min(progress, 100)}%` }}
+            />
+            <div
+              className="h-full bg-card-foreground"
+              style={{ width: `${100 - Math.min(progress, 100)}%` }}
+            />
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 }
