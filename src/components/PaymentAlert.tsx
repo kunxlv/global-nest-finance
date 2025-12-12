@@ -89,9 +89,7 @@ export default function PaymentAlert({ payment, onMarkPaid }: PaymentAlertProps)
   };
 
   return (
-    <div className={cn(
-      "bg-muted/50 rounded-2xl p-6 border border-border/30 shadow-md transition-all duration-200 hover:shadow-lg",
-    )}>
+    <div className="bg-muted/50 rounded-2xl p-6 border border-border/30 shadow-md transition-all duration-200 hover:shadow-lg">
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
@@ -118,40 +116,23 @@ export default function PaymentAlert({ payment, onMarkPaid }: PaymentAlertProps)
         </div>
 
         {/* Due Date Section */}
-        <div className="space-y-3">
-          <div className="flex justify-between text-sm">
-            <div className="flex items-center gap-2">
-              <Clock className={cn("w-4 h-4", urgencyColor)} />
-              <span className={cn("font-medium", urgencyColor)}>
-                {getDueDateText()}
-              </span>
-            </div>
-            <span className="font-medium text-muted-foreground">
-              {format(new Date(payment.due_date), "MMM d, yyyy")}
+        <div className="flex justify-between items-center text-sm">
+          <div className="flex items-center gap-2">
+            <Clock className={cn("w-4 h-4", urgencyColor)} />
+            <span className={cn("font-medium", urgencyColor)}>
+              {getDueDateText()}
             </span>
           </div>
-          
-          {/* Progress-like bar to match goal card */}
-          <div className="w-full h-2.5 rounded-full overflow-hidden flex">
-            <div 
-              className={cn(
-                "h-full transition-all duration-500",
-                isOverdue ? "bg-destructive" : isDueSoon ? "bg-[hsl(45,93%,47%)]" : "bg-primary"
-              )} 
-              style={{ width: isOverdue ? '100%' : isDueSoon ? '75%' : '50%' }} 
-            />
-            <div 
-              className="h-full bg-secondary-foreground" 
-              style={{ width: isOverdue ? '0%' : isDueSoon ? '25%' : '50%' }} 
-            />
-          </div>
+          <span className="font-medium text-muted-foreground">
+            {format(new Date(payment.due_date), "MMM d, yyyy")}
+          </span>
         </div>
 
         {payment.status === "UPCOMING" && onMarkPaid && (
           <Button
             size="sm"
             variant="outline"
-            className="mt-2 h-8 text-xs rounded-xl"
+            className="h-8 text-xs rounded-xl"
             onClick={() => onMarkPaid(payment.id)}
           >
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
