@@ -11,7 +11,7 @@ All colors MUST be HSL.
     /* Dark premium theme with light cards */
     --background: 220 14% 10%;
     --foreground: 0 0% 95%;
-    
+
     --background-alt: 220 14% 8%;
 
     /* Light cards on dark background */
@@ -49,10 +49,10 @@ All colors MUST be HSL.
 
     --success: 155 60% 42%;
     --success-foreground: 0 0% 100%;
-    
+
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     --error: 0 72% 51%;
     --error-foreground: 0 0% 100%;
 
@@ -79,7 +79,7 @@ All colors MUST be HSL.
     /* Same as root */
     --background: 220 14% 10%;
     --foreground: 0 0% 95%;
-    
+
     --background-alt: 220 14% 8%;
 
     --card: 0 0% 100%;
@@ -111,10 +111,10 @@ All colors MUST be HSL.
 
     --success: 155 60% 42%;
     --success-foreground: 0 0% 100%;
-    
+
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     --error: 0 72% 51%;
     --error-foreground: 0 0% 100%;
 
@@ -138,7 +138,12 @@ All colors MUST be HSL.
     @apply bg-background text-foreground antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply tracking-tight;
   }
 
@@ -151,11 +156,11 @@ All colors MUST be HSL.
   .transition-smooth {
     @apply transition-all duration-200 ease-in-out;
   }
-  
+
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98];
   }
-  
+
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
   }
@@ -166,19 +171,19 @@ All colors MUST be HSL.
   .card-base {
     @apply bg-card text-card-foreground rounded-2xl border border-border/50 shadow-md;
   }
-  
+
   .card-interactive {
     @apply card-base transition-all duration-200 hover:shadow-lg;
   }
-  
+
   .card-muted {
-    @apply bg-muted/50 rounded-2xl border border-border/30 shadow-md transition-all duration-200 hover:shadow-lg;
+    @apply bg-muted/50 rounded-xl border border-border/30 shadow-md transition-all duration-200 hover:shadow-xl;
   }
-  
+
   .card-section {
     @apply bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-2xl;
   }
-  
+
   .card-empty {
     @apply bg-muted/50 rounded-2xl text-center py-12;
   }
