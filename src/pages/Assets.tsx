@@ -165,10 +165,7 @@ export default function Assets() {
                 <span className="sm:hidden">Add</span>
               </Button>
             </AssetForm>
-            <Button variant="outline" size="sm" className="flex-1 sm:flex-initial">
-              <FileDown className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Export</span>
-            </Button>
+            
           </div>
         </div>
 
