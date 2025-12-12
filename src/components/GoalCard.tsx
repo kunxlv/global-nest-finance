@@ -27,7 +27,7 @@ export default function GoalCard({
   return (
     <div
       className={cn(
-        "card-muted rounded-xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg",
+        "card-muted rounded-xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-xl",
         className,
       )}
     >
