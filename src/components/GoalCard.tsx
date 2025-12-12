@@ -22,9 +22,15 @@ export default function GoalCard({
   assetLinkedCount = 0,
   assetNames = [],
   actionsMenu,
-  className
+  className,
 }: GoalCardProps) {
-  return <div className={cn("bg-card text-card-foreground rounded-2xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg", className)}>
+  return (
+    <div
+      className={cn(
+        "card-muted text-card-foreground rounded-2xl p-6 border border-border/50 shadow-md transition-all duration-200 hover:shadow-lg",
+        className,
+      )}
+    >
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
@@ -33,7 +39,8 @@ export default function GoalCard({
             {timeframe && <span className="text-muted-foreground text-sm">· {timeframe}</span>}
           </div>
           <div className="flex items-center gap-2">
-            {assetLinkedCount > 0 && <TooltipProvider>
+            {assetLinkedCount > 0 && (
+              <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0 cursor-help text-xs font-medium px-3 py-1">
@@ -42,22 +49,23 @@ export default function GoalCard({
                   </TooltipTrigger>
                   <TooltipContent>
                     <div className="space-y-1">
-                      {assetNames.map((name, index) => <p key={index} className="text-sm">
+                      {assetNames.map((name, index) => (
+                        <p key={index} className="text-sm">
                           {name}
-                        </p>)}
+                        </p>
+                      ))}
                     </div>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>}
+              </TooltipProvider>
+            )}
             {actionsMenu && <div className="shrink-0">{actionsMenu}</div>}
           </div>
         </div>
 
         {/* Current Amount - Large muted value */}
         <div>
-          <p className="text-3xl font-semibold tracking-tight text-secondary-foreground">
-            {current}
-          </p>
+          <p className="text-3xl font-semibold tracking-tight text-secondary-foreground">{current}</p>
         </div>
 
         {/* Progress Section */}
@@ -68,14 +76,21 @@ export default function GoalCard({
           </div>
           {/* Two-tone progress bar */}
           <div className="w-full h-2.5 rounded-full overflow-hidden flex">
-            <div className="h-full bg-primary transition-all duration-500" style={{
-            width: `${Math.min(progress, 100)}%`
-          }} />
-            <div style={{
-            width: `${100 - Math.min(progress, 100)}%`
-          }} className="h-full bg-secondary-foreground" />
+            <div
+              className="h-full bg-primary transition-all duration-500"
+              style={{
+                width: `${Math.min(progress, 100)}%`,
+              }}
+            />
+            <div
+              style={{
+                width: `${100 - Math.min(progress, 100)}%`,
+              }}
+              className="h-full bg-secondary-foreground"
+            />
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 }
