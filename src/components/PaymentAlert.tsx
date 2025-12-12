@@ -9,12 +9,11 @@ import {
   Home, 
   CircleDollarSign,
   CheckCircle2,
-  Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { PaymentHistory, RecurringPayment } from "@/lib/supabase";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PaymentAlertProps {
   payment: PaymentHistory & { recurring_payment: RecurringPayment };
@@ -82,11 +81,11 @@ export default function PaymentAlert({ payment, onMarkPaid }: PaymentAlertProps)
   };
 
   return (
-    <div className="bg-muted/50 rounded-2xl p-4 border border-border/30 shadow-md transition-all duration-200 hover:shadow-lg">
+    <div className="card-muted p-4">
       <div className="flex items-center gap-4">
         {/* Icon with urgency indicator */}
         <div className="relative shrink-0">
-          <div className="p-2.5 rounded-xl bg-card shadow-sm text-muted-foreground">
+          <div className="p-2.5 rounded-2xl bg-card shadow-sm text-muted-foreground">
             <Icon className="w-5 h-5" />
           </div>
           {/* Urgency dot */}
@@ -118,16 +117,28 @@ export default function PaymentAlert({ payment, onMarkPaid }: PaymentAlertProps)
           </div>
         </div>
 
-        {/* Action */}
+        {/* Action with tooltip */}
         {payment.status === "UPCOMING" && onMarkPaid && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="shrink-0 h-8 w-8 rounded-xl hover:bg-card"
-            onClick={() => onMarkPaid(payment.id)}
-          >
-            <CheckCircle2 className="w-4 h-4 text-muted-foreground" />
-          </Button>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="shrink-0 h-8 w-8 rounded-2xl hover:bg-card"
+                  onClick={() => onMarkPaid(payment.id)}
+                >
+                  <CheckCircle2 className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent 
+                side="top" 
+                className="bg-card text-card-foreground border border-border/30 shadow-lg px-3 py-1.5 text-xs font-medium rounded-xl"
+              >
+                Mark as Paid
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
     </div>
