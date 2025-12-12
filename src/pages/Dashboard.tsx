@@ -168,7 +168,7 @@ export default function Dashboard() {
           {upcomingPayments.length === 0 ? (
             <p className="text-muted-foreground text-sm py-4">No upcoming payments in the next 7 days</p>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {upcomingPayments.map((payment) => (
                 <PaymentAlert key={payment.id} payment={payment} onMarkPaid={handleMarkAsPaid} />
               ))}
