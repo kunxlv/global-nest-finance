@@ -48,7 +48,7 @@ export default function AssetFilters({
     typeFilter !== "ALL" || countryFilter !== "ALL" || holderFilter !== "ALL";
 
   return (
-    <div className="bg-card rounded-2xl border border-border/50 p-4 mb-6">
+    <div className="bg-card rounded-3xl border border-border/50 shadow-xl p-4 mb-6">
       <div className="flex flex-col lg:flex-row lg:items-center gap-4">
         {/* Filter icon and label */}
         <div className="flex items-center gap-2 text-muted-foreground">
