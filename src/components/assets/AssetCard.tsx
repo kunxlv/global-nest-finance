@@ -30,38 +30,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-// Asset type icons and colors
-const ASSET_CONFIG: Record<string, { icon: React.ElementType; gradient: string; bgColor: string }> = {
-  CASH: {
-    icon: Banknote,
-    gradient: "from-emerald-500/20 to-emerald-600/10",
-    bgColor: "bg-emerald-500/10",
-  },
-  EQUITY: {
-    icon: TrendingUp,
-    gradient: "from-blue-500/20 to-blue-600/10",
-    bgColor: "bg-blue-500/10",
-  },
-  CRYPTO: {
-    icon: Coins,
-    gradient: "from-orange-500/20 to-amber-600/10",
-    bgColor: "bg-orange-500/10",
-  },
-  GOLD: {
-    icon: Gem,
-    gradient: "from-yellow-500/20 to-yellow-600/10",
-    bgColor: "bg-yellow-500/10",
-  },
-  REAL_ESTATE: {
-    icon: Building2,
-    gradient: "from-violet-500/20 to-purple-600/10",
-    bgColor: "bg-violet-500/10",
-  },
-  OTHER: {
-    icon: Package,
-    gradient: "from-slate-500/20 to-slate-600/10",
-    bgColor: "bg-slate-500/10",
-  },
+// Asset type icons
+const ASSET_ICONS: Record<string, React.ElementType> = {
+  CASH: Banknote,
+  EQUITY: TrendingUp,
+  CRYPTO: Coins,
+  GOLD: Gem,
+  REAL_ESTATE: Building2,
+  OTHER: Package,
 };
 
 interface AssetCardProps {
@@ -76,8 +52,7 @@ export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEd
   const [expanded, setExpanded] = useState(false);
   const { convertToDisplayCurrency, formatCurrency: formatDisplayCurrency, displayCurrency } = useCurrency();
 
-  const config = ASSET_CONFIG[asset.type] || ASSET_CONFIG.OTHER;
-  const Icon = config.icon;
+  const Icon = ASSET_ICONS[asset.type] || ASSET_ICONS.OTHER;
 
   const originalAmount = Number(asset.valuation);
   const convertedAmount = convertToDisplayCurrency(originalAmount, asset.currency as CurrencyCode);
@@ -86,20 +61,18 @@ export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEd
   return (
     <div
       className={cn(
-        "group relative bg-card rounded-2xl border border-border/50 overflow-hidden",
+        "group relative bg-card rounded-3xl border border-border/50 overflow-hidden",
         "transition-all duration-300 ease-out",
-        "hover:shadow-xl hover:shadow-black/5 hover:border-border hover:-translate-y-0.5",
+        "hover:shadow-lg hover:shadow-black/5 hover:border-border hover:-translate-y-0.5",
         expanded && "ring-1 ring-primary/10",
       )}
     >
-      {/* Gradient accent bar */}
-
       <div className="p-5">
         {/* Main content row */}
         <div className="flex items-start gap-4">
           {/* Icon */}
-          <div className={cn("flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center", config.bgColor)}>
-            <Icon className="w-6 h-6 text-foreground/80" />
+          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-muted flex items-center justify-center">
+            <Icon className="w-6 h-6 text-muted-foreground" />
           </div>
 
           {/* Content */}

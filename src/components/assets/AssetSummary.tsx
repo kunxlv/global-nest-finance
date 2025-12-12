@@ -22,12 +22,12 @@ const ASSET_ICONS: Record<string, React.ElementType> = {
 };
 
 const ASSET_COLORS: Record<string, string> = {
-  CASH: "bg-emerald-500",
-  EQUITY: "bg-blue-500",
-  CRYPTO: "bg-orange-500",
-  GOLD: "bg-yellow-500",
-  REAL_ESTATE: "bg-violet-500",
-  OTHER: "bg-slate-500",
+  CASH: "bg-primary",
+  EQUITY: "bg-primary/80",
+  CRYPTO: "bg-primary/60",
+  GOLD: "bg-primary/45",
+  REAL_ESTATE: "bg-primary/30",
+  OTHER: "bg-primary/20",
 };
 
 interface AssetSummaryProps {
@@ -89,17 +89,17 @@ export default function AssetSummary({ assets, isLoading }: AssetSummaryProps) {
       {/* Main summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Assets Card */}
-        <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-6 text-primary-foreground col-span-1 md:col-span-2 lg:col-span-1">
+        <div className="bg-card rounded-3xl p-5 border border-border/50 col-span-1 md:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-muted flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-muted-foreground" />
             </div>
-            <span className="text-sm font-medium opacity-90">Total Assets</span>
+            <span className="text-sm font-medium text-muted-foreground">Total Assets</span>
           </div>
-          <p className="text-3xl font-bold tracking-tight">
+          <p className="text-2xl font-bold tracking-tight text-foreground">
             {formatCurrency(totalValue)}
           </p>
-          <p className="text-sm opacity-75 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {assets.length} asset{assets.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -110,14 +110,11 @@ export default function AssetSummary({ assets, isLoading }: AssetSummaryProps) {
           return (
             <div
               key={item.type}
-              className="bg-card rounded-2xl p-6 border border-border/50 hover:border-border transition-colors"
+              className="bg-card rounded-3xl p-5 border border-border/50 hover:border-border transition-colors"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center",
-                  ASSET_COLORS[item.type] + "/10"
-                )}>
-                  <Icon className={cn("w-5 h-5", "text-foreground/70")} />
+                <div className="w-10 h-10 rounded-2xl bg-muted flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <span className="text-sm font-medium text-muted-foreground">
                   {item.type.replace("_", " ")}
@@ -136,11 +133,11 @@ export default function AssetSummary({ assets, isLoading }: AssetSummaryProps) {
 
       {/* Distribution bar */}
       {distribution.length > 0 && (
-        <div className="bg-card rounded-2xl p-6 border border-border/50">
+        <div className="bg-card rounded-3xl p-5 border border-border/50">
           <h3 className="text-sm font-medium text-muted-foreground mb-4">Asset Distribution</h3>
           
           {/* Visual bar */}
-          <div className="h-3 rounded-full overflow-hidden flex bg-muted mb-4">
+          <div className="h-2.5 rounded-full overflow-hidden flex bg-muted mb-4">
             {distribution.map((item, index) => (
               <div
                 key={item.type}
@@ -154,10 +151,9 @@ export default function AssetSummary({ assets, isLoading }: AssetSummaryProps) {
           {/* Legend */}
           <div className="flex flex-wrap gap-4">
             {distribution.map((item) => {
-              const Icon = ASSET_ICONS[item.type] || Package;
               return (
                 <div key={item.type} className="flex items-center gap-2">
-                  <div className={cn("w-3 h-3 rounded-full", ASSET_COLORS[item.type])} />
+                  <div className={cn("w-2.5 h-2.5 rounded-full", ASSET_COLORS[item.type])} />
                   <span className="text-sm text-muted-foreground">
                     {item.type.replace("_", " ")} ({item.percentage.toFixed(0)}%)
                   </span>
