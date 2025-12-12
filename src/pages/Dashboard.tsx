@@ -84,7 +84,7 @@ export default function Dashboard() {
         {/* Balance Section */}
         <div className="card-section">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8 shadow-none">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Balance</h2>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Overview</h2>
 
             <Button variant="outline">
               <Bell className="w-4 h-4 mr-2" />
