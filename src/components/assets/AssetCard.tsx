@@ -67,7 +67,7 @@ export default function AssetCard({
                   <Badge variant="secondary" className="text-xs font-medium">
                     {asset.type.replace("_", " ")}
                   </Badge>
-                  {asset.holder && <Badge variant="outline" className="text-xs">
+                  {asset.holder && <Badge variant="outline" className="text-xs text-muted-foreground">
                       <User className="w-3 h-3 mr-1" />
                       {asset.holder}
                     </Badge>}
