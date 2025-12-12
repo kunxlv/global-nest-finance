@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 const navigation = [
   {
     name: "Dashboard",
@@ -79,24 +80,35 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const Icon = item.icon;
     const isActive = location.pathname === item.href;
     return (
-      <Link
-        to={item.href}
-        onClick={onClick}
-        className="relative flex items-center justify-center w-12 h-12 group"
-        title={item.name}
-      >
-        {/* Icon container */}
-        <div
-          className={cn(
-            "flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200",
-            isActive
-              ? "bg-card text-card-foreground shadow-md"
-              : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground",
-          )}
-        >
-          <Icon className="w-5 h-5" />
-        </div>
-      </Link>
+      <TooltipProvider delayDuration={100}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              to={item.href}
+              onClick={onClick}
+              className="relative flex items-center justify-center w-12 h-12 group"
+            >
+              <div
+                className={cn(
+                  "flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200",
+                  isActive
+                    ? "bg-card text-card-foreground shadow-md"
+                    : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground",
+                )}
+              >
+                <Icon className="w-5 h-5" />
+              </div>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent 
+            side="right" 
+            sideOffset={12}
+            className="bg-card text-card-foreground border border-border/30 shadow-lg px-3 py-1.5 text-sm font-medium rounded-lg"
+          >
+            {item.name}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   };
   const MobileSidebarContent = () => (
@@ -205,18 +217,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Settings */}
         <div className="flex flex-col items-center px-2">
-          <Link to="/settings" className="relative flex items-center justify-center w-12 h-12 group" title="Settings">
-            <div
-              className={cn(
-                "flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200",
-                location.pathname === "/settings"
-                  ? "bg-card text-card-foreground shadow-md"
-                  : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground",
-              )}
-            >
-              <Settings className="w-5 h-5" />
-            </div>
-          </Link>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link to="/settings" className="relative flex items-center justify-center w-12 h-12 group">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200",
+                      location.pathname === "/settings"
+                        ? "bg-card text-card-foreground shadow-md"
+                        : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground",
+                    )}
+                  >
+                    <Settings className="w-5 h-5" />
+                  </div>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent 
+                side="right" 
+                sideOffset={12}
+                className="bg-card text-card-foreground border border-border/30 shadow-lg px-3 py-1.5 text-sm font-medium rounded-lg"
+              >
+                Settings
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </aside>
 
