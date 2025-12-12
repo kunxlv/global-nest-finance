@@ -178,4 +178,8 @@ All colors MUST be HSL.
   .card-section {
     @apply bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-2xl;
   }
+  
+  .card-empty {
+    @apply bg-muted/50 rounded-2xl text-center py-12;
+  }
 }

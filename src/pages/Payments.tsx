@@ -207,7 +207,7 @@ export default function Payments() {
 
             <TabsContent value="upcoming" className="space-y-4">
               {filteredUpcoming.length === 0 ? (
-                <div className="text-center py-12 bg-muted/50 rounded-2xl">
+                <div className="card-empty">
                   <p className="text-muted-foreground">
                     No upcoming payments in the next 30 days
                   </p>
@@ -227,11 +227,11 @@ export default function Payments() {
 
             <TabsContent value="history">
               {filteredHistory.length === 0 ? (
-                <div className="text-center py-12 bg-muted/50 rounded-2xl">
+                <div className="card-empty">
                   <p className="text-muted-foreground">No payment history yet</p>
                 </div>
               ) : (
-                <div className="bg-card rounded-2xl border overflow-x-auto">
+                <div className="card-base overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -300,13 +300,13 @@ export default function Payments() {
 
             <TabsContent value="recurring">
               {filteredRecurring.length === 0 ? (
-                <div className="text-center py-12 bg-muted/50 rounded-2xl">
+                <div className="card-empty">
                   <p className="text-muted-foreground">
                     No recurring payments configured yet
                   </p>
                 </div>
               ) : (
-                <div className="bg-card rounded-2xl border overflow-x-auto">
+                <div className="card-base overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>

@@ -98,10 +98,10 @@ export default function Liabilities() {
         </div>
 
         {/* Liabilities Table */}
-        <div className="bg-card rounded-lg p-4 sm:p-6 border shadow-md">
+        <div className="card-section">
           <div className="flex items-center gap-2 mb-6">
-            <h2 className="text-lg sm:text-xl font-semibold">All liabilities</h2>
-            <ChevronDown className="w-5 h-5" />
+            <h2 className="text-lg sm:text-xl font-semibold text-card-foreground">All liabilities</h2>
+            <ChevronDown className="w-5 h-5 text-muted-foreground" />
           </div>
 
           {loading ? (
