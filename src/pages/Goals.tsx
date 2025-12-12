@@ -95,8 +95,8 @@ export default function Goals() {
             <p className="text-muted-foreground">Loading goals...</p>
           </div> : <>
             {/* Short term goals */}
-            <div className="bg-card p-6 border rounded-xl shadow-xl">
-              <h2 className="text-2xl font-bold mb-6 text-secondary-foreground">Short term goals</h2>
+            <div className="card-section">
+              <h2 className="text-2xl font-bold mb-6 text-card-foreground">Short term goals</h2>
               {shortTermGoals.length === 0 ? <p className="text-muted-foreground text-center py-8">
                   No short-term goals yet. Add one to start tracking!
                 </p> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -139,14 +139,14 @@ export default function Goals() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             </DropdownMenuContent>
-                          </DropdownMenu>} className="rounded-xl shadow-xl" />;
+                          </DropdownMenu>} className="card-muted" />;
             })}
                 </div>}
             </div>
 
             {/* Long term goals */}
-            <div className="bg-card p-6 border rounded-xl shadow-xl">
-              <h2 className="text-2xl font-bold mb-6 text-secondary-foreground">Long term goals</h2>
+            <div className="card-section">
+              <h2 className="text-2xl font-bold mb-6 text-card-foreground">Long term goals</h2>
               {longTermGoals.length === 0 ? <p className="text-muted-foreground text-center py-8">
                   No long-term goals yet. Add one to start tracking!
                 </p> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -189,7 +189,7 @@ export default function Goals() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             </DropdownMenuContent>
-                          </DropdownMenu>} className="rounded-xl border-0 shadow-xl" />;
+                          </DropdownMenu>} className="card-muted" />;
             })}
                 </div>}
             </div>

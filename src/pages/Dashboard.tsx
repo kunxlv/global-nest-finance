@@ -189,11 +189,11 @@ export default function Dashboard() {
                     ? Math.round((Number(goal.current_amount) / Number(goal.target_amount)) * 100)
                     : 0;
                 return (
-                  <GoalCard
-                    key={goal.id}
-                    title={goal.title}
-                    timeframe={goal.timeframe || undefined}
-                    current={
+                    <GoalCard
+                      key={goal.id}
+                      title={goal.title}
+                      timeframe={goal.timeframe || undefined}
+                      current={
                       <CurrencyAmount
                         amount={Number(goal.current_amount)}
                         originalCurrency={goal.currency as CurrencyCode}
@@ -207,11 +207,11 @@ export default function Dashboard() {
                         showOriginal
                       />
                     }
-                    progress={progress}
-                    assetLinkedCount={goal.asset_linked ? 1 : 0}
-                    className="bg-[#f4f4f6] rounded-xl shadow-xl"
-                  />
-                );
+                      progress={progress}
+                      assetLinkedCount={goal.asset_linked ? 1 : 0}
+                      className="card-muted"
+                    />
+                  );
               })}
             </div>
           )}

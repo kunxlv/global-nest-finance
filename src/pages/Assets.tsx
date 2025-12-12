@@ -220,9 +220,9 @@ export default function Assets() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-card rounded-2xl p-6 border border-border/50 animate-pulse">
+              <div key={i} className="card-base p-6 animate-pulse">
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-muted rounded-xl" />
+                  <div className="w-12 h-12 bg-muted rounded-2xl" />
                   <div className="flex-1 space-y-3">
                     <div className="h-4 bg-muted rounded w-3/4" />
                     <div className="h-3 bg-muted rounded w-1/2" />
@@ -233,7 +233,7 @@ export default function Assets() {
             ))}
           </div>
         ) : filteredAssets.length === 0 ? (
-          <div className="bg-card rounded-2xl border border-border/50 p-12 text-center">
+          <div className="card-base p-12 text-center">
             <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
               <Package className="w-8 h-8 text-muted-foreground" />
             </div>

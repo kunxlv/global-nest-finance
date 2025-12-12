@@ -101,10 +101,10 @@ export default function CashFlow() {
                   </IncomeStreamForm>
                 </div>
 
-                {incomeStreams.length === 0 ? <div className="text-center py-8 bg-muted rounded-lg">
+                {incomeStreams.length === 0 ? <div className="card-empty">
                     <p className="text-muted-foreground">No income streams yet. Add one to get started!</p>
                   </div> : <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {incomeStreams.map(income => <div key={income.id} className="bg-card rounded-xl p-6 border shadow-md relative">
+                    {incomeStreams.map(income => <div key={income.id} className="card-interactive p-6 relative">
                         <div className="flex items-start justify-between mb-4">
                           <h3 className="font-semibold text-secondary-foreground">{income.name}</h3>
                           <div className="flex gap-1">
@@ -160,7 +160,7 @@ export default function CashFlow() {
                   </BankAccountForm>
                 </div>
 
-                {bankAccounts.length === 0 ? <div className="text-center py-8 bg-muted rounded-lg">
+                {bankAccounts.length === 0 ? <div className="card-empty">
                     <p className="text-muted-foreground">No bank accounts yet. Add one to track your balances!</p>
                   </div> : <div className="flex gap-4 overflow-x-auto pb-2">
                     {bankAccounts.map(account => <div key={account.id} className="relative group">
@@ -209,7 +209,7 @@ export default function CashFlow() {
                   </CardForm>
                 </div>
 
-                {cards.length === 0 ? <div className="text-center py-8 bg-muted rounded-lg">
+                {cards.length === 0 ? <div className="card-empty">
                     <p className="text-muted-foreground">No cards yet. Add one to track your credit cards!</p>
                   </div> : <div className="flex gap-4 overflow-x-auto pb-2">
                     {cards.map(card => <div key={card.id} className="relative group">
