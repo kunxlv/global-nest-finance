@@ -106,9 +106,9 @@ export default function Dashboard() {
                     <TooltipContent
                       side="right"
                       sideOffset={12}
-                      className="bg-card text-card-foreground border border-border/30 shadow-lg px-3 py-1.5 text-sm font-medium rounded-lg"
+                      className="bg-card text-card-foreground border border-border/30 shadow-lg px-3 py-1.5 text-xs font-light rounded-lg"
                     >
-                      <p>(ASSETS + BALANCE) - LIABILITIES</p>
+                      <p>(Assets + Balance) - Liabilities</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
