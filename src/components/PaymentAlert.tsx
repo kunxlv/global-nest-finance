@@ -49,19 +49,12 @@ export default function PaymentAlert({ payment, onMarkPaid }: PaymentAlertProps)
   
   const isOverdue = daysUntilDue < 0;
   const isDueSoon = daysUntilDue >= 0 && daysUntilDue <= 3;
-  const isDueThisWeek = daysUntilDue > 3 && daysUntilDue <= 7;
 
-  const urgencyColor = isOverdue 
-    ? "text-destructive" 
+  const urgencyConfig = isOverdue 
+    ? { color: "bg-destructive", textColor: "text-destructive", label: "Overdue" }
     : isDueSoon 
-    ? "text-[hsl(45,93%,47%)]" 
-    : "text-muted-foreground";
-
-  const bgColor = isOverdue
-    ? "bg-destructive/5 border-destructive/20"
-    : isDueSoon
-    ? "bg-[hsl(45,93%,47%)]/5 border-[hsl(45,93%,47%)]/20"
-    : "bg-muted/50 border-border";
+    ? { color: "bg-[hsl(45,93%,47%)]", textColor: "text-[hsl(45,93%,47%)]", label: "Due Soon" }
+    : { color: "bg-muted-foreground", textColor: "text-muted-foreground", label: "Upcoming" };
 
   const formatCurrency = (amount: number, currency: string) => {
     const symbols: Record<string, string> = {
@@ -73,70 +66,67 @@ export default function PaymentAlert({ payment, onMarkPaid }: PaymentAlertProps)
       AUD: "A$",
       CAD: "C$",
     };
-    return `${symbols[currency] || currency} ${amount.toLocaleString()}`;
+    return `${symbols[currency] || currency}${amount.toLocaleString()}`;
   };
 
   const getDueDateText = () => {
     if (isOverdue) {
-      return `Overdue by ${Math.abs(daysUntilDue)} day${Math.abs(daysUntilDue) !== 1 ? 's' : ''}`;
+      return `${Math.abs(daysUntilDue)}d overdue`;
     } else if (daysUntilDue === 0) {
-      return "Due today";
+      return "Today";
     } else if (daysUntilDue === 1) {
-      return "Due tomorrow";
+      return "Tomorrow";
     } else {
-      return `Due in ${daysUntilDue} days`;
+      return `${daysUntilDue}d left`;
     }
   };
 
   return (
-    <div className="bg-muted/50 rounded-2xl p-6 border border-border/30 shadow-md transition-all duration-200 hover:shadow-lg">
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className={cn("p-2.5 rounded-xl bg-card shadow-sm", urgencyColor)}>
-              <Icon className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg text-secondary-foreground line-clamp-1">
+    <div className="bg-muted/50 rounded-2xl p-4 border border-border/30 shadow-md transition-all duration-200 hover:shadow-lg">
+      <div className="flex items-center gap-4">
+        {/* Icon with urgency indicator */}
+        <div className="relative shrink-0">
+          <div className="p-2.5 rounded-xl bg-card shadow-sm text-muted-foreground">
+            <Icon className="w-5 h-5" />
+          </div>
+          {/* Urgency dot */}
+          <div className={cn(
+            "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-muted/50",
+            urgencyConfig.color
+          )} />
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h3 className="font-medium text-sm text-secondary-foreground truncate">
                 {payment.recurring_payment.name}
               </h3>
-              <Badge variant="secondary" className="text-xs mt-1 bg-secondary/50 text-muted-foreground border-0">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {categoryLabels[payment.recurring_payment.category as keyof typeof categoryLabels]}
-              </Badge>
+              </p>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="font-semibold text-sm text-secondary-foreground">
+                {formatCurrency(Number(payment.amount), payment.currency)}
+              </p>
+              <p className={cn("text-xs font-medium mt-0.5", urgencyConfig.textColor)}>
+                {getDueDateText()}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Amount - Large value */}
-        <div>
-          <p className="text-3xl font-semibold tracking-tight text-secondary-foreground">
-            {formatCurrency(Number(payment.amount), payment.currency)}
-          </p>
-        </div>
-
-        {/* Due Date Section */}
-        <div className="flex justify-between items-center text-sm">
-          <div className="flex items-center gap-2">
-            <Clock className={cn("w-4 h-4", urgencyColor)} />
-            <span className={cn("font-medium", urgencyColor)}>
-              {getDueDateText()}
-            </span>
-          </div>
-          <span className="font-medium text-muted-foreground">
-            {format(new Date(payment.due_date), "MMM d, yyyy")}
-          </span>
-        </div>
-
+        {/* Action */}
         {payment.status === "UPCOMING" && onMarkPaid && (
           <Button
-            size="sm"
-            variant="outline"
-            className="h-8 text-xs rounded-xl"
+            size="icon"
+            variant="ghost"
+            className="shrink-0 h-8 w-8 rounded-xl hover:bg-card"
             onClick={() => onMarkPaid(payment.id)}
           >
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-            Mark as Paid
+            <CheckCircle2 className="w-4 h-4 text-muted-foreground" />
           </Button>
         )}
       </div>
