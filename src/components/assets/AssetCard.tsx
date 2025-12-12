@@ -2,32 +2,10 @@ import { useState } from "react";
 import { Asset, RecurringPayment } from "@/lib/supabase";
 import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import {
-  Banknote,
-  TrendingUp,
-  Coins,
-  Building2,
-  Gem,
-  Package,
-  ChevronDown,
-  ChevronUp,
-  MoreVertical,
-  Pencil,
-  Trash,
-  Bell,
-  Target,
-  Calendar,
-  User,
-  MapPin,
-} from "lucide-react";
+import { Banknote, TrendingUp, Coins, Building2, Gem, Package, ChevronDown, ChevronUp, MoreVertical, Pencil, Trash, Bell, Target, Calendar, User, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 // Asset type icons
@@ -37,37 +15,37 @@ const ASSET_ICONS: Record<string, React.ElementType> = {
   CRYPTO: Coins,
   GOLD: Gem,
   REAL_ESTATE: Building2,
-  OTHER: Package,
+  OTHER: Package
 };
-
 interface AssetCardProps {
   asset: Asset;
   linkedPayments?: RecurringPayment[];
-  linkedGoal?: { id: string; title: string } | null;
+  linkedGoal?: {
+    id: string;
+    title: string;
+  } | null;
   onEdit: () => void;
   onDelete: () => void;
 }
-
-export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEdit, onDelete }: AssetCardProps) {
+export default function AssetCard({
+  asset,
+  linkedPayments = [],
+  linkedGoal,
+  onEdit,
+  onDelete
+}: AssetCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const { convertToDisplayCurrency, formatCurrency: formatDisplayCurrency, displayCurrency } = useCurrency();
-
+  const {
+    convertToDisplayCurrency,
+    formatCurrency: formatDisplayCurrency,
+    displayCurrency
+  } = useCurrency();
   const Icon = ASSET_ICONS[asset.type] || ASSET_ICONS.OTHER;
-
   const originalAmount = Number(asset.valuation);
   const convertedAmount = convertToDisplayCurrency(originalAmount, asset.currency as CurrencyCode);
   const showConverted = asset.currency !== displayCurrency;
-
-  return (
-    <div
-      className={cn(
-        "group relative bg-card rounded-3xl border border-border/50 overflow-hidden",
-        "transition-all duration-300 ease-out",
-        "hover:shadow-lg hover:shadow-black/5 hover:border-border hover:-translate-y-0.5",
-        expanded && "ring-1 ring-primary/10",
-      )}
-    >
-      <div className="p-5">
+  return <div className={cn("group relative bg-card rounded-3xl border border-border/50 overflow-hidden", "transition-all duration-300 ease-out", "hover:shadow-lg hover:shadow-black/5 hover:border-border hover:-translate-y-0.5", expanded && "ring-1 ring-primary/10")}>
+      <div className="p-5 rounded-xl">
         {/* Main content row */}
         <div className="flex items-start gap-4">
           {/* Icon */}
@@ -81,7 +59,7 @@ export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEd
               <div className="min-w-0">
                 {/* Asset name and country */}
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-foreground truncate">{asset.description}</h3>
+                  <h3 className="font-semibold truncate text-secondary-foreground">{asset.description}</h3>
                 </div>
 
                 {/* Tags row */}
@@ -89,45 +67,33 @@ export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEd
                   <Badge variant="secondary" className="text-xs font-medium">
                     {asset.type.replace("_", " ")}
                   </Badge>
-                  {asset.holder && (
-                    <Badge variant="outline" className="text-xs">
+                  {asset.holder && <Badge variant="outline" className="text-xs">
                       <User className="w-3 h-3 mr-1" />
                       {asset.holder}
-                    </Badge>
-                  )}
-                  {linkedGoal && (
-                    <Badge className="text-xs bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0">
+                    </Badge>}
+                  {linkedGoal && <Badge className="text-xs bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20 border-0">
                       <Target className="w-3 h-3 mr-1" />
                       {linkedGoal.title}
-                    </Badge>
-                  )}
-                  {linkedPayments.length > 0 && (
-                    <Badge variant="secondary" className="text-xs">
+                    </Badge>}
+                  {linkedPayments.length > 0 && <Badge variant="secondary" className="text-xs">
                       <Bell className="w-3 h-3 mr-1" />
                       {linkedPayments.length} payment{linkedPayments.length !== 1 ? "s" : ""}
-                    </Badge>
-                  )}
+                    </Badge>}
                 </div>
 
                 {/* Valuation */}
                 <div className="space-y-0.5">
-                  <p className="text-2xl font-bold tracking-tight text-foreground">
+                  <p className="text-2xl font-bold tracking-tight text-secondary-foreground">
                     {formatCurrency(originalAmount, asset.currency as CurrencyCode)}
                   </p>
-                  {showConverted && (
-                    <p className="text-sm text-muted-foreground">≈ {formatDisplayCurrency(convertedAmount)}</p>
-                  )}
+                  {showConverted && <p className="text-sm text-muted-foreground">≈ {formatDisplayCurrency(convertedAmount)}</p>}
                 </div>
               </div>
 
               {/* Actions menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
+                  <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
                     <MoreVertical className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -146,6 +112,5 @@ export default function AssetCard({ asset, linkedPayments = [], linkedGoal, onEd
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
