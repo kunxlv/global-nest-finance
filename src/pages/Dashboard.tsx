@@ -81,7 +81,7 @@ export default function Dashboard() {
         </div>
 
         {/* Balance Section */}
-        <div className="bg-card p-6 sm:p-8 border border-border/50 rounded-xl shadow-xl">
+        <div className="card-section">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8 shadow-none">
             <h2 className="text-2xl sm:text-3xl font-semibold text-card-foreground">Balance</h2>
 
@@ -93,7 +93,7 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Net Worth Card */}
-            <div className="bg-muted/50 rounded-xl p-6 border border-border/30 shadow-xl">
+            <div className="card-muted p-6">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-medium tracking-widest text-muted-foreground">NET WORTH</p>
                 {/* <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH</span> */}
@@ -120,7 +120,7 @@ export default function Dashboard() {
 
             {/* Quick Actions Card */}
             <div className="space-y-4">
-              <div className="bg-muted/50 rounded-xl p-6 border border-border/30 shadow-xl">
+              <div className="card-muted p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
                     <Target className="w-4 h-4 text-accent" />
@@ -153,7 +153,7 @@ export default function Dashboard() {
         <PaymentNotificationBanner overdueCount={overdueCount} dueTodayCount={dueTodayCount} />
 
         {/* Transactions / Upcoming Payments */}
-        <div className="bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-xl">
+        <div className="card-section">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground">Upcoming Payments</h2>
             <Link to="/payments">
@@ -177,7 +177,7 @@ export default function Dashboard() {
         </div>
 
         {/* Goals */}
-        <div className="bg-card p-6 sm:p-8 border border-border/50 shadow-md rounded-xl">
+        <div className="card-section">
           <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-6">Goals</h2>
           {goals.length === 0 ? (
             <p className="text-muted-foreground text-sm">No goals set yet</p>
