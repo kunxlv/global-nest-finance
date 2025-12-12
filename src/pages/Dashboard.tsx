@@ -96,7 +96,7 @@ export default function Dashboard() {
             <div className="card-muted p-6">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-medium tracking-widest text-muted-foreground">NET WORTH</p>
-                {/* <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH</span> */}
+                {/* <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH (ASSETS+BALANCE)-LIABILITIES</span> */}
               </div>
               <p className="text-4xl sm:text-5xl font-bold text-card-foreground tracking-tight">
                 {summaryLoading ? "..." : formatCurrency(netWorth)}
@@ -189,11 +189,11 @@ export default function Dashboard() {
                     ? Math.round((Number(goal.current_amount) / Number(goal.target_amount)) * 100)
                     : 0;
                 return (
-                    <GoalCard
-                      key={goal.id}
-                      title={goal.title}
-                      timeframe={goal.timeframe || undefined}
-                      current={
+                  <GoalCard
+                    key={goal.id}
+                    title={goal.title}
+                    timeframe={goal.timeframe || undefined}
+                    current={
                       <CurrencyAmount
                         amount={Number(goal.current_amount)}
                         originalCurrency={goal.currency as CurrencyCode}
@@ -207,11 +207,11 @@ export default function Dashboard() {
                         showOriginal
                       />
                     }
-                      progress={progress}
-                      assetLinkedCount={goal.asset_linked ? 1 : 0}
-                      className="card-muted"
-                    />
-                  );
+                    progress={progress}
+                    assetLinkedCount={goal.asset_linked ? 1 : 0}
+                    className="card-muted"
+                  />
+                );
               })}
             </div>
           )}
