@@ -95,8 +95,10 @@ export default function Dashboard() {
             {/* Net Worth Card */}
             <div className="card-muted p-6">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-medium tracking-widest text-muted-foreground">NET WORTH</p>
-                {/* <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH (ASSETS+BALANCE)-LIABILITIES</span> */}
+                <p className="text-xs font-medium tracking-widest text-muted-foreground">
+                  NET WORTH (ASSETS+BALANCE)-LIABILITIES
+                </p>
+                {/* <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH</span> */}
               </div>
               <p className="text-4xl sm:text-5xl font-bold text-card-foreground tracking-tight">
                 {summaryLoading ? "..." : formatCurrency(netWorth)}
