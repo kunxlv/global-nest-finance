@@ -101,7 +101,6 @@ export default function Dashboard() {
                     <TooltipTrigger asChild>
                       <p className="text-xs font-medium tracking-widest text-muted-foreground cursor-help flex items-center gap-1.5">
                         NET WORTH
-                        <Info className="w-3 h-3" />
                       </p>
                     </TooltipTrigger>
                     <TooltipContent>
