@@ -8,7 +8,8 @@ import CurrencySelector from "@/components/CurrencySelector";
 import CurrencyAmount from "@/components/CurrencyAmount";
 import ConversionRate from "@/components/ConversionRate";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bell, Target } from "lucide-react";
+import { ArrowRight, Bell, Target, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase, PaymentHistory, RecurringPayment, Goal } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -95,10 +96,19 @@ export default function Dashboard() {
             {/* Net Worth Card */}
             <div className="card-muted p-6">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-medium tracking-widest text-muted-foreground">
-                  NET WORTH (ASSETS+BALANCE)-LIABILITIES
-                </p>
-                {/* <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">NET WORTH</span> */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <p className="text-xs font-medium tracking-widest text-muted-foreground cursor-help flex items-center gap-1.5">
+                        NET WORTH
+                        <Info className="w-3 h-3" />
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>(ASSETS + BALANCE) - LIABILITIES</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <p className="text-4xl sm:text-5xl font-bold text-card-foreground tracking-tight">
                 {summaryLoading ? "..." : formatCurrency(netWorth)}
