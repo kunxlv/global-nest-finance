@@ -177,7 +177,7 @@ export default function Assets() {
           <h2 className="text-lg font-semibold mb-4 text-secondary-foreground">All Assets</h2>
           
           {/* Filters */}
-          <AssetFilters typeFilter={typeFilter} countryFilter={countryFilter} holderFilter={holderFilter} sortBy={sortBy} onTypeChange={setTypeFilter} onCountryChange={setCountryFilter} onHolderChange={setHolderFilter} onSortChange={setSortBy} onClearFilters={clearFilters} className="rounded-xl shadow-lg" />
+          <AssetFilters typeFilter={typeFilter} countryFilter={countryFilter} holderFilter={holderFilter} sortBy={sortBy} onTypeChange={setTypeFilter} onCountryChange={setCountryFilter} onHolderChange={setHolderFilter} onSortChange={setSortBy} onClearFilters={clearFilters} />
 
           {/* Asset Cards Grid */}
           {loading ? <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
@@ -212,7 +212,7 @@ export default function Assets() {
           }} onDelete={() => {
             setAssetToDelete(asset.id);
             setDeleteDialogOpen(true);
-          }} className="rounded-xl shadow-lg" />)}
+          }} />)}
             </div>}
         </div>
 

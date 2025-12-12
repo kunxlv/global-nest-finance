@@ -44,8 +44,8 @@ export default function AssetCard({
   const originalAmount = Number(asset.valuation);
   const convertedAmount = convertToDisplayCurrency(originalAmount, asset.currency as CurrencyCode);
   const showConverted = asset.currency !== displayCurrency;
-  return <div className={cn("group relative bg-card rounded-3xl border border-border/50 overflow-hidden", "transition-all duration-300 ease-out", "hover:shadow-lg hover:shadow-black/5 hover:border-border hover:-translate-y-0.5", expanded && "ring-1 ring-primary/10")}>
-      <div className="p-5 rounded-xl">
+  return <div className={cn("group relative bg-card rounded-3xl border border-border/50 shadow-xl overflow-hidden", "transition-all duration-300 ease-out", "hover:shadow-2xl hover:shadow-black/5 hover:border-border hover:-translate-y-0.5", expanded && "ring-1 ring-primary/10")}>
+      <div className="p-5 rounded-3xl">
         {/* Main content row */}
         <div className="flex items-start gap-4">
           {/* Icon */}
