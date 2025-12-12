@@ -46,7 +46,7 @@ export default function CurrencySelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="bg-card border-border" disabled={isLoading}>
+        <Button variant="outline" className="bg-card border-border hover:secondary" disabled={isLoading}>
           {CURRENCY_SYMBOLS[displayCurrency]} {displayCurrency}
         </Button>
       </DropdownMenuTrigger>
