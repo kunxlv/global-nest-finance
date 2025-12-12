@@ -103,7 +103,11 @@ export default function Dashboard() {
                         NET WORTH
                       </p>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent
+                      side="right"
+                      sideOffset={12}
+                      className="bg-card text-card-foreground border border-border/30 shadow-lg px-3 py-1.5 text-sm font-medium rounded-lg"
+                    >
                       <p>(ASSETS + BALANCE) - LIABILITIES</p>
                     </TooltipContent>
                   </Tooltip>
