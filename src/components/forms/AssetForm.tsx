@@ -228,13 +228,13 @@ export default function AssetForm({ children, asset, onSuccess, open: controlled
                 type="button" 
                 variant="ghost" 
                 onClick={() => setOpen(false)}
-                className="rounded-xl px-6"
+                className="rounded-xl px-6 text-muted-foreground hover:text-card-foreground"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit"
-                className="rounded-xl px-8 bg-foreground text-background hover:bg-foreground/90"
+                className="rounded-xl px-8 bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 {asset ? "Update Asset" : "Add Asset"}
               </Button>

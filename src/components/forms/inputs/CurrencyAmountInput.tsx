@@ -35,10 +35,10 @@ export function CurrencyAmountInput({
 
   return (
     <div className={cn(
-      "flex items-center rounded-xl bg-muted/50 transition-all duration-200",
-      "border border-border/30 shadow-sm",
-      "focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-background",
-      "hover:border-border/50",
+      "flex items-center rounded-xl bg-muted transition-all duration-200",
+      "border border-border/50 shadow-sm",
+      "focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/20",
+      "hover:border-border",
       disabled && "opacity-50 cursor-not-allowed",
       className
     )}>

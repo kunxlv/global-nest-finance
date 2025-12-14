@@ -319,8 +319,8 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                           className={cn(
                             "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all duration-200",
                             !field.value
-                              ? "border-foreground bg-foreground text-background"
-                              : "border-border bg-background text-muted-foreground hover:border-foreground/20"
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border/50 bg-muted text-card-foreground hover:border-border"
                           )}
                         >
                           <Clock className="h-4 w-4" />
@@ -332,8 +332,8 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                           className={cn(
                             "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all duration-200",
                             field.value
-                              ? "border-foreground bg-foreground text-background"
-                              : "border-border bg-background text-muted-foreground hover:border-foreground/20"
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border/50 bg-muted text-card-foreground hover:border-border"
                           )}
                         >
                           <TrendingUp className="h-4 w-4" />
@@ -444,13 +444,13 @@ export default function GoalForm({ children, goal, onSuccess }: GoalFormProps) {
                 type="button" 
                 variant="ghost" 
                 onClick={() => setOpen(false)}
-                className="rounded-xl px-6"
+                className="rounded-xl px-6 text-muted-foreground hover:text-card-foreground"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit"
-                className="rounded-xl px-8 bg-foreground text-background hover:bg-foreground/90"
+                className="rounded-xl px-8 bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 {goal ? "Update Goal" : "Create Goal"}
               </Button>

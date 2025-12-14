@@ -47,8 +47,8 @@ export function DatePickerInput({
           disabled={disabled}
           className={cn(
             "w-full justify-start text-left font-normal h-12 rounded-xl",
-            "bg-muted/50 border border-border/30 shadow-sm",
-            "hover:bg-muted/70 hover:border-border/50 transition-all duration-200",
+            "bg-muted border border-border/50 shadow-sm",
+            "hover:bg-muted/80 hover:border-border transition-all duration-200",
             !value && "text-muted-foreground",
             className
           )}
@@ -57,11 +57,11 @@ export function DatePickerInput({
           {date ? (
             <span className="text-card-foreground">{format(date, "PPP")}</span>
           ) : (
-            <span>{placeholder}</span>
+            <span className="text-muted-foreground">{placeholder}</span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 rounded-xl border border-border/30 shadow-lg" align="start">
+      <PopoverContent className="w-auto p-0 rounded-xl border border-border/50 bg-card shadow-xl" align="start">
         <Calendar
           mode="single"
           selected={date}
