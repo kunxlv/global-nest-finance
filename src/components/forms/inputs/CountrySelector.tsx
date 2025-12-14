@@ -67,8 +67,8 @@ export function CountrySelector({
           aria-expanded={open}
           className={cn(
             "w-full justify-between h-12 rounded-xl text-left font-normal",
-            "bg-muted/50 border border-border/30 shadow-sm",
-            "hover:bg-muted/70 hover:border-border/50 transition-all duration-200",
+            "bg-muted border border-border/50 shadow-sm",
+            "hover:bg-muted/80 hover:border-border transition-all duration-200",
             !value && "text-muted-foreground",
             className
           )}
@@ -79,19 +79,19 @@ export function CountrySelector({
               <span className="text-card-foreground">{selectedCountry.name}</span>
             </span>
           ) : (
-            <span className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
+            <span className="flex items-center gap-2 text-muted-foreground">
+              <Globe className="h-4 w-4 text-muted-foreground" />
               <span>{placeholder}</span>
             </span>
           )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0 rounded-xl border border-border/30 shadow-lg">
-        <Command>
+      <PopoverContent className="w-[300px] p-0 rounded-xl border border-border/50 bg-card shadow-xl">
+        <Command className="bg-card">
           <CommandInput placeholder="Search country..." className="h-10" />
           <CommandList>
-            <CommandEmpty>No country found.</CommandEmpty>
+            <CommandEmpty className="text-muted-foreground">No country found.</CommandEmpty>
             <CommandGroup>
               {countries.map((country) => (
                 <CommandItem
@@ -101,7 +101,7 @@ export function CountrySelector({
                     onChange(country.name);
                     setOpen(false);
                   }}
-                  className="cursor-pointer rounded-lg"
+                  className="cursor-pointer rounded-lg text-card-foreground"
                 >
                   <Check
                     className={cn(

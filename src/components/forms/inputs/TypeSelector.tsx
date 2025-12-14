@@ -85,12 +85,12 @@ export function TypeSelector<T extends string>({
           onClick={() => onChange(option.value as T)}
           className={cn(
             "flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-200",
-            "border border-border/30 shadow-sm",
-            "hover:shadow-md hover:border-border/50 hover:bg-muted/50",
+            "border border-border/50 shadow-sm",
+            "hover:shadow-md hover:border-border hover:bg-muted/80",
             "focus:outline-none focus:ring-2 focus:ring-primary/20",
             value === option.value
               ? "bg-card-foreground text-card border-card-foreground shadow-md"
-              : "bg-muted/30 text-muted-foreground"
+              : "bg-muted text-card-foreground"
           )}
         >
           <span className={cn(
