@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Plus, FileDown, Package } from "lucide-react";
 import AssetForm from "@/components/forms/AssetForm";
-import AssetCard from "@/components/assets/AssetCard";
+import AssetRow from "@/components/assets/AssetRow";
 import AssetSummary from "@/components/assets/AssetSummary";
 import AssetFilters from "@/components/assets/AssetFilters";
 import { supabase, Asset, RecurringPayment } from "@/lib/supabase";
@@ -179,41 +179,62 @@ export default function Assets() {
           {/* Filters */}
           <AssetFilters typeFilter={typeFilter} countryFilter={countryFilter} holderFilter={holderFilter} sortBy={sortBy} onTypeChange={setTypeFilter} onCountryChange={setCountryFilter} onHolderChange={setHolderFilter} onSortChange={setSortBy} onClearFilters={clearFilters} />
 
-          {/* Asset Cards Grid */}
-          {loading ? <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
-              {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="bg-muted/50 rounded-2xl p-6 animate-pulse">
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-muted rounded-2xl" />
-                    <div className="flex-1 space-y-3">
-                      <div className="h-4 bg-muted rounded w-3/4" />
-                      <div className="h-3 bg-muted rounded w-1/2" />
-                      <div className="h-6 bg-muted rounded w-1/3" />
-                    </div>
-                  </div>
-                </div>)}
-            </div> : filteredAssets.length === 0 ? <div className="bg-muted/30 rounded-2xl p-12 text-center mt-4">
+          {/* Asset Rows List */}
+          {loading ? (
+            <div className="bg-card rounded-2xl border border-border/50 mt-4 overflow-hidden">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                <div key={i} className="flex items-center gap-3 px-4 py-3 animate-pulse border-b border-border/30 last:border-b-0">
+                  <div className="w-10 h-10 bg-muted rounded-xl" />
+                  <div className="flex-1 h-4 bg-muted rounded" />
+                  <div className="w-16 h-5 bg-muted rounded hidden sm:block" />
+                  <div className="w-20 h-5 bg-muted rounded hidden md:block" />
+                  <div className="w-24 h-8 bg-muted rounded" />
+                  <div className="w-4 h-4 bg-muted rounded" />
+                </div>
+              ))}
+            </div>
+          ) : filteredAssets.length === 0 ? (
+            <div className="bg-muted/30 rounded-2xl p-12 text-center mt-4">
               <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
                 <Package className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">No assets found</h3>
+              <h3 className="text-lg font-semibold mb-2 text-card-foreground">No assets found</h3>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                {assets.length === 0 ? "Start building your portfolio by adding your first asset." : "No assets match your current filters. Try adjusting them."}
+                {assets.length === 0 
+                  ? "Start building your portfolio by adding your first asset." 
+                  : "No assets match your current filters. Try adjusting them."}
               </p>
-              {assets.length === 0 && <AssetForm onSuccess={fetchAssets}>
+              {assets.length === 0 && (
+                <AssetForm onSuccess={fetchAssets}>
                   <Button>
                     <Plus className="w-4 h-4 mr-2" />
                     Add Your First Asset
                   </Button>
-                </AssetForm>}
-            </div> : <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
-              {filteredAssets.map(asset => <AssetCard key={asset.id} asset={asset} linkedPayments={linkedPayments[asset.id]} linkedGoal={linkedGoals[asset.id]} onEdit={() => {
-            setEditingAsset(asset);
-            setEditDialogOpen(true);
-          }} onDelete={() => {
-            setAssetToDelete(asset.id);
-            setDeleteDialogOpen(true);
-          }} />)}
-            </div>}
+                </AssetForm>
+              )}
+            </div>
+          ) : (
+            <div className="bg-card rounded-2xl border border-border/50 mt-4 overflow-hidden">
+              {filteredAssets.map((asset, index) => (
+                <AssetRow 
+                  key={asset.id} 
+                  asset={asset} 
+                  linkedPayments={linkedPayments[asset.id]} 
+                  linkedGoal={linkedGoals[asset.id]} 
+                  isFirst={index === 0}
+                  isLast={index === filteredAssets.length - 1}
+                  onEdit={() => {
+                    setEditingAsset(asset);
+                    setEditDialogOpen(true);
+                  }} 
+                  onDelete={() => {
+                    setAssetToDelete(asset.id);
+                    setDeleteDialogOpen(true);
+                  }} 
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Edit Dialog */}
