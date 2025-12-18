@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      asset_valuations: {
+        Row: {
+          asset_id: string
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          id: string
+          recorded_at: string
+          source: string | null
+          user_id: string
+          valuation: number
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          id?: string
+          recorded_at?: string
+          source?: string | null
+          user_id: string
+          valuation: number
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          id?: string
+          recorded_at?: string
+          source?: string | null
+          user_id?: string
+          valuation?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_valuations_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assets: {
         Row: {
           country: string | null

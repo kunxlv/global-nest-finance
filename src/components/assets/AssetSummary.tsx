@@ -3,6 +3,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { CurrencyCode } from "@/lib/currencyConversion";
 import { Banknote, TrendingUp, Coins, Building2, Gem, Package, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PortfolioTrendChart from "./PortfolioTrendChart";
 const ASSET_ICONS: Record<string, React.ElementType> = {
   CASH: Banknote,
   EQUITY: TrendingUp,
@@ -110,6 +111,9 @@ export default function AssetSummary({
             </div>;
       })}
       </div>
+
+      {/* Portfolio Trend Chart */}
+      <PortfolioTrendChart />
 
       {/* Distribution bar */}
       {distribution.length > 0 && <div className="bg-card rounded-3xl p-5 border border-border/50">
