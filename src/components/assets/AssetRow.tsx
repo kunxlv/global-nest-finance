@@ -4,10 +4,13 @@ import { formatCurrency, CurrencyCode } from "@/lib/currencyConversion";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { 
   Banknote, TrendingUp, Coins, Building2, Gem, Package, 
-  ChevronDown, Pencil, Trash, Bell, Target, Calendar, User, MapPin 
+  ChevronDown, Pencil, Trash, Bell, Target, Calendar, User, MapPin,
+  RefreshCw, Check, X
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import AssetValueChart from "./AssetValueChart";
 
@@ -40,6 +43,7 @@ interface AssetRowProps {
   linkedGoal?: { id: string; title: string } | null;
   onEdit: () => void;
   onDelete: () => void;
+  onQuickUpdate?: (newValuation: number) => Promise<void>;
   isFirst?: boolean;
   isLast?: boolean;
 }
@@ -50,10 +54,14 @@ export default function AssetRow({
   linkedGoal,
   onEdit,
   onDelete,
+  onQuickUpdate,
   isFirst,
   isLast
 }: AssetRowProps) {
   const [expanded, setExpanded] = useState(false);
+  const [quickUpdateOpen, setQuickUpdateOpen] = useState(false);
+  const [quickUpdateValue, setQuickUpdateValue] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
   const { convertToDisplayCurrency, formatCurrency: formatDisplayCurrency, displayCurrency } = useCurrency();
   
   const Icon = ASSET_ICONS[asset.type] || ASSET_ICONS.OTHER;
@@ -61,6 +69,20 @@ export default function AssetRow({
   const convertedAmount = convertToDisplayCurrency(originalAmount, asset.currency as CurrencyCode);
   const showConverted = asset.currency !== displayCurrency;
   const countryFlag = asset.country ? COUNTRY_FLAGS[asset.country] || "🌍" : null;
+
+  const handleQuickUpdate = async () => {
+    const newValue = parseFloat(quickUpdateValue);
+    if (isNaN(newValue) || newValue < 0 || !onQuickUpdate) return;
+    
+    setIsUpdating(true);
+    try {
+      await onQuickUpdate(newValue);
+      setQuickUpdateOpen(false);
+      setQuickUpdateValue("");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className={cn(
@@ -196,6 +218,78 @@ export default function AssetRow({
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
+            {onQuickUpdate && (
+              <Popover open={quickUpdateOpen} onOpenChange={setQuickUpdateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setQuickUpdateValue(asset.valuation.toString());
+                    }}
+                    className="h-8 text-xs"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+                    Quick Update
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-64 p-3" 
+                  align="start"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm font-medium mb-1">Update Valuation</p>
+                      <p className="text-xs text-muted-foreground">
+                        Current: {formatCurrency(originalAmount, asset.currency as CurrencyCode)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">{asset.currency}</span>
+                      <Input
+                        type="number"
+                        value={quickUpdateValue}
+                        onChange={(e) => setQuickUpdateValue(e.target.value)}
+                        placeholder="New value"
+                        className="h-8 text-sm"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        className="flex-1 h-8"
+                        onClick={handleQuickUpdate}
+                        disabled={isUpdating || !quickUpdateValue || parseFloat(quickUpdateValue) < 0}
+                      >
+                        {isUpdating ? (
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <>
+                            <Check className="w-3.5 h-3.5 mr-1" />
+                            Save
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8"
+                        onClick={() => {
+                          setQuickUpdateOpen(false);
+                          setQuickUpdateValue("");
+                        }}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
             <Button
               variant="outline"
               size="sm"

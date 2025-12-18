@@ -107,6 +107,40 @@ export default function Assets() {
     setDeleteDialogOpen(false);
     setAssetToDelete(null);
   };
+
+  const handleQuickUpdate = async (assetId: string, newValuation: number, currency: string) => {
+    if (!user) return;
+    
+    // Update asset valuation
+    const { error: updateError } = await supabase
+      .from("assets")
+      .update({ valuation: newValuation, updated_at: new Date().toISOString() })
+      .eq("id", assetId);
+    
+    if (updateError) {
+      toast.error("Failed to update valuation");
+      return;
+    }
+
+    // Record in history
+    const { error: historyError } = await supabase
+      .from("asset_valuations")
+      .insert([{
+        asset_id: assetId,
+        user_id: user.id,
+        valuation: newValuation,
+        currency: currency as "USD" | "EUR" | "INR" | "GBP" | "JPY" | "AUD" | "CAD",
+        source: "quick_update"
+      }]);
+
+    if (historyError) {
+      console.error("Failed to record history:", historyError);
+    }
+
+    toast.success("Valuation updated");
+    fetchAssets();
+  };
+
   const clearFilters = () => {
     setTypeFilter("ALL");
     setCountryFilter("ALL");
@@ -230,7 +264,8 @@ export default function Assets() {
                   onDelete={() => {
                     setAssetToDelete(asset.id);
                     setDeleteDialogOpen(true);
-                  }} 
+                  }}
+                  onQuickUpdate={(newValuation) => handleQuickUpdate(asset.id, newValuation, asset.currency)}
                 />
               ))}
             </div>
