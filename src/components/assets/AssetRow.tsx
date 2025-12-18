@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import AssetValueChart from "./AssetValueChart";
 
 // Asset type icons
 const ASSET_ICONS: Record<string, React.ElementType> = {
@@ -186,6 +187,11 @@ export default function AssetRow({
                 {linkedPayments.length} linked payment{linkedPayments.length !== 1 ? "s" : ""}
               </Badge>
             )}
+          </div>
+
+          {/* Value History Chart */}
+          <div className="mb-4">
+            <AssetValueChart assetId={asset.id} assetCurrency={asset.currency} />
           </div>
 
           {/* Action Buttons */}

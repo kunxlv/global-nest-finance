@@ -55,10 +55,13 @@ export default function AssetForm({ children, asset, onSuccess, open: controlled
   const onSubmit = async (data: AssetFormData) => {
     if (!user) return;
 
+    const newValuation = parseFloat(data.valuation);
+    const newCurrency = data.currency as "USD" | "EUR" | "GBP" | "INR" | "JPY" | "AUD" | "CAD";
+    
     const payload = {
       user_id: user.id,
-      valuation: parseFloat(data.valuation),
-      currency: data.currency as "USD" | "EUR" | "GBP" | "INR" | "JPY" | "AUD" | "CAD",
+      valuation: newValuation,
+      currency: newCurrency,
       type: data.type as "CASH" | "EQUITY" | "CRYPTO" | "GOLD" | "REAL_ESTATE" | "OTHER",
       description: data.description,
       country: data.country || null,
@@ -66,19 +69,60 @@ export default function AssetForm({ children, asset, onSuccess, open: controlled
       purchase_date: data.purchase_date || null,
     };
 
-    const { error } = asset
-      ? await supabase.from("assets").update(payload).eq("id", asset.id)
-      : await supabase.from("assets").insert(payload);
+    if (asset) {
+      // Update existing asset
+      const { error } = await supabase.from("assets").update(payload).eq("id", asset.id);
+      
+      if (error) {
+        toast.error("Failed to update asset");
+        console.error(error);
+        return;
+      }
 
-    if (error) {
-      toast.error("Failed to save asset");
-      console.error(error);
+      // Check if valuation changed and record history
+      const oldValuation = Number(asset.valuation);
+      if (oldValuation !== newValuation) {
+        await supabase.from("asset_valuations").insert({
+          asset_id: asset.id,
+          user_id: user.id,
+          valuation: newValuation,
+          currency: newCurrency,
+          source: "update"
+        });
+      }
+
+      toast.success("Asset updated successfully");
     } else {
-      toast.success(asset ? "Asset updated successfully" : "Asset created successfully");
-      setOpen(false);
-      form.reset();
-      onSuccess();
+      // Create new asset
+      const { data: newAsset, error } = await supabase
+        .from("assets")
+        .insert(payload)
+        .select()
+        .single();
+      
+      if (error) {
+        toast.error("Failed to create asset");
+        console.error(error);
+        return;
+      }
+
+      // Record initial valuation
+      if (newAsset) {
+        await supabase.from("asset_valuations").insert({
+          asset_id: newAsset.id,
+          user_id: user.id,
+          valuation: newValuation,
+          currency: newCurrency,
+          source: "initial"
+        });
+      }
+
+      toast.success("Asset created successfully");
     }
+
+    setOpen(false);
+    form.reset();
+    onSuccess();
   };
 
   return (
