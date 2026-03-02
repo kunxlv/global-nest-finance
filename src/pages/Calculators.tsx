@@ -5,22 +5,22 @@ const savingsCalculators = [
   {
     title: "APY",
     description: "Work out how much interest you might earn on your savings.",
-    href: "#"
+    href: "/calculators/apy"
   },
   {
     title: "CAGR",
     description: "Work out the annual growth rate of an investment.",
-    href: "#"
+    href: "/calculators/cagr"
   },
   {
     title: "SIP",
     description: "Work out what returns you might receive made through your Systematic Investment Plan (SIP).",
-    href: "#"
+    href: "/calculators/sip"
   },
   {
     title: "Daily compounding",
     description: "Calculate the daily compound interest/earnings you might receive on your investment.",
-    href: "#"
+    href: "/calculators/daily-compounding"
   }
 ];
 
@@ -28,22 +28,22 @@ const debtCalculators = [
   {
     title: "Amortization",
     description: "Work out your schedule of monthly repayments and the split of principal and interest on your loan or mortgage.",
-    href: "#"
+    href: "/calculators/amortization"
   },
   {
     title: "Debt Payoff",
     description: "See how long it might take to pay off your loan and what interest you will pay.",
-    href: "#"
+    href: "/calculators/debt-payoff"
   },
   {
     title: "Interest Rate",
     description: "Work out what interest rate you're currently paying on your loan or mortgage.",
-    href: "#"
+    href: "/calculators/interest-rate"
   },
   {
     title: "Credit Card Payment",
     description: "Work out effective strategies for paying off your credit card debt.",
-    href: "#"
+    href: "/calculators/credit-card-payment"
   }
 ];
 
@@ -51,17 +51,17 @@ const salaryCalculators = [
   {
     title: "Pay raise",
     description: "Calculate the pay increase for an hourly, weekly, monthly or annual salary and see how your earnings increase.",
-    href: "#"
+    href: "/calculators/pay-raise"
   },
   {
     title: "Overtime",
     description: "Calculate the amount of overtime pay you're due for the additional overtime hours you have worked.",
-    href: "#"
+    href: "/calculators/overtime"
   },
   {
     title: "Salary to hourly",
     description: "Convert your annual wage to an hourly pay figure and see how much you're earning per hour.",
-    href: "#"
+    href: "/calculators/salary-to-hourly"
   }
 ];
 

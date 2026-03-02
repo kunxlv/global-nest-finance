@@ -13,6 +13,7 @@ import Liabilities from "./pages/Liabilities";
 import Goals from "./pages/Goals";
 import Payments from "./pages/Payments";
 import Calculators from "./pages/Calculators";
+import CalculatorDetail from "./pages/CalculatorDetail";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
               <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
               <Route path="/calculators" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
+              <Route path="/calculators/:type" element={<ProtectedRoute><CalculatorDetail /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
